@@ -20,8 +20,7 @@
 #include "datalink.h"
 #include "datalink_private.h"
 
-int
-dl_sizeof_list(wi, list)
+int dl_sizeof_list(wi, list)
 WatchInfoPtr wi;
 ListPtr list;
 {
@@ -31,5 +30,5 @@ ListPtr list;
 	for (ip = list->first; ip; ip = ip->next)
 		size += dl_sizeof_item(wi, ip);
 
-	return(size);
+	return (size);
 }

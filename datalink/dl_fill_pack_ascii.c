@@ -17,8 +17,7 @@
  *
  */
 
-void
-dl_fill_pack_ascii(to, from, size, fill)
+void dl_fill_pack_ascii(to, from, size, fill)
 unsigned char *to;
 unsigned char *from;
 int size;

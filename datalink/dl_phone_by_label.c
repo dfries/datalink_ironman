@@ -19,12 +19,11 @@
 
 #include "datalink.h"
 
-int
-dl_phone_by_label(a, b)
+int dl_phone_by_label(a, b)
 ItemPtr a;
 ItemPtr b;
 {
 	int r;
 
-	return(strcmp(a->data.phone.label, b->data.phone.label));
+	return (strcmp(a->data.phone.label, b->data.phone.label));
 }

@@ -23,7 +23,8 @@
 #ifndef __DATALINK_H__
 #define __DATALINK_H__
 
-typedef struct time_s {
+typedef struct time_s
+{
 	unsigned char tz_num;
 	unsigned char hours;
 	unsigned char minutes;
@@ -39,7 +40,8 @@ typedef struct time_s {
 	char *label;
 } Time, *TimePtr;
 
-typedef struct alarm_s {
+typedef struct alarm_s
+{
 	unsigned char alarm_num;
 	unsigned char hours;
 	unsigned char minutes;
@@ -49,13 +51,15 @@ typedef struct alarm_s {
 	unsigned char audible;
 } Alarm, *AlarmPtr;
 
-typedef struct chron_s {
+typedef struct chron_s
+{
 	unsigned char chron_laps;
 	int memused;
 	char *label;
 } Chron, *ChronPtr;
 
-typedef struct timer_s {
+typedef struct timer_s
+{
 	unsigned char timer_num;
 	unsigned char hours;
 	unsigned char minutes;
@@ -65,48 +69,57 @@ typedef struct timer_s {
 	char *label;
 } Timer, *TimerPtr;
 
-typedef struct system_s {
+typedef struct system_s
+{
 	unsigned char chime;
 	unsigned char beep;
 } System, *SystemPtr;
 
-typedef struct appointment_s {
+typedef struct appointment_s
+{
 	unsigned char month;
 	unsigned char day;
 	unsigned char time;
 	char *label;
 } Appointment, *AppointmentPtr;
 
-typedef struct phone_s {
+typedef struct phone_s
+{
 	char *number;
 	char *label;
 } Phone, *PhonePtr;
 
-typedef struct todo_s {
+typedef struct todo_s
+{
 	unsigned char priority;
 	char *label;
 } ToDo, *ToDoPtr;
 
-typedef struct anniversary_s {
+typedef struct anniversary_s
+{
 	unsigned char month;
 	unsigned char day;
 	char *label;
 } Anniversary, *AnniversaryPtr;
 
-typedef struct wristapp_s {
+typedef struct wristapp_s
+{
 	int len;
 	unsigned char *data;
 } WristApp, *WristAppPtr;
 
-typedef struct melody_s {
+typedef struct melody_s
+{
 	int len;
 	unsigned char *data;
 } Melody, *MelodyPtr;
 
-typedef struct item_s {
+typedef struct item_s
+{
 	struct item_s *next;
 	int type;
-	union {
+	union
+	{
 		Time time;
 		Alarm alarm;
 		Chron chron;
@@ -119,17 +132,21 @@ typedef struct item_s {
 		System system;
 		WristApp wristapp;
 		Melody melody;
-	} data;
-} Item, *ItemPtr;
+	}
+	data;
+}
+Item, *ItemPtr;
 
-typedef struct list_s {
+typedef struct list_s
+{
 	ItemPtr first;
 	ItemPtr last;
 	int download;
 	int count;
 } List, *ListPtr;
 
-typedef struct watch_info_s {
+typedef struct watch_info_s
+{
 	int dl_device;		/* Device to download to. */
 	int max_tz;
 	int max_alarms;
@@ -202,8 +219,8 @@ typedef struct watch_info_s {
 
 #define DEF_LPTRANSINFO 1
 
-extern int (*dl_error_proc)(char *);
-extern int (*dl_warn_proc)(char *);
+extern int (*dl_error_proc) (char *);
+extern int (*dl_warn_proc) (char *);
 
 /* Function definitions. */
 
@@ -216,7 +233,8 @@ unsigned short int dl_docrc(unsigned char *);
 void dl_fill_pack_ascii(unsigned char *, unsigned char *, int, char);
 void dl_free_download(void);
 int dl_init_download(WatchInfoPtr, ListPtr, ListPtr, ListPtr, ListPtr,
-	ListPtr, ListPtr, ListPtr, ListPtr, ListPtr, ListPtr, ListPtr);
+		     ListPtr, ListPtr, ListPtr, ListPtr, ListPtr, ListPtr,
+		     ListPtr);
 WatchInfoPtr dl_init_watch(int);
 int dl_item_ok(WatchInfoPtr, ItemPtr);
 ItemPtr dl_new_item(WatchInfoPtr, int);
@@ -227,18 +245,18 @@ int dl_pack_digit(char);
 void dl_pack_phone(unsigned char *, unsigned char *, int);
 int dl_pack_size(char *);
 int dl_phone_by_label(ItemPtr, ItemPtr);
-WatchInfoPtr dl_read_save(char *, int, ListPtr *, ListPtr *, ListPtr *, 
-	ListPtr *, ListPtr *, ListPtr *, ListPtr *, ListPtr *, ListPtr *,
-	ListPtr *, ListPtr * );
+WatchInfoPtr dl_read_save(char *, int, ListPtr *, ListPtr *, ListPtr *,
+			  ListPtr *, ListPtr *, ListPtr *, ListPtr *,
+			  ListPtr *, ListPtr *, ListPtr *, ListPtr *);
 int dl_send_data(WatchInfoPtr, int);
 void dl_set_error(int (*)());
 void dl_set_warn(int (*)());
 int dl_sizeof_item(WatchInfoPtr, ItemPtr);
 int dl_sizeof_list(WatchInfoPtr, ListPtr);
-int dl_sort(ListPtr, int(*)());
+int dl_sort(ListPtr, int (*)());
 int dl_string_ok(char *, int);
 int dl_todo_by_label(ItemPtr, ItemPtr);
 int dl_todo_by_prio(ItemPtr, ItemPtr);
 int dl_write_save(char *, char *, char *);
 
-#endif /* __DATALINK_H__ */
+#endif				/* __DATALINK_H__ */

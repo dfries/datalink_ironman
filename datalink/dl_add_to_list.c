@@ -19,19 +19,19 @@
 
 #include "datalink.h"
 
-void
-dl_add_to_list(list, item)
+void dl_add_to_list(list, item)
 ListPtr list;
 ItemPtr item;
 {
 
-	if (list->last) {
+	if (list->last)
+	{
 		list->last = list->last->next = item;
 		list->count++;
-	}
-	else {
+	} else
+	{
 		list->first = list->last = item;
 		list->count = 1;
 	}
-	
+
 }

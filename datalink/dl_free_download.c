@@ -24,8 +24,7 @@
 #include "datalink_private.h"
 
 
-void
-dl_free_download()
+void dl_free_download()
 {
 /* Free up old download structure if it exists. */
 	if (dl_download_data.times)
@@ -61,5 +60,5 @@ dl_free_download()
 	if (dl_download_data.melody)
 		free(dl_download_data.melody);
 
-	memset((char *)&dl_download_data, 0, sizeof(Download));
+	memset((char *) &dl_download_data, 0, sizeof(Download));
 }

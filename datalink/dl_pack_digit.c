@@ -17,8 +17,7 @@
  *
  */
 
-int
-dl_pack_digit(c)
+int dl_pack_digit(c)
 char c;
 {
 	int i;
@@ -26,14 +25,15 @@ char c;
 	c = toupper(c);
 
 	if (c >= '0' && c <= '9')
-		return(c - '0');
+		return (c - '0');
 
-	for (i = 0; i < 6; i++) {
+	for (i = 0; i < 6; i++)
+	{
 
 		if (c == "CFHPW "[i])
-			return(i + 10);
+			return (i + 10);
 
 	}
 
-	return(0xf);
+	return (0xf);
 }

@@ -19,9 +19,8 @@
 
 #include "datalink.h"
 
-void
-dl_set_error(func)
-int (*func)();
+void dl_set_error(func)
+int (*func) ();
 {
 	dl_error_proc = func;
 }

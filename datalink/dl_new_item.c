@@ -19,8 +19,7 @@
 
 #include "datalink.h"
 
-ItemPtr
-dl_new_item(wi, type)
+ItemPtr dl_new_item(wi, type)
 WatchInfoPtr wi;
 int type;
 {
@@ -28,18 +27,20 @@ int type;
 
 /* Since there is only one supported device, wi is not used. */
 
-	if (type <= DL_NO_TYPE && type > DL_MAX_TYPE) {
-		(*dl_error_proc)("Unknown type, can't allocate.");
-		return(NULL);
+	if (type <= DL_NO_TYPE && type > DL_MAX_TYPE)
+	{
+		(*dl_error_proc) ("Unknown type, can't allocate.");
+		return (NULL);
 	}
 
-	if ((ni = (ItemPtr)malloc(sizeof(Item))) == NULL) {
-		(*dl_error_proc)("Could not allocate item.");
-		return(NULL);
+	if ((ni = (ItemPtr) malloc(sizeof(Item))) == NULL)
+	{
+		(*dl_error_proc) ("Could not allocate item.");
+		return (NULL);
 	}
 
-	memset((char *)ni, 0, sizeof(Item));
+	memset((char *) ni, 0, sizeof(Item));
 
 	ni->type = type;
-	return(ni);
+	return (ni);
 }

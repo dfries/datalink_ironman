@@ -40,7 +40,8 @@ int npckts;
 	unsigned char black[80];
 	int inc = (type == MODEL_70) ? 1 : 2;
 
-	for (i = 0; i < 80; i++) {
+	for (i = 0; i < 80; i++)
+	{
 		white[i] = 0xff;
 		black[i] = 0x00;
 	}
@@ -58,30 +59,26 @@ int npckts;
 	seteuid(getuid());
 #endif
 
-	SYNC
-	DATASTART
+	SYNC DATASTART for (i = 0; i < npckts; i++)
+	{
 
-	for (i = 0; i < npckts; i++) {
-
-		for (j = 0; j <= *packets[i]; j += inc) {
+		for (j = 0; j <= *packets[i]; j += inc)
+		{
 			vga_waitretrace();
 			byte = packets[i][j];
-			WRITE_BYTE1(1, byte)
-
-			if (type == MODEL_70)
+			WRITE_BYTE1(1, byte) if (type == MODEL_70)
 				continue;
 
 			if (j + 1 == packets[i][0])
 				WRITE_BYTE2(0, 0xff)
-			else {
+				else
+			{
 				byte = packets[i][j + 1];
-				WRITE_BYTE2(1, byte)
-			}
+			WRITE_BYTE2(1, byte)}
 
 		}
 
-		END_PACKET
-	}
+	END_PACKET}
 
 #ifdef MACH64_HACK
 /* For some reason, the latest mach 64 svga driver requires root on the

@@ -19,8 +19,7 @@
 
 #include "datalink.h"
 
-int
-dl_string_ok(string, maxl)
+int dl_string_ok(string, maxl)
 char *string;
 int maxl;
 {
@@ -30,14 +29,15 @@ int maxl;
 	l = strlen(string);
 
 	if (l > maxl)
-		return(0);
+		return (0);
 
-	for (i = 0; i < l; i++) {
+	for (i = 0; i < l; i++)
+	{
 
 		if (string[i] < ' ' || string[i] > '~')
-			return(0);
+			return (0);
 
 	}
 
-	return(1);
+	return (1);
 }

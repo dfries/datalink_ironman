@@ -19,12 +19,11 @@
 
 #include "datalink.h"
 
-int
-dl_todo_by_prio(a, b)
+int dl_todo_by_prio(a, b)
 ItemPtr a;
 ItemPtr b;
 {
 	int r;
 
-	return(a->data.todo.priority - b->data.todo.priority);
+	return (a->data.todo.priority - b->data.todo.priority);
 }

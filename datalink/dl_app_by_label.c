@@ -19,12 +19,11 @@
 
 #include "datalink.h"
 
-int
-dl_app_by_label(a, b)
+int dl_app_by_label(a, b)
 ItemPtr a;
 ItemPtr b;
 {
 	int r;
 
-	return(strcmp(a->data.app.label, b->data.app.label));
+	return (strcmp(a->data.app.label, b->data.app.label));
 }

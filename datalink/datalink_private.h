@@ -23,7 +23,8 @@
 #ifndef __DATALINK_PRIVATE_H__
 #define __DATALINK_PRIVATE_H__
 
-typedef struct download_s {
+typedef struct download_s
+{
 	int num_times;
 	TimePtr times;
 	int num_alarms;
@@ -60,4 +61,4 @@ typedef struct download_s {
 
 extern Download dl_download_data;
 
-#endif /* __DATALINK_PRIVATE_H__ */
+#endif				/* __DATALINK_PRIVATE_H__ */

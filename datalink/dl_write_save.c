@@ -22,8 +22,7 @@
 #include "datalink.h"
 #include "datalink_private.h"
 
-int
-dl_write_save(datafile, wristappfile, melodyfile)
+int dl_write_save(datafile, wristappfile, melodyfile)
 char *datafile;
 char *wristappfile;
 char *melodyfile;
@@ -48,52 +47,59 @@ char *melodyfile;
 /* Create backup of old datafile. */
 
 	sprintf(bakfile, "%s.bak", datafile);
-	(void)unlink(bakfile);
+	(void) unlink(bakfile);
 
 	if (link(datafile, bakfile) < 0)
-		last_warn = (*dl_warn_proc)("Could not make backup.");
+		last_warn = (*dl_warn_proc) ("Could not make backup.");
 
-	(void)unlink(datafile);
+	(void) unlink(datafile);
 
 	if ((fp = fopen(datafile, "w")) == NULL)
-		return((*dl_error_proc)("Could not write save file."));
+		return ((*dl_error_proc) ("Could not write save file."));
 
-	fprintf(fp, "# Data Link save file created by the datalink library.\n\n");
+	fprintf(fp,
+		"# Data Link save file created by the datalink library.\n\n");
 
 /* Save each type of data. */
 
-	for (i = 0; i < dl_download_data.num_times; i++) {
+	for (i = 0; i < dl_download_data.num_times; i++)
+	{
 		tip = &dl_download_data.times[i];
 		fprintf(fp, "timezone = %d, \"%s\", %d, %d, %d\n",
-			tip->tz_num, tip->label, tip->offset, tip->hour_fmt, tip->date_fmt);
+			tip->tz_num, tip->label, tip->offset,
+			tip->hour_fmt, tip->date_fmt);
 	}
 
 	if (dl_download_data.num_times)
 		fprintf(fp, "\n");
 
-	for (i = 0; i < dl_download_data.num_alarms; i++) {
+	for (i = 0; i < dl_download_data.num_alarms; i++)
+	{
 		alp = &dl_download_data.alarms[i];
-		fprintf(fp, "alarm = %d, %02d/%02d, %02d:%02d, \"%s\", %d\n",
-			alp->alarm_num, alp->month, alp->day, alp->hours, alp->minutes,
-			alp->label, alp->audible);
+		fprintf(fp,
+			"alarm = %d, %02d/%02d, %02d:%02d, \"%s\", %d\n",
+			alp->alarm_num, alp->month, alp->day, alp->hours,
+			alp->minutes, alp->label, alp->audible);
 	}
 
 	if (dl_download_data.num_alarms)
 		fprintf(fp, "\n");
 
-	for (i = 0; i < dl_download_data.num_apps; i++) {
+	for (i = 0; i < dl_download_data.num_apps; i++)
+	{
 		ap = &dl_download_data.apps[i];
 		min = 0;
 
-		for (i = 1; i < 0xFF; i <<= 1) {
+		for (i = 1; i < 0xFF; i <<= 1)
+		{
 
-			if ((i&ap->time))
-				min += i*15;
+			if ((i & ap->time))
+				min += i * 15;
 
 		}
 
-		hour = min/60;
-		min = hour*60;
+		hour = min / 60;
+		min = hour * 60;
 
 		fprintf(fp, "appointment = %02d/%02d, %02d:%02d, \"%s\"\n",
 			ap->month, ap->day, hour, min, ap->label);
@@ -102,23 +108,28 @@ char *melodyfile;
 	if (dl_download_data.num_apps)
 		fprintf(fp, "\n");
 
-	for (i = 0; i < dl_download_data.num_todos; i++) {
+	for (i = 0; i < dl_download_data.num_todos; i++)
+	{
 		tp = &dl_download_data.todos[i];
-		fprintf(fp, "todo = %d, \"%s\"\n", tp->priority, tp->label);
+		fprintf(fp, "todo = %d, \"%s\"\n", tp->priority,
+			tp->label);
 	}
 
 	if (dl_download_data.num_todos)
 		fprintf(fp, "\n");
 
-	for (i = 0; i < dl_download_data.num_phones; i++) {
+	for (i = 0; i < dl_download_data.num_phones; i++)
+	{
 		pp = &dl_download_data.phones[i];
-		fprintf(fp, "phone = \"%s\", \"%s\"\n", pp->number, pp->label);
+		fprintf(fp, "phone = \"%s\", \"%s\"\n", pp->number,
+			pp->label);
 	}
 
 	if (dl_download_data.num_phones)
 		fprintf(fp, "\n");
 
-	for (i = 0; i < dl_download_data.num_annivs; i++) {
+	for (i = 0; i < dl_download_data.num_annivs; i++)
+	{
 		anp = &dl_download_data.annivs[i];
 		fprintf(fp, "anniversary = %02d/%02d, \"%s\"\n",
 			anp->month, anp->day, anp->label);
@@ -127,7 +138,8 @@ char *melodyfile;
 	if (dl_download_data.num_annivs)
 		fprintf(fp, "\n");
 
-	for (i = 0; i < dl_download_data.num_system; i++) {
+	for (i = 0; i < dl_download_data.num_system; i++)
+	{
 		sp = &dl_download_data.system[i];
 		fprintf(fp, "system = %d, %d\n", sp->chime, sp->beep);
 	}
@@ -141,5 +153,5 @@ char *melodyfile;
 	if (melodyfile && *melodyfile)
 		fprintf(fp, "melody = \"%s\"\n\n", melodyfile);
 
-	return(last_warn);
+	return (last_warn);
 }

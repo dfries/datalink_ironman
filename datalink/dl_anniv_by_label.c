@@ -19,12 +19,11 @@
 
 #include "datalink.h"
 
-int
-dl_anniv_by_label(a, b)
+int dl_anniv_by_label(a, b)
 ItemPtr a;
 ItemPtr b;
 {
 	int r;
 
-	return(strcmp(a->data.anniv.label, b->data.anniv.label));
+	return (strcmp(a->data.anniv.label, b->data.anniv.label));
 }

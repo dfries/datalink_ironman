@@ -18,13 +18,12 @@
  */
 
 /* crc lookup table */
-static unsigned short int crc16_table[16]={
+static unsigned short int crc16_table[16] = {
 	0x0000, 0xCC01, 0xD801, 0x1400, 0xF001, 0x3C00, 0x2800, 0xE401,
 	0xA001, 0x6C00, 0x7800, 0xB401, 0x5000, 0x9C01, 0x8801, 0x4400
 };
 
-unsigned short int
-dl_docrc(data)
+unsigned short int dl_docrc(data)
 unsigned char *data;
 {
 	int i;
@@ -34,7 +33,8 @@ unsigned char *data;
 
 	l = data[0] - 2;
 
-	for (i = 0; i < l; i++) {
+	for (i = 0; i < l; i++)
+	{
 		t = crc16_table[crc & 0xF];
 		crc = (crc >> 4) & 0x0FFF;
 		crc = crc ^ t ^ crc16_table[data[i] & 0xF];
@@ -45,7 +45,7 @@ unsigned char *data;
 		crc = crc ^ t ^ crc16_table[(data[i] >> 4) & 0xF];
 	}
 
-	data[l++] = crc>>8;
-	data[l] = crc&0xff;
-	return(crc);
+	data[l++] = crc >> 8;
+	data[l] = crc & 0xff;
+	return (crc);
 }

@@ -20,14 +20,13 @@
 #include "datalink.h"
 #include "datalink_private.h"
 
-int
-dl_pack_size(string)
+int dl_pack_size(string)
 char *string;
 {
 	int size;
 	int l;
 
-	l = (strlen(string) + 1)*3;
-	size = (l%4) ? l/4 + 1 : l/4;
-	return(size);
+	l = (strlen(string) + 1) * 3;
+	size = (l % 4) ? l / 4 + 1 : l / 4;
+	return (size);
 }

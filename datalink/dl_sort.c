@@ -19,10 +19,9 @@
 
 #include "datalink.h"
 
-int
-dl_sort(list, cmp_proc)
+int dl_sort(list, cmp_proc)
 ListPtr list;
-int (*cmp_proc)();
+int (*cmp_proc) ();
 {
 	ListPtr nl;
 	ItemPtr ip;
@@ -31,30 +30,35 @@ int (*cmp_proc)();
 	ItemPtr pi;
 
 	if ((nl = dl_new_list()) == NULL)
-		return((*dl_error_proc)("List alloc error."));
+		return ((*dl_error_proc) ("List alloc error."));
 
-	for (ip = list->first; ip; ip = ni) {
+	for (ip = list->first; ip; ip = ni)
+	{
 		ni = ip->next;
 
-		for (pi = NULL, si = nl->first; si; si = si->next) {
+		for (pi = NULL, si = nl->first; si; si = si->next)
+		{
 
-			if ((*cmp_proc)(ip, si) >= 0) {
+			if ((*cmp_proc) (ip, si) >= 0)
+			{
 				pi = si;
 				continue;
 			}
 
-			if (pi) {
+			if (pi)
+			{
 				ip->next = pi->next;
 				pi->next = ip;
-			}
-			else {
+			} else
+			{
 				ip->next = nl->first;
 				nl->first = ip;
 			}
 
 			nl->count++;
 
-			if (!nl->last) {
+			if (!nl->last)
+			{
 				nl->last = ip;
 				ip->next = NULL;
 			}
@@ -63,7 +67,8 @@ int (*cmp_proc)();
 
 		}
 
-		if (!si) {
+		if (!si)
+		{
 			dl_add_to_list(nl, ip);
 			ip->next = NULL;
 		}

@@ -19,16 +19,16 @@
 
 #include "datalink.h"
 
-ListPtr
-dl_new_list()
+ListPtr dl_new_list()
 {
 	ListPtr nl;
 
-	if ((nl = (ListPtr)malloc(sizeof(List))) == NULL) {
-		(*dl_error_proc)("Could not allocate new list.");
-		return(NULL);
+	if ((nl = (ListPtr) malloc(sizeof(List))) == NULL)
+	{
+		(*dl_error_proc) ("Could not allocate new list.");
+		return (NULL);
 	}
 
-	memset((char *)nl, 0, sizeof(List));
-	return(nl);
+	memset((char *) nl, 0, sizeof(List));
+	return (nl);
 }

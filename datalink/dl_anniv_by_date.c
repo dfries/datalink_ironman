@@ -19,8 +19,7 @@
 
 #include "datalink.h"
 
-int
-dl_anniv_by_date(a, b)
+int dl_anniv_by_date(a, b)
 ItemPtr a;
 ItemPtr b;
 {
@@ -29,7 +28,7 @@ ItemPtr b;
 	r = a->data.anniv.month - b->data.anniv.month;
 
 	if (r)
-		return(r);
+		return (r);
 
-	return(a->data.anniv.day - b->data.anniv.day);
+	return (a->data.anniv.day - b->data.anniv.day);
 }

@@ -24,28 +24,26 @@
 #include "datalink.h"
 #include "datalink_private.h"
 
-int (*dl_error_proc)(char *);
-int (*dl_warn_proc)(char *);
+int (*dl_error_proc) (char *);
+int (*dl_warn_proc) (char *);
 
-Download dl_download_data = {0};
+Download dl_download_data = { 0 };
 
 dl_default_error(msg)
 char *msg;
 {
 	fprintf(stderr, "ERROR: %s\n", msg);
-	return(-1);
+	return (-1);
 }
 
-int
-dl_default_warn(msg)
+int dl_default_warn(msg)
 char *msg;
 {
 	fprintf(stderr, "WARNING: %s\n", msg);
-	return(1);
+	return (1);
 }
 
-WatchInfoPtr
-dl_init_watch(type)
+WatchInfoPtr dl_init_watch(type)
 int type;
 {
 	WatchInfoPtr result;
@@ -56,14 +54,16 @@ int type;
 	if (!dl_warn_proc)
 		dl_warn_proc = dl_default_warn;
 
-	if ((result = (WatchInfoPtr)malloc(sizeof(WatchInfo))) == NULL) {
-		(*dl_error_proc)("Could not allocate WatchInfo structure.");
-		return(NULL);
+	if ((result = (WatchInfoPtr) malloc(sizeof(WatchInfo))) == NULL)
+	{
+		(*dl_error_proc) ("Could not allocate WatchInfo structure.");
+		return (NULL);
 	}
 
-	memset((char *)result, 0, sizeof(WatchInfo));
+	memset((char *) result, 0, sizeof(WatchInfo));
 
-	switch (type) {
+	switch (type)
+	{
 	case DATALINK_70:
 		result->dl_device = type;
 		result->max_tz = 2;
@@ -143,9 +143,9 @@ int type;
 		result->time_adjust = 9;
 		break;
 	default:
-		(*dl_error_proc)("Unknown watch type.");
-		return(NULL);
+		(*dl_error_proc) ("Unknown watch type.");
+		return (NULL);
 	}
 
-	return(result);
+	return (result);
 }

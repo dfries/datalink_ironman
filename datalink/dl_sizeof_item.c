@@ -20,8 +20,7 @@
 #include "datalink.h"
 #include "datalink_private.h"
 
-int
-dl_sizeof_item(wi, item)
+int dl_sizeof_item(wi, item)
 WatchInfoPtr wi;
 ItemPtr item;
 {
@@ -29,7 +28,8 @@ ItemPtr item;
 	int size;
 	int l;
 
-	switch (item->type) {
+	switch (item->type)
+	{
 	case DL_TIME_TYPE:
 		size = 0;
 		break;
@@ -39,8 +39,12 @@ ItemPtr item;
 	case DL_APP_TYPE:
 		l = strlen(item->data.app.label);
 
-		if (l > wi->max_str) {
-			(void)(*dl_warn_proc)("Appointment label too long.");
+		if (l > wi->max_str)
+		{
+
+
+			(void) (*dl_warn_proc)
+			    ("Appointment label too long.");
 			l = wi->max_str;
 		}
 
@@ -49,19 +53,21 @@ ItemPtr item;
 	case DL_PHONE_TYPE:
 		l = strlen(item->data.app.label);
 
-		if (l > wi->max_str) {
-			(void)(*dl_warn_proc)("Phone label too long.");
+		if (l > wi->max_str)
+		{
+			(void) (*dl_warn_proc) ("Phone label too long.");
 			l = wi->max_str;
 		}
 
 		size = dl_pack_size(item->data.app.label) + 1;
-		size += wi->max_phone_str/2;
+		size += wi->max_phone_str / 2;
 		break;
 	case DL_TODO_TYPE:
 		l = strlen(item->data.app.label);
 
-		if (l > wi->max_str) {
-			(void)(*dl_warn_proc)("Todo label too long.");
+		if (l > wi->max_str)
+		{
+			(void) (*dl_warn_proc) ("Todo label too long.");
 			l = wi->max_str;
 		}
 
@@ -70,8 +76,12 @@ ItemPtr item;
 	case DL_ANNIV_TYPE:
 		l = strlen(item->data.app.label);
 
-		if (l > wi->max_str) {
-			(void)(*dl_warn_proc)("Anniversary label too long.");
+		if (l > wi->max_str)
+		{
+
+
+			(void) (*dl_warn_proc)
+			    ("Anniversary label too long.");
 			l = wi->max_str;
 		}
 
@@ -88,8 +98,8 @@ ItemPtr item;
 		break;
 	default:
 		size = 0;
-		(void)(*dl_error_proc)("Unknown type");
+		(void) (*dl_error_proc) ("Unknown type");
 	}
 
-	return(size);
+	return (size);
 }

@@ -19,12 +19,11 @@
 
 #include "datalink.h"
 
-int
-dl_todo_by_label(a, b)
+int dl_todo_by_label(a, b)
 ItemPtr a;
 ItemPtr b;
 {
 	int r;
 
-	return(strcmp(a->data.todo.label, b->data.todo.label));
+	return (strcmp(a->data.todo.label, b->data.todo.label));
 }

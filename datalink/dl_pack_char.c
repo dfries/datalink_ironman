@@ -17,24 +17,23 @@
  *
  */
 
-int
-dl_pack_char(c)
+int dl_pack_char(c)
 char c;
 {
 	c = toupper(c);
 
 	if (c >= '0' && c <= '9')
-		return(c - '0');
+		return (c - '0');
 
 	if (c >= 'A' && c <= 'Z')
-		return(10 + c - 'A');
+		return (10 + c - 'A');
 
 	if (c >= ' ' && c < '0')
-		return(36 + c - ' ');
+		return (36 + c - ' ');
 
 
 	if (c >= ':' && c <= '~')
-		return(26 + c - ' ');
+		return (26 + c - ' ');
 
-	return(0x3f);
+	return (0x3f);
 }

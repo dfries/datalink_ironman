@@ -17,8 +17,7 @@
  *
  */
 
-int
-dl_pack_ascii(to, from)
+int dl_pack_ascii(to, from)
 unsigned char *to;
 unsigned char *from;
 {
@@ -26,9 +25,11 @@ unsigned char *from;
 	int p = 0;
 	int o = 0;
 
-	while (*from) {
-		
-		if (o == 0) {
+	while (*from)
+	{
+
+		if (o == 0)
+		{
 			to[p] = dl_pack_char(*from);
 			o = 6;
 			from++;
@@ -36,20 +37,21 @@ unsigned char *from;
 		}
 
 		c = dl_pack_char(*from);
-		to[p] |= c<<o;
-		to[++p] = c>>(8 - o);
-		o = (o + 6)%8;
+		to[p] |= c << o;
+		to[++p] = c >> (8 - o);
+		o = (o + 6) % 8;
 		from++;
 	}
 
-	if (o) {
-		to[p] |= 0x3f<<o;
-		to[++p] = 0x3f>>(8 - o);
-		o = (o + 6)%8;
-		if (o) p++;
-	}
-	else
+	if (o)
+	{
+		to[p] |= 0x3f << o;
+		to[++p] = 0x3f >> (8 - o);
+		o = (o + 6) % 8;
+		if (o)
+			p++;
+	} else
 		to[p++] = 0x3f;
 
-	return(p);
+	return (p);
 }

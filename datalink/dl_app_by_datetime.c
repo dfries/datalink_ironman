@@ -19,8 +19,7 @@
 
 #include "datalink.h"
 
-int
-dl_app_by_datetime(a, b)
+int dl_app_by_datetime(a, b)
 ItemPtr a;
 ItemPtr b;
 {
@@ -29,12 +28,12 @@ ItemPtr b;
 	r = a->data.app.month - b->data.app.month;
 
 	if (r)
-		return(r);
+		return (r);
 
 	r = a->data.app.day - b->data.app.day;
 
 	if (r)
-		return(r);
+		return (r);
 
-	return(a->data.app.time - b->data.app.time);
+	return (a->data.app.time - b->data.app.time);
 }

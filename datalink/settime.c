@@ -3,10 +3,10 @@
 /*                                                             */
 /* Now warranty expressed or implied, use it as you see fit.   */
  /*
- *
- * Modified by David Fries <dfries@mail.win.org> 7/11/99
- * - Added support for the Timex Datalink Ironman Triathlon
- */
+    *
+    * Modified by David Fries <dfries@mail.win.org> 7/11/99
+    * - Added support for the Timex Datalink Ironman Triathlon
+  */
 
 #include <stdio.h>
 #include <time.h>
@@ -14,8 +14,7 @@
 
 extern char *tzname[];
 
-int
-set_time(wi)
+int set_time(wi)
 WatchInfoPtr wi;
 {
 	time_t now;
@@ -25,7 +24,7 @@ WatchInfoPtr wi;
 	int isdst;
 	int err;
 
-	now = time(NULL) + 9; /* Offset for sending to watch. */
+	now = time(NULL) + 9;	/* Offset for sending to watch. */
 	now_s = localtime(&now);
 	isdst = (now_s->tm_isdst > 0) ? 1 : 0;
 
@@ -39,16 +38,16 @@ WatchInfoPtr wi;
 	tp->data.time.month = now_s->tm_mon + 1;
 	tp->data.time.day = now_s->tm_mday;
 	tp->data.time.year = now_s->tm_year;
-	tp->data.time.dow = (now_s->tm_wday + 6)%7;
+	tp->data.time.dow = (now_s->tm_wday + 6) % 7;
 	tp->data.time.hour_fmt = 1;
 	tp->data.time.download = 1;
 	tp->data.time.label = tzname[isdst];
 	dl_add_to_list(times, tp);
 
 	if (isdst)
-		now -= 60*60;
+		now -= 60 * 60;
 	else
-		now += 60*60;
+		now += 60 * 60;
 
 	now_s = localtime(&now);
 
@@ -60,14 +59,15 @@ WatchInfoPtr wi;
 	tp->data.time.month = now_s->tm_mon + 1;
 	tp->data.time.day = now_s->tm_mday;
 	tp->data.time.year = now_s->tm_year;
-	tp->data.time.dow = (now_s->tm_wday + 6)%7;
+	tp->data.time.dow = (now_s->tm_wday + 6) % 7;
 	tp->data.time.hour_fmt = 1;
 	tp->data.time.download = 1;
 	tp->data.time.label = tzname[1 - isdst];
 	dl_add_to_list(times, tp);
 
-	dl_init_download(wi, times, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-	return(0);
+	dl_init_download(wi, times, NULL, NULL, NULL, NULL, NULL, NULL,
+			 NULL, NULL, NULL, NULL);
+	return (0);
 }
 
 my_error_proc(msg)
@@ -81,7 +81,7 @@ my_warn_proc(msg)
 char *msg;
 {
 	fprintf(stderr, "WARNING: %s\n", msg);
-	return(0);
+	return (0);
 }
 
 main()

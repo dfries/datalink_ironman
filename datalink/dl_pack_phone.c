@@ -17,8 +17,7 @@
  *
  */
 
-void
-dl_pack_phone(to, from, len)
+void dl_pack_phone(to, from, len)
 unsigned char *to;
 unsigned char *from;
 int len;
@@ -31,19 +30,21 @@ int len;
 	if (l > len)
 		l = len;
 
-	for (i = 0; i < l; i++) {
-		
-		if (i&1)
-			*to++ |= dl_pack_digit(from[i])<<4;
+	for (i = 0; i < l; i++)
+	{
+
+		if (i & 1)
+			*to++ |= dl_pack_digit(from[i]) << 4;
 		else
 			*to = dl_pack_digit(from[i]);
 
 	}
 
-	for (i = l; i < len; i++) {
+	for (i = l; i < len; i++)
+	{
 
-		if (i&1)
-			*to++ |= dl_pack_digit(' ')<<4;
+		if (i & 1)
+			*to++ |= dl_pack_digit(' ') << 4;
 		else
 			*to = dl_pack_digit(' ');
 
