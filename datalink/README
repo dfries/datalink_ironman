@@ -54,6 +54,10 @@ The default locations of the installed programs are:
 /usr/local/bin/serblink
 /usr/local/bin/setwatch
 
+By default svgablink is installed with permissions 4750 and group
+video.  Include any user that should run the program in the video
+group to limit access to the program.
+
 Please note that the svgablink must be installed setuid root to use
 the SVGAlib and change to graphics mode.  If you install as root
 the default is to install setuid root.  If you are concerned about
