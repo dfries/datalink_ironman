@@ -17,6 +17,8 @@
  *
  */
 
+#include <ctype.h>
+
 int dl_pack_digit(char c)
 {
 	int i;

@@ -17,6 +17,8 @@
  *
  */
 
+#include <ctype.h>
+
 int dl_pack_char(char c)
 {
 	c = toupper(c);

@@ -21,7 +21,5 @@
 
 int dl_phone_by_label(ItemPtr a, ItemPtr b)
 {
-	int r;
-
 	return (strcmp(a->data.phone.label, b->data.phone.label));
 }
