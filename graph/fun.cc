@@ -13,6 +13,8 @@ public:
 			| GDK_BUTTON_PRESS_MASK
 			| GDK_POINTER_MOTION_MASK
 			| GDK_POINTER_MOTION_HINT_MASK);
+		lastx = -1;
+		lasty = -1;
 	}
 private:
 	/* Backing pixmap for drawing area */
@@ -21,6 +23,8 @@ private:
 	Gdk_GC gc;
 	Gdk_Window win;
 	Gdk_Visual visual;
+	int lastx;
+	int lasty;
 
 	/* Create a new backing pixmap of the appropriate size */
 	int configure_event_impl (GdkEventConfigure * /* event */)
@@ -45,7 +49,7 @@ private:
 	}
 
 	/* Redraw the screen from the backing pixmap */
-	int expose_event_imp (GdkEventExpose *event)
+	int expose_event_impl (GdkEventExpose *event)
 	{
 		gc = get_style()->gtkobj()->fg_gc
 			[GTK_WIDGET_STATE (GTK_WIDGET(gtkobj()))];
@@ -63,18 +67,28 @@ private:
 	void draw_brush ( gdouble x, gdouble y)
 	{
 		GdkRectangle update_rect;
-		update_rect.x = (int)x-5;
-		update_rect.y = (int)y-5;
-		update_rect.width = 10;
-		update_rect.height = 10;
-		//gc = get_style()->gtkobj()->white_gc;
-		gc = get_style()->gtkobj()->black_gc;
-		pixmap.draw_rectangle(
+		int xcur = (int)x;
+		int ycur = (int)y;
+		if( lastx == -1 )
+		{
+			lastx = xcur;
+			lasty = ycur;
+		}
+			
+		pixmap.draw_line(
 			gc,
-			TRUE,
-			update_rect.x, update_rect.y,
-			update_rect.width, update_rect.height);
+			lastx,lasty,
+			xcur,ycur );
+		/* -1 and +2 makes the box one pixel bigger on all sides */
+		update_rect.x = ((lastx < xcur ) ? lastx : xcur)-1;
+		update_rect.y = ((lasty < ycur ) ? lasty : ycur)-1;
+		update_rect.width = 
+			((lastx < xcur) ? xcur-lastx : lastx-xcur)+2;
+		update_rect.height =
+			((lasty < ycur) ? ycur-lasty : lasty-ycur)+2;
 		draw( &update_rect);
+		lastx = xcur;
+		lasty = ycur;
 	}
 
 	gint button_press_event_impl (GdkEventButton *event)
@@ -137,6 +151,7 @@ private:
 	{
 		gtk_exit(0);
 	}
+
 };
 
 int main ( int argc, char ** argv)
