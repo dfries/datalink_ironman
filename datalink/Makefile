@@ -101,6 +101,7 @@ install: all
 	install -o root -g bin -m 4555 svgablink $(BINDIR)
 	install -o root -g bin -m 555 serblink $(BINDIR)
 	install -o root -g bin -m 555 setwatch $(BINDIR)
+	install -o root -g bin -m 555 settime $(BINDIR)
 
 clean:
 	rm -f $(OBJ) libdatalink.a libdatalink.so.1 Makefile.bak
