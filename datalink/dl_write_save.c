@@ -48,12 +48,12 @@ char *melodyfile;
 /* Create backup of old datafile. */
 
 	sprintf(bakfile, "%s.bak", datafile);
-	//(void)unlink(bakfile);
+	(void)unlink(bakfile);
 
 	if (link(datafile, bakfile) < 0)
 		last_warn = (*dl_warn_proc)("Could not make backup.");
 
-	//(void)unlink(datafile);
+	(void)unlink(datafile);
 
 	if ((fp = fopen(datafile, "w")) == NULL)
 		return((*dl_error_proc)("Could not write save file."));

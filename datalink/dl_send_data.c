@@ -393,7 +393,6 @@ int type;
 			 * one for this byte
 			 */
 			memdata[p++] = labelsize + 7; 
-			printf("label is %s, size is %d\n", pp->label, labelsize );
 			dl_pack_phone(&memdata[p], pp->number, dl_download_data.max_phone_str);
 			p += 6;
 
@@ -427,8 +426,6 @@ int type;
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
 
-		printf("p %d, packets %d\n", p, packets);
-
 		for( i = 0; i < packets; i++ )
 		{
 			if( i < packets-1 )
@@ -436,8 +433,6 @@ int type;
 			else
 				buf[0] = p-27*(packets-1) + 5;
 			size = buf[0] - 5;
-			printf("i %d, buf[0] 0x%0.2x, size %d, offset %d\n",
-				i, buf[0], size, offset );
 			buf[1] = 0x61;
 			buf[2] = i+1;
 			buf[3] = i;
@@ -462,7 +457,9 @@ int type;
 		*/
 		for( i = 0; i < p; i++ )
 		{
+			#ifdef DEBUGGING_FILE
 			printf(" 0x%0.2x", 0xff&((unsigned int)memdata[i]) );
+			#endif /* DEBUGGING_FILE */
 			if( !p%8 )
 				printf("\n");
 		}
@@ -709,7 +706,7 @@ int type;
 			if (waitpid(pid, &status, 0) < 0)
 				perror("waitpid");
 
-			//(void)unlink(fname);
+			(void)unlink(fname);
 
 			if (WIFEXITED(status))
 				ret = WEXITSTATUS(status);
@@ -738,7 +735,7 @@ int type;
 			if (waitpid(pid, &status, 0) < 0)
 				perror("waitpid");
 
-			//(void)unlink(fname);
+			(void)unlink(fname);
 
 			if (WIFEXITED(status))
 				ret = WEXITSTATUS(status);
