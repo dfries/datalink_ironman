@@ -185,7 +185,11 @@ void decodestream( int buf[], int size )
 			   location will tell how many blank packets otherwise
 			   it is re-dundant and hides data */
 			if( blanks == 13 )
-				wide = blankstart+2;
+			{
+				buf[2*(blankstart+3)] = buf[2*wide];
+				buf[2*(blankstart+3)+1] = buf[2*wide+1];
+				wide = blankstart+3;
+			}
 			blanks = 0;
 			blankstart = wide;
 		}
