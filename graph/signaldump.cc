@@ -20,8 +20,8 @@ void dumpdata( int buf[], int size )
 {
 	int i;
 	cout.setf(ios::right);
-	cout << setw(4) << "#" << setw(7) << "value" << setw(6) << "diff"
-		<< setw(6) << "sum" << endl;
+	cout << setw(4) << "#" << setw(6) << "sum"
+		<< setw(7) << "value" << setw(6) << "diff" << endl;
 	// zero is a special case
 	cout << setw(4) << 0 << setw(7) << buf[0] << endl;
 	// stop early so we don't overrun the buffers
@@ -30,17 +30,17 @@ void dumpdata( int buf[], int size )
 		cout
 		// display sample number
 		<< setw(4) << i
+		// display sum of this and next two samples
+		<< setw(6) << (buf[i+2]-buf[i-1])
 		// display the sample
 		<< setw(7) << buf[i] 
 		// display difference between this one and last one
 		<< setw(6) << (buf[i] - buf[i-1])
-		// display sum of this and next two samples
-		<< setw(6) << (buf[i+2]-buf[i-1])
 		<< endl;
 	}
-	cout << setw(4) << size-2 << setw(7) << buf[size-2]
+	cout << setw(4) << size-2 << "      " << setw(7) << buf[size-2]
 		<< setw(6) << (buf[size-2] - buf[size-2-1]) << endl;
-	cout << setw(4) << size-1 << setw(7) << buf[size-1]
+	cout << setw(4) << size-1 << "      " << setw(7) << buf[size-1]
 		<< setw(6) << (buf[size-1] - buf[size-2-1]) << endl;
 }
 
