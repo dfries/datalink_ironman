@@ -362,6 +362,7 @@ int type;
 			memdata[p++] = 0;
 			memdata[p++] = 0xe;
 			memdata[p++] = 0;
+			#warning has dl_download_data.chron[i].memused been initalized
 			memdata[p++] = dl_download_data.chron[i].memused;
 			memdata[p++] = dl_download_data.chron[i].chron_laps;
 			if ( dl_download_data.num_phones )
@@ -395,7 +396,7 @@ int type;
 		*/
 		for( i = 0; i < p; i++ )
 		{
-			printf(" 0x%2x", memdata[i] );
+			printf(" 0x%0.2x", memdata[i] );
 			if( !p%8 )
 				printf("\n");
 		}
