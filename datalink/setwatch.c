@@ -96,6 +96,56 @@ ListPtr times;
 	return(times);
 }
 
+void Usage()
+{
+	printf("DataLink Library Karl Hakimian <hakimian@eecs.wsu.edu>\n");
+	printf("\tIronman support added by David Fries <dfries@mail.win.org>\n");
+	printf("Usage: datalink options\n");
+	printf("options:\n");
+	printf("\tNot all options are available for all watches\n");
+	printf("\tIf you specify any of the send only... options following\n");
+	printf("\twill affect what other data is also sent\n");
+	printf("  -all\tsend all data to watch\n");
+	printf("  -db\tsend only database information\n");
+	printf("  -db\talso send database information\n");
+	printf("  -time\tonly send time information\n");
+	printf("  +time\talso send time information\n");
+	printf("  -alarm\tonly send alarm information\n");
+	printf("  +alarm\talso send alarm information\n");
+	printf("  -timer\tonly send timer information\n");
+	printf("  +timer\talso send timer information\n");
+	printf("  -wristapp\tonly send wristapp information\n");
+	printf("  +wristapp\talso send wristapp information\n");
+	printf("  -app\tonly send wristapp information\n");
+	printf("  +app\talso send wristapp information\n");
+	printf("  -melody\tonly send melody information\n");
+	printf("  +melody\talso send melody information\n");
+	printf("  -phone\tonly send phone information\n");
+	printf("  +phone\talso send phone information\n");
+	printf("  -chron\tonly send chronograph information\n");
+	printf("  +chron\talso send chronograph information\n");
+	printf("  -system\tonly send system (hour/button beep) information\n");
+	printf("  +system\talso send system (hour/button beep) information\n");
+	printf("  -reset\n");
+	printf("  +reset\n");
+	printf("  -sort-app-by-datetime\n");
+	printf("  -sort-app-by-label\n");
+	printf("  -sort-todo-by-label\n");
+	printf("  -sort-todo-by-prio\n");
+	printf("  -sort-phone\n");
+	printf("  -sort-anniv-by-date\n");
+	printf("  -sort-anniv-by-label\n");
+	printf("  -file\t dump data to DEBUGOUTPUT and do not display\n");
+	printf("  -serial\t send with the serial link\n");
+	printf("  -model70\t use if you have this watch\n");
+	printf("  -70\t use if you have this watch\n");
+	printf("  -model70\t use if you have this watch\n");
+	printf("  -150\t use if you have this watch\n");
+	printf("  -model150\t use if you have this watch\n");
+	printf("  -ironman\t use if you have this watch\n");
+	exit(-1);
+}
+
 #define TIME 0x001
 #define ALARM 0x002
 #define APP 0x004
@@ -211,8 +261,13 @@ char **argv;
 			type = DATALINK_150;
 		else if (strcmp("-ironman", argv[1]) == 0)
 			type = DATALINK_IRONMAN;
+		else if (strcmp("--help", argv[1]) == 0)
+			Usage();
+		else if (strcmp("-h", argv[1]) == 0)
+			Usage();
 		else {
 			fprintf(stderr, "%s: Unknown option (%s).\n", prog, argv[1]);
+			Usage();
 			exit(-1);
 		}
 
