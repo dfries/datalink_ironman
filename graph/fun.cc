@@ -1,6 +1,7 @@
 #include <gtk--.h>
 #include <gdk--.h>
 #include <gtk/gtk.h>
+#include <gtk--/fileselection.h>
 #include <iostream>
 
 class graph_drawing_area : public Gtk_DrawingArea
@@ -22,16 +23,6 @@ public:
 		colormap.alloc( fgcolor );
 	}
 private:
-	/* Backing pixmap for drawing area */
-
-	Gdk_Pixmap pixmap;
-	Gdk_GC gc;
-	Gdk_Window win;
-	Gdk_Visual visual;
-	int lastx;
-	int lasty;
-	Gdk_Color fgcolor;
-	Gdk_Colormap colormap;
 
 	/* Create a new backing pixmap of the appropriate size */
 	int configure_event_impl (GdkEventConfigure * /* event */)
@@ -125,6 +116,18 @@ private:
 			draw_brush(x,y);
 		return TRUE;
 	}
+
+	/* Backing pixmap for drawing area */
+
+	Gdk_Pixmap pixmap;
+	Gdk_GC gc;
+	Gdk_Window win;
+	Gdk_Visual visual;
+	int lastx;
+	int lasty;
+	Gdk_Color fgcolor;
+	Gdk_Colormap colormap;
+
 };
 
 
@@ -132,8 +135,8 @@ class graph_window : public Gtk_Window
 {
 public:
 	graph_window() : Gtk_Window(GTK_WINDOW_TOPLEVEL),
-		vbox( FALSE, 0),
-		button ("quit")
+		vbox( FALSE, 0), hbox( FALSE, 0), FileSelectButton("Load File"),
+		button ("quit"), fs(0)
 	{
 		add(&vbox);
 
@@ -141,8 +144,16 @@ public:
 		drawing_area.size(400,400);
 		vbox.pack_start(drawing_area, TRUE, TRUE, 0);
 
+		/* Add the hbox to the buttom */
+		vbox.pack_start(hbox, FALSE, FALSE, 0);
+
 		/* Add the button */
-		vbox.pack_start( button, FALSE, FALSE, 0);
+		hbox.pack_start( button, FALSE, FALSE, 0);
+
+		hbox.pack_start( FileSelectButton, FALSE, FALSE, 0);
+		connect_to_method ( FileSelectButton.clicked, this,
+			&showfileselection);
+		FileSelectButton.show();
 
 		connect_to_method ( button.clicked, this, &quit );
 		connect_to_method ( destroy, this, &quit );
@@ -150,17 +161,57 @@ public:
 		drawing_area.show();
 		button.show();
 		vbox.show();
+		hbox.show();
+
 	}
 
 private:
-	Gtk_VBox vbox;
-	graph_drawing_area drawing_area;
-	Gtk_Button button;
 
+	int FSselectionclosed(GdkEventAny*)
+	{
+		cout << "Selection closed\n";
+		// according the the example program it is deleted by
+		// now so we don't bother
+		// fs->hide();
+		// fs=0;
+		return TRUE;
+	}
+	void FSbuttoncanceled()
+	{
+		cout << "File NOT selected " << fs->get_filename() << endl;
+		fs->hide();
+	}
+
+	void FSbuttonpressed()
+	{
+		cout << "File Selected " << fs->get_filename() << endl;
+		fs->hide();
+	}
+	void showfileselection()
+	{
+		if(!fs)
+		{
+			fs=new Gtk_FileSelection("File Selection");
+			connect_to_method(fs->get_ok_button()->clicked,
+				this, &FSbuttonpressed);
+			connect_to_method(fs->get_cancel_button()->clicked,
+				this, &FSbuttoncanceled);
+			connect_to_method(fs->delete_event,
+				this, &FSselectionclosed);
+		}
+		fs->show();
+	}
 	void quit()
 	{
 		gtk_exit(0);
 	}
+
+	Gtk_VBox vbox;
+	Gtk_HBox hbox;
+	graph_drawing_area drawing_area;
+	Gtk_Button FileSelectButton;
+	Gtk_Button button;
+	Gtk_FileSelection *fs;
 
 };
 
