@@ -1,0 +1,53 @@
+visible improvements:
+Add support for Datalink 150S watches (from Frank Denis)
+It will now only search in the users path for serblink and svgablink
+not any hard-coded paths.
+
+02-04-2001 
+	hang at svgablink.c:150 trying to do a close_vt(oldvt); call
+
+
+02-04-2001 patching process from Frank Denis
+	used `indent -bls -bli0 -bl -v -kr -i8 *.c *.h` to help format code
+in Makefile (-mine, +his)
+-CFLAGS = -g -DBINDIR=\"$(BINDIR)\"
+-#CFLAGS = -O2 -DBINDIR=\"$(BINDIR)\"
++#CFLAGS = -g -DBINDIR=\"$(BINDIR)\"
++CFLAGS = -O2 -DYY_NO_UNPUT -D_GNU_SOURCE -Wall -W -DBINDIR=\"$(BINDIR)\" -DDEBUGGING=1
+	leaving until I figure out why
+
+in README
++***** NEVER ADD A SETUID BIT TO THESE PROGRAMS *****
++
++This can be a major security flaw. Grab a snapshot of SVGAlib with the
++"svgalib_helper" module instead.
++
++If lines are only visible at the top of the screen, don't use a frame buffer
++console. Reboot using "vga=0" as a Lilo parameter.
++
++
++
++
++Best regards,
++
++               Frank Denis "Jedi/Sector One" <j@4u.net>.
+
+diff --exclude=CVS -u --recursive --new-file ./TODO /home/david/programming/cc/X/ironman/split_package/watchlink-0.3/TODO
+--- ./TODO      Mon Jan 22 22:42:27 2001
++++ /home/david/programming/cc/X/ironman/split_package/watchlink-0.3/TODO       Mon Apr 17 05:49:47 2000
+@@ -1,3 +1,12 @@
++open_vt is definitly not the right thing to do, especially with modern
++unices. Linux has Unix98 pty and DevFS. Use them.
++
++
++
++There is *a lot* of buffer overflows. Fix them all.
++
++
++
+
+./dl_new_item.c
+has +       (void) wi;
+why?  so it is used?
+
+
