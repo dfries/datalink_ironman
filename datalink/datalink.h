@@ -179,7 +179,8 @@ typedef struct watch_info_s {
 #define DL_WRISTAPP_TYPE	8
 #define DL_MELODY_TYPE		9
 #define DL_TIMER_TYPE		10
-#define DL_MAX_TYPE			10
+#define DL_CHRON_TYPE		11
+#define DL_MAX_TYPE			12
 
 /* Output types */
 #define NO_OUTPUT 0
