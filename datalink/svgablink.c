@@ -72,6 +72,9 @@ int main(int argc, char **argv)
 		else
 		{
 			fprintf(stderr, "Unknown option %s.\n", argv[1]);
+			fprintf(stderr, "Usage: %s [ -ironman | -modelironman | -150 | -model150 | -150s | \n"
+				"\t-model150s | -70 | -model70 ] datafile\n"
+				"$Id$\n", argv[0]);
 			exit(-1);
 		}
 
