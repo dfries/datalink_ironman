@@ -537,7 +537,7 @@ value		: INTEGER ',' DATE ',' TIME ',' STRING ',' INTEGER
 				minute = $5;
 				tfmt = $7;
 				dfmt = $9;
-				$$ = TIMEZONE
+				$$ = TIMEZONE;
 			}
 			| STRING
 			{
