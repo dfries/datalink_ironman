@@ -57,6 +57,9 @@ static unsigned char timer[] = { 0x11, 0x43, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0 };
 static unsigned char sysinfo[] = {6, 0x71, 0, 0, 0, 0};
 static unsigned char end1[] = {4, 0x21, 0, 0};
 
+static unsigned char pre60[] = {6, 0x23, 2, 0x40, 0, 0};
+static unsigned char numdatapackets[] = {5, 0x60, 0, 0, 0};
+
 _write_data(fd, buf, data, size, pnum, type, wi)
 int fd;
 unsigned char *buf;
@@ -354,9 +357,14 @@ int type;
 		 * phone data.  The information is broken up into packets and sent one at
 		 * a time.
 		 */
-		char memdata[4096] = { 0 };
+		/* should be overkill, don't know the right value*/
+		#define maxdatasize 4096
+		char memdata[maxdatasize] = { 0 };
 		int p = 0;
 		int labelsize;
+		int packets;
+		int offset = 0;
+		int size;
 
 		for (i = 0; i < dl_download_data.num_chron; i++) {
 			memdata[p++] = 0;
@@ -388,6 +396,55 @@ int type;
 			p += labelsize;
 		}
 
+		if (p > maxdatasize )
+		{
+			printf("Error buffer overflow, too much data or too small of buffer\n");
+			exit(-1);
+		}
+
+		/* set how many packets it will take to send the data, there are up
+		 * to 32 bytes per packet, 27 of those are data bytes */
+		packets = p/27 + (p%27? 1 : 0);
+
+		/* packet before the one that lists how many data packets to send */
+		memcpy(buf, pre60, *pre60);
+		dl_docrc(buf);
+		if (write(ofd, buf, *buf) != *buf)
+			return((*dl_error_proc)("Can't write to tmp file."));
+
+		/* send the packet that lists how many data packets are to follow */
+		memcpy(buf, numdatapackets, *numdatapackets);
+		buf[2] = packets;
+		dl_docrc(buf);
+		if (write(ofd, buf, *buf) != *buf)
+			return((*dl_error_proc)("Can't write to tmp file."));
+
+		printf("p %d, packets %d\n", p, packets);
+
+		for( i = 0; i < packets; i++ )
+		{
+			if( i < packets-1 )
+				buf[0] = 32;
+			else
+				buf[0] = p-27*(packets-1) + 5;
+			size = buf[0] - 5;
+			printf("i %d, buf[0] 0x%0.2x, size %d, offset %d\n",
+				i, buf[0], size, offset );
+			buf[1] = 0x61;
+			buf[3] = i;
+			memcpy(&buf[3], &memdata[offset], size);
+			dl_docrc(buf);
+			if (write(ofd, buf, *buf) != *buf)
+				return((*dl_error_proc)("Can't write to tmp file."));
+			offset += size;
+		}
+
+		buf[0] = 4;
+		buf[1] = 0x62;
+		dl_docrc(buf);
+		if (write(ofd, buf, *buf) != *buf)
+			return((*dl_error_proc)("Can't write to tmp file."));
+
 		/*
 		dl_docrc(buf);
 
@@ -396,7 +453,7 @@ int type;
 		*/
 		for( i = 0; i < p; i++ )
 		{
-			printf(" 0x%0.2x", memdata[i] );
+			printf(" 0x%0.2x", 0xff&((unsigned int)memdata[i]) );
 			if( !p%8 )
 				printf("\n");
 		}
