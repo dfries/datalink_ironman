@@ -1,0 +1,23 @@
+Document the Ironman protocol
+add options in the datafile parser to
+	-set the watch model
+	-set the order of phone entries
+	-set the spacing of the lines
+	-set all other options that can be specified on the commandline
+being able to abort a transfer while the screen is flashing would be nice
+
+figure out why just sending alarms will corrupt the phone entries
+(later entries like 17 or so)
+
+Mon Jan 22 22:38:50 CST 2001
+question from a user,
+I can't seem to move fast enough for me to put my watch in front of the
+screen before your program starts sending data to the watch...
+
+How about showing the initializing sequence (the many bars on the screen
+that makes DataLink go beeping while in COMM mode), then wait for a key
+to be pressed before actually sending the data?
+
+probably not a bad idea to show the sync signal until the user initiates
+the data mode, also possibly have an option for the time to wait while
+displaying the sync signal
