@@ -4,6 +4,7 @@
 #include <gtk--/fileselection.h>
 #include <fstream.h>
 #include <iostream>
+#include <stdlib.h>
 
 #define ExitOnTrue( file, msg ) if(file){ cout << msg ;\
 	cout << __FUNCTION__ << "() " << __FILE__ << ':' << __LINE__ << endl;\
@@ -30,7 +31,7 @@ const int numsignals = 2;
 const char* syncfile = "/tmp/data/121blank";
 
 const int DefaultWidth = 735;
-const int DefaultHeight = 600;
+const int DefaultHeight = 550;
 
 const int DefaultMinMotion = 5;
 
@@ -40,6 +41,7 @@ public:
 	graph_drawing_area();
 	~graph_drawing_area();
 	void setinputfile ( string name, int signalnum );
+	void setflipamount( int amount );
 
 private:
 	/* Create a new backing pixmap of the appropriate size */
@@ -68,11 +70,9 @@ private:
 	Gdk_Colormap colormap;
 	signalinfo signal[numsignals];
 	GdkPoint *points;
-	Gtk_Label changeflipL;
-	Gtk_Entry changeflipE;
 };
 
-graph_drawing_area::graph_drawing_area() : pixmap(0), changeflipL("Flip amount")
+graph_drawing_area::graph_drawing_area() : pixmap(0)
 {
 	set_events( GDK_EXPOSURE_MASK
 		| GDK_LEAVE_NOTIFY_MASK
@@ -120,6 +120,11 @@ graph_drawing_area::~graph_drawing_area()
 		delete [] signal[i].buffer;
 		delete [] signal[i].points;
 	}
+}
+
+void graph_drawing_area::setflipamount( int amount )
+{
+	flipamount = amount;
 }
 
 void graph_drawing_area::setinputfile ( string name, int signalnum )
@@ -347,7 +352,7 @@ class graph_window : public Gtk_Window
 public:
 	graph_window() : Gtk_Window(GTK_WINDOW_TOPLEVEL),
 		vbox( FALSE, 0), hbox( FALSE, 0), FileSelectButton("Load File"),
-		button ("quit"), fs(0)
+		button ("quit"), fs(0), changeflipL("Flip amount")
 	{
 		add(&vbox);
 
@@ -360,13 +365,19 @@ public:
 
 		/* Add the button */
 		hbox.pack_start( button, FALSE, FALSE, 0);
+		connect_to_method ( button.clicked, this, &quit );
 
 		hbox.pack_start( FileSelectButton, FALSE, FALSE, 0);
 		connect_to_method ( FileSelectButton.clicked, this,
 			&showfileselection);
 		FileSelectButton.show();
 
-		connect_to_method ( button.clicked, this, &quit );
+		hbox.pack_start( changeflipL, FALSE, FALSE, 0);
+		changeflipL.show();
+		hbox.pack_start( changeflipE, FALSE, FALSE, 0);
+		changeflipE.show();
+		connect_to_method( changeflipE.activate, this, &changeflip );
+
 		connect_to_method ( destroy, this, &quit );
 
 		drawing_area.show();
@@ -377,6 +388,13 @@ public:
 	}
 
 private:
+
+	void changeflip()
+	{
+		cout << changeflipE.get_text() << endl;
+		drawing_area.setflipamount(
+			atoi(changeflipE.get_text().c_str()));
+	}
 
 	int FSselectionclosed(GdkEventAny*)
 	{
@@ -425,7 +443,8 @@ private:
 	Gtk_Button FileSelectButton;
 	Gtk_Button button;
 	Gtk_FileSelection *fs;
-
+	Gtk_Label changeflipL;
+	Gtk_Entry changeflipE;
 };
 
 int main ( int argc, char ** argv)
