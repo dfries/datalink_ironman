@@ -22,7 +22,6 @@
 
 int dl_sizeof_item(WatchInfoPtr wi, ItemPtr item)
 {
-	int last_warn = 0;
 	int size;
 	int l;
 
@@ -41,8 +40,7 @@ int dl_sizeof_item(WatchInfoPtr wi, ItemPtr item)
 		{
 
 
-			(void) (*dl_warn_proc)
-			    ("Appointment label too long.");
+			(void) (*dl_warn_proc) ("Appointment label too long.");
 			l = wi->max_str;
 		}
 
@@ -78,8 +76,7 @@ int dl_sizeof_item(WatchInfoPtr wi, ItemPtr item)
 		{
 
 
-			(void) (*dl_warn_proc)
-			    ("Anniversary label too long.");
+			(void) (*dl_warn_proc) ("Anniversary label too long.");
 			l = wi->max_str;
 		}
 
