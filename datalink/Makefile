@@ -53,7 +53,7 @@ YACC = bison -y -p dl_ -oy.tab.c
 LEX = flex -Pdl_ -olex.yy.c
 
 
-all: libdatalink.so.1 settime setwatch $(ENGINES)
+all: depend libdatalink.so.1 settime setwatch $(ENGINES)
 
 libdatalink.a: $(OBJ)
 	rm -f $@
@@ -73,7 +73,9 @@ parse.c: dataread.l dl_read_save.c y.tab.h
 	mv lex.yy.c $@
 
 depend: parse.c dl_read_save.c
-	makedepend -o.o $(CFLAGS) $(SRC) $(SVGASRC) $(SERSRC)
+	makedepend -f- -o.o $(CFLAGS) $(SRC) $(SVGASRC) $(SERSRC) > depend
+	@echo "Dependencies have been made, re-run make to build"
+	@false
 
 serblink.o: $(SERSRC)
 	$(CC) -c $(CFLAGS) -DPORT=\"$(PORT)\" $(SERSRC)
@@ -138,194 +140,6 @@ clean:
 	rm -f settime.o setwatch.o cvt.o
 	rm -f settime setwatch cvt $(ENGINES)
 
+# The next line was used for makedepend
+include depend
 # DO NOT DELETE
-
-dl_add_to_list.o: datalink.h
-dl_anniv_by_date.o: datalink.h
-dl_anniv_by_label.o: /usr/include/string.h /usr/include/features.h
-dl_anniv_by_label.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_anniv_by_label.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_anniv_by_label.o: datalink.h
-dl_app_by_datetime.o: datalink.h
-dl_app_by_label.o: /usr/include/string.h /usr/include/features.h
-dl_app_by_label.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_app_by_label.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_app_by_label.o: datalink.h
-dl_fill_pack_ascii.o: /usr/include/string.h /usr/include/features.h
-dl_fill_pack_ascii.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_fill_pack_ascii.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_fill_pack_ascii.o: datalink.h
-dl_free_download.o: /usr/include/stdlib.h /usr/include/features.h
-dl_free_download.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_free_download.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_free_download.o: /usr/include/string.h datalink.h datalink_private.h
-dl_init_download.o: /usr/include/stdio.h /usr/include/features.h
-dl_init_download.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_init_download.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_init_download.o: /usr/include/bits/types.h /usr/include/libio.h
-dl_init_download.o: /usr/include/_G_config.h /usr/include/wchar.h
-dl_init_download.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-dl_init_download.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stdarg.h
-dl_init_download.o: /usr/include/bits/stdio_lim.h /usr/include/stdlib.h
-dl_init_download.o: /usr/include/string.h datalink.h datalink_private.h
-dl_init_watch.o: /usr/include/stdio.h /usr/include/features.h
-dl_init_watch.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_init_watch.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_init_watch.o: /usr/include/bits/types.h /usr/include/libio.h
-dl_init_watch.o: /usr/include/_G_config.h /usr/include/wchar.h
-dl_init_watch.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-dl_init_watch.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stdarg.h
-dl_init_watch.o: /usr/include/bits/stdio_lim.h /usr/include/stdlib.h
-dl_init_watch.o: /usr/include/string.h datalink.h datalink_private.h
-dl_item_ok.o: /usr/include/stdio.h /usr/include/features.h
-dl_item_ok.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_item_ok.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_item_ok.o: /usr/include/bits/types.h /usr/include/libio.h
-dl_item_ok.o: /usr/include/_G_config.h /usr/include/wchar.h
-dl_item_ok.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-dl_item_ok.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stdarg.h
-dl_item_ok.o: /usr/include/bits/stdio_lim.h /usr/include/stdlib.h datalink.h
-dl_item_ok.o: datalink_private.h
-dl_new_item.o: /usr/include/stdlib.h /usr/include/features.h
-dl_new_item.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_new_item.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_new_item.o: /usr/include/string.h datalink.h
-dl_new_list.o: /usr/include/stdlib.h /usr/include/features.h
-dl_new_list.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_new_list.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_new_list.o: /usr/include/string.h datalink.h
-dl_pack_ascii.o: datalink.h
-dl_pack_char.o: /usr/include/ctype.h /usr/include/features.h
-dl_pack_char.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_pack_char.o: /usr/include/bits/types.h
-dl_pack_char.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_pack_char.o: /usr/include/endian.h /usr/include/bits/endian.h
-dl_pack_digit.o: /usr/include/ctype.h /usr/include/features.h
-dl_pack_digit.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_pack_digit.o: /usr/include/bits/types.h
-dl_pack_digit.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_pack_digit.o: /usr/include/endian.h /usr/include/bits/endian.h
-dl_pack_phone.o: /usr/include/string.h /usr/include/features.h
-dl_pack_phone.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_pack_phone.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_pack_phone.o: datalink.h
-dl_pack_size.o: /usr/include/string.h /usr/include/features.h
-dl_pack_size.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_pack_size.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_pack_size.o: datalink.h datalink_private.h
-dl_phone_by_label.o: /usr/include/string.h /usr/include/features.h
-dl_phone_by_label.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_phone_by_label.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_phone_by_label.o: datalink.h
-dl_send_data.o: /usr/include/stdlib.h /usr/include/features.h
-dl_send_data.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_send_data.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_send_data.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
-dl_send_data.o: /usr/include/bits/types.h /usr/include/bits/confname.h
-dl_send_data.o: /usr/include/stdio.h /usr/include/libio.h
-dl_send_data.o: /usr/include/_G_config.h /usr/include/wchar.h
-dl_send_data.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-dl_send_data.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stdarg.h
-dl_send_data.o: /usr/include/bits/stdio_lim.h /usr/include/fcntl.h
-dl_send_data.o: /usr/include/bits/fcntl.h /usr/include/sys/types.h
-dl_send_data.o: /usr/include/time.h /usr/include/sys/wait.h
-dl_send_data.o: /usr/include/signal.h /usr/include/bits/sigset.h
-dl_send_data.o: /usr/include/bits/signum.h /usr/include/sys/resource.h
-dl_send_data.o: /usr/include/bits/resource.h /usr/include/bits/time.h
-dl_send_data.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
-dl_send_data.o: /usr/include/string.h datalink.h datalink_private.h
-dl_set_error.o: datalink.h
-dl_set_warn.o: datalink.h
-dl_sizeof_item.o: /usr/include/string.h /usr/include/features.h
-dl_sizeof_item.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_sizeof_item.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_sizeof_item.o: datalink.h datalink_private.h
-dl_sizeof_list.o: datalink.h datalink_private.h
-dl_sort.o: /usr/include/stdlib.h /usr/include/features.h
-dl_sort.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_sort.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h datalink.h
-dl_string_ok.o: /usr/include/string.h /usr/include/features.h
-dl_string_ok.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_string_ok.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_string_ok.o: datalink.h
-dl_todo_by_label.o: /usr/include/string.h /usr/include/features.h
-dl_todo_by_label.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_todo_by_label.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_todo_by_label.o: datalink.h
-dl_todo_by_prio.o: datalink.h
-dl_write_save.o: /usr/include/stdio.h /usr/include/features.h
-dl_write_save.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-dl_write_save.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-dl_write_save.o: /usr/include/bits/types.h /usr/include/libio.h
-dl_write_save.o: /usr/include/_G_config.h /usr/include/wchar.h
-dl_write_save.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-dl_write_save.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stdarg.h
-dl_write_save.o: /usr/include/bits/stdio_lim.h /usr/include/unistd.h
-dl_write_save.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
-dl_write_save.o: datalink.h datalink_private.h
-svgablink.o: /usr/include/unistd.h /usr/include/features.h
-svgablink.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-svgablink.o: /usr/include/bits/posix_opt.h /usr/include/bits/types.h
-svgablink.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-svgablink.o: /usr/include/bits/confname.h /usr/include/stdio.h
-svgablink.o: /usr/include/libio.h /usr/include/_G_config.h
-svgablink.o: /usr/include/wchar.h /usr/include/bits/wchar.h
-svgablink.o: /usr/include/gconv.h
-svgablink.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stdarg.h
-svgablink.o: /usr/include/bits/stdio_lim.h /usr/include/stdlib.h
-svgablink.o: /usr/include/sys/fcntl.h /usr/include/fcntl.h
-svgablink.o: /usr/include/bits/fcntl.h /usr/include/sys/types.h
-svgablink.o: /usr/include/time.h /usr/include/signal.h
-svgablink.o: /usr/include/bits/sigset.h /usr/include/bits/signum.h
-svgablink.o: /usr/include/sched.h /usr/include/bits/sched.h
-svgablink.o: /usr/include/string.h /usr/include/sys/ioctl.h
-svgablink.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
-svgablink.o: /usr/include/asm/ioctl.h /usr/include/bits/ioctl-types.h
-svgablink.o: /usr/include/sys/ttydefaults.h /usr/include/sys/mman.h
-svgablink.o: /usr/include/bits/mman.h datalink.h
-vt.o: /usr/include/unistd.h /usr/include/features.h /usr/include/sys/cdefs.h
-vt.o: /usr/include/gnu/stubs.h /usr/include/bits/posix_opt.h
-vt.o: /usr/include/bits/types.h
-vt.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-vt.o: /usr/include/bits/confname.h /usr/include/stdio.h /usr/include/libio.h
-vt.o: /usr/include/_G_config.h /usr/include/wchar.h /usr/include/bits/wchar.h
-vt.o: /usr/include/gconv.h
-vt.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stdarg.h
-vt.o: /usr/include/bits/stdio_lim.h /usr/include/sys/vt.h
-vt.o: /usr/include/linux/vt.h /usr/include/sys/ioctl.h
-vt.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
-vt.o: /usr/include/asm/ioctl.h /usr/include/bits/ioctl-types.h
-vt.o: /usr/include/sys/ttydefaults.h /usr/include/sys/fcntl.h
-vt.o: /usr/include/fcntl.h /usr/include/bits/fcntl.h /usr/include/sys/types.h
-vt.o: /usr/include/time.h
-send_data.o: /usr/include/unistd.h /usr/include/features.h
-send_data.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-send_data.o: /usr/include/bits/posix_opt.h /usr/include/bits/types.h
-send_data.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-send_data.o: /usr/include/bits/confname.h /usr/include/stdio.h
-send_data.o: /usr/include/libio.h /usr/include/_G_config.h
-send_data.o: /usr/include/wchar.h /usr/include/bits/wchar.h
-send_data.o: /usr/include/gconv.h
-send_data.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stdarg.h
-send_data.o: /usr/include/bits/stdio_lim.h /usr/include/vga.h
-send_data.o: /usr/include/sys/types.h /usr/include/time.h
-send_data.o: /usr/include/sys/time.h /usr/include/bits/time.h
-send_data.o: /usr/include/sys/select.h /usr/include/bits/select.h
-send_data.o: /usr/include/bits/sigset.h datalink.h datalink_macros.h
-serblink.o: /usr/include/unistd.h /usr/include/features.h
-serblink.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-serblink.o: /usr/include/bits/posix_opt.h /usr/include/bits/types.h
-serblink.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stddef.h
-serblink.o: /usr/include/bits/confname.h /usr/include/stdio.h
-serblink.o: /usr/include/libio.h /usr/include/_G_config.h
-serblink.o: /usr/include/wchar.h /usr/include/bits/wchar.h
-serblink.o: /usr/include/gconv.h
-serblink.o: /usr/lib/gcc-lib/i386-linux/2.95.4/include/stdarg.h
-serblink.o: /usr/include/bits/stdio_lim.h /usr/include/fcntl.h
-serblink.o: /usr/include/bits/fcntl.h /usr/include/sys/types.h
-serblink.o: /usr/include/time.h /usr/include/stdlib.h /usr/include/termios.h
-serblink.o: /usr/include/bits/termios.h /usr/include/string.h
-serblink.o: /usr/include/sys/time.h /usr/include/bits/time.h
-serblink.o: /usr/include/sys/select.h /usr/include/bits/select.h
-serblink.o: /usr/include/bits/sigset.h /usr/include/sys/resource.h
-serblink.o: /usr/include/bits/resource.h
