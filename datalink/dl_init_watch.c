@@ -21,6 +21,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "datalink.h"
 #include "datalink_private.h"
 
@@ -29,7 +30,7 @@ int (*dl_warn_proc) (char *);
 
 Download dl_download_data = { 0 };
 
-dl_default_error(char *msg)
+int dl_default_error(char *msg)
 {
 	fprintf(stderr, "ERROR: %s\n", msg);
 	return (-1);
@@ -88,6 +89,7 @@ WatchInfoPtr dl_init_watch(int type)
 		result->time_adjust = 9;
 		break;
 	case DATALINK_150:
+	case DATALINK_150S:
 		result->dl_device = type;
 		result->max_tz = 2;
 		result->max_alarms = 5;
