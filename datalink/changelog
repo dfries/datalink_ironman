@@ -1,3 +1,25 @@
+04-22-2000:
+Fixed a bug with the day of the week that was shifted by one. Please report
+if it broke something.
+-- Frank Denis
+
+04-20-2000:
+Fixed the path to svgablink.
+The datalink 150 S protocol was implemented but the "-150s" option was
+rejected in setwatch. Fixed.
+-- Frank Denis
+
+04-17-2000:
+Add support for Datalink 150 S watches
+-- Frank Denis
+
+
+04-14-2000:
+Lots, lots, lots of cleanups to the source code in order to make it compile
+on modern compilers.
+-- Frank Denis
+
+
 01-05-2000:
 Added a patch from Scottie Shore <sshore@escape.ca> for a Y2K problem.
 As localtime(3) reads,
