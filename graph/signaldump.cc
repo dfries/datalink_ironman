@@ -129,11 +129,16 @@ unsigned short decodeframe( int buf[], int &lastlocation, int size )
 		lastlocation += framelength;
 		return 0;
 	}
-	byte = (unsigned short) decodebyte( buf, location );
+	byte = (unsigned short) decodebyte( buf, location ) << 8*sizeof(char);;
+	lastlocation = location+2*maxbytelength;
 	location = findpeak( buf, location+maxbytelength,
-		location+maxbytelength);
+		location+2*maxbytelength);
+	if( location == -1 )
+	{
+		return byte;
+	}
 	lastlocation = location + maxbytelength;
-	byte |= decodebyte( buf, location) << 8*sizeof(char);
+	byte |= decodebyte( buf, location);
 	return byte;
 }
 
