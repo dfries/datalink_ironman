@@ -17,6 +17,7 @@
  *
  */
 
+#include <string.h>
 #include "datalink.h"
 
 int dl_anniv_by_label(ItemPtr a, ItemPtr b)

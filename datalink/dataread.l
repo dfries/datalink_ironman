@@ -1,4 +1,5 @@
 %{
+#include <string.h>
 #include "y.tab.h"
 int line_num = 1;
 %}

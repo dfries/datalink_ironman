@@ -17,6 +17,7 @@
  *
  */
 
+#include <string.h>
 #include "datalink.h"
 
 int dl_todo_by_label(ItemPtr a, ItemPtr b)

@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <string.h>
 #include "datalink.h"
 #include "datalink_private.h"
 

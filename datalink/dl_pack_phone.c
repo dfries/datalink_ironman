@@ -17,6 +17,7 @@
  *
  */
 
+#include <string.h>
 #include "datalink.h"
 
 void dl_pack_phone(unsigned char *to, unsigned char *from, int len)

@@ -21,6 +21,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "datalink.h"
 #include "datalink_private.h"
 
