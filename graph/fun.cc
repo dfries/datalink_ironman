@@ -7,11 +7,15 @@
 #include <strstream.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sigc++/slot.h>
 
 #define ExitOnTrue( file, msg ) if(file){ cout << msg ;\
 	cout << __FUNCTION__ << "() " << __FILE__ << ':' << __LINE__ << endl;\
 	exit(1); }
 
+
+using SigC::slot;
+using SigC::bind;
 
 struct signalinfo
 {
@@ -39,7 +43,7 @@ const int DefaultHeight = 550;
 
 const int DefaultMinMotion = 5;
 
-class graph_drawing_area : public Gtk_DrawingArea
+class graph_drawing_area : public Gtk::DrawingArea
 {
 public:
 	graph_drawing_area();
@@ -77,7 +81,7 @@ private:
 	GdkPoint *points;
 };
 
-class graph_window : public Gtk_Window
+class graph_window : public Gtk::Window
 {
 public:
 	graph_window();
@@ -91,15 +95,15 @@ private:
 	void showfileselection();
 	void quit();
 
-	Gtk_VBox vbox;
-	Gtk_HBox hbox;
+	Gtk::VBox vbox;
+	Gtk::HBox hbox;
 	graph_drawing_area drawing_area;
-	Gtk_Button FileSelectButton;
-	Gtk_Button button;
-	Gtk_FileSelection *fs;
-	Gtk_Label changeflipL;
-	Gtk_Entry changeflipE;
-	Gtk_Label fileoffset[numsignals];
+	Gtk::Button FileSelectButton;
+	Gtk::Button button;
+	Gtk::FileSelection *fs;
+	Gtk::Label changeflipL;
+	Gtk::Entry changeflipE;
+	Gtk::Label fileoffset[numsignals];
 };
 
 graph_drawing_area::graph_drawing_area() : pixmap(0)
@@ -178,10 +182,12 @@ int graph_drawing_area::configure_event_impl (GdkEventConfigure * /* event */)
 	win = get_window();
 	visual = win.get_visual();
 
+	/*
 	if (pixmap)
 	{
 		pixmap.free();
 	}
+	*/
 	//gc = get_style()->gtkobj()->white_gc;
 	gc = get_style()->gtkobj()->black_gc;
 	gc.set_foreground( black );
@@ -203,7 +209,7 @@ int graph_drawing_area::expose_event_impl (GdkEventExpose *event)
 	gc = get_style()->gtkobj()->fg_gc
 		[GTK_WIDGET_STATE (GTK_WIDGET(gtkobj()))];
 	gc.set_foreground( black );
-	// Same like above + Gtk_Widget has set_state function but
+	// Same like above + Gtk::Widget has set_state function but
 	// no get_state function.
 	win.draw_pixmap( gc,
 		pixmap,
@@ -386,11 +392,12 @@ void graph_drawing_area::move_graph( int updatesignal,
 	win.draw_pixmap( gc, pixmap, 0,0,0,0, width(), height() );
 }
 
-graph_window::graph_window() : Gtk_Window(GTK_WINDOW_TOPLEVEL),
+graph_window::graph_window() : Gtk::Window(GTK_WINDOW_TOPLEVEL),
 	vbox( FALSE, 0), hbox( FALSE, 0), FileSelectButton("Load File"),
 	button ("quit"), fs(0), changeflipL("Flip amount")
 {
-	add(&vbox);
+	add(vbox);
+	//pack_start(&vbox);
 
 	/* Create the drawing area */
 	drawing_area.size(DefaultWidth,DefaultHeight);
@@ -409,18 +416,18 @@ graph_window::graph_window() : Gtk_Window(GTK_WINDOW_TOPLEVEL),
 	
 	/* Add the button */
 	hbox.pack_start( button, FALSE, FALSE, 0);
-	connect_to_method ( button.clicked, this, &quit );
+	button.clicked.connect(slot(this,&graph_window::quit));
 
 	hbox.pack_start( FileSelectButton, FALSE, FALSE, 0);
-	connect_to_method ( FileSelectButton.clicked, this,
-		&showfileselection);
+	FileSelectButton.clicked.connect(slot(this,
+		&graph_window::showfileselection));
 	FileSelectButton.show();
 
 	hbox.pack_start( changeflipL, FALSE, FALSE, 0);
 	changeflipL.show();
 	hbox.pack_start( changeflipE, FALSE, FALSE, 0);
 	changeflipE.show();
-	connect_to_method( changeflipE.activate, this, &changeflip );
+	changeflipE.activate.connect(slot(this,&graph_window::changeflip));
 
 	// set the text for the flip amount
 	char * buff = new char [5];
@@ -430,7 +437,7 @@ graph_window::graph_window() : Gtk_Window(GTK_WINDOW_TOPLEVEL),
 	changeflipE.insert_text( buff, strlen(buff), &zero );
 	delete buff;
 
-	connect_to_method ( destroy, this, &quit );
+	destroy.connect(slot(this, &graph_window::quit));
 
 	drawing_area.show();
 	button.show();
@@ -471,14 +478,14 @@ void graph_window::showfileselection()
 {
 	if(!fs)
 	{
-		fs=new Gtk_FileSelection("File Selection");
+		fs=new Gtk::FileSelection("File Selection");
 		fs->set_filename("/tmp/data/");
-		connect_to_method(fs->get_ok_button()->clicked,
-			this, &FSbuttonpressed);
-		connect_to_method(fs->get_cancel_button()->clicked,
-			this, &FSbuttoncanceled);
-		connect_to_method(fs->delete_event,
-			this, &FSselectionclosed);
+		fs->get_ok_button()->clicked.connect(slot(this,
+			&graph_window::FSbuttonpressed));
+		fs->get_cancel_button()->clicked.connect(slot(this,
+			&graph_window::FSbuttoncanceled));
+		fs->delete_event.connect(slot(this,
+			&graph_window::FSselectionclosed));
 	}
 	fs->show();
 }
@@ -507,7 +514,7 @@ int main ( int argc, char ** argv)
 	}
 		
 	graph_window *window;
-	Gtk_Main myapp(&argc, &argv);
+	Gtk::Main myapp(&argc, &argv);
 
 	window = new graph_window;
 	window->show();
