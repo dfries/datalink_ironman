@@ -1,12 +1,19 @@
+# Do not modify this - modify PREFIX (below) instead.  This is used by
+# package manages such as that for Debian.
+DESTDIR = 
+
+
 # Edit the parameters below for your needs.
 
-PREFIX=/usr/local
+PREFIX=$(DESTDIR)/usr/local
 BINDIR=$(PREFIX)/bin
 LIBDIR=$(PREFIX)/lib
+MANDIR=$(PREFIX)/man
 INCDIR=$(PREFIX)/include
 
-CFLAGS = -Wall -g -DBINDIR=\"$(BINDIR)\"
-#CFLAGS = -O2 -DBINDIR=\"$(BINDIR)\"
+CC = gcc
+#CFLAGS = -Wall -g -DBINDIR=\"$(BINDIR)\"
+CFLAGS = -O2 -DBINDIR=\"$(BINDIR)\"
 
 PORT = /dev/ttyS0
 
@@ -46,7 +53,7 @@ YACC = bison -y -p dl_ -oy.tab.c
 LEX = flex -Pdl_ -olex.yy.c
 
 
-all: libdatalink.a libdatalink.so.1 settime setwatch $(ENGINES)
+all: libdatalink.so.1 settime setwatch $(ENGINES)
 
 libdatalink.a: $(OBJ)
 	rm -f $@
@@ -69,7 +76,7 @@ depend: parse.c dl_read_save.c
 	makedepend -o.o $(CFLAGS) $(SRC) $(SVGASRC) $(SERSRC)
 
 serblink.o: $(SERSRC)
-	cc -c $(CFLAGS) -DPORT=\"$(PORT)\" $(SERSRC)
+	$(CC) -c $(CFLAGS) -DPORT=\"$(PORT)\" $(SERSRC)
 
 serblink: $(SEROBJ)
 	rm -f $@
@@ -95,13 +102,32 @@ cvt: cvt.o
 	$(CC) $(CFLAGS) -o $@
 
 install: all
-	install -o root -g bin -m 555 libdatalink.so.1 $(LIBDIR)
+	install -o root -g video -m 4750 svgablink $(BINDIR)
+	install -o root -g root -m 755 serblink $(BINDIR)
+	install -o root -g root -m 755 setwatch $(BINDIR)
+	install -o root -g root -m 755 settime $(BINDIR)
+	install -o root -g root -m 644 setwatch.1 $(MANDIR)/man1
+	install -o root -g root -m 644 settime.1 $(MANDIR)/man1
+	install -o root -g root -m 644 svgablink.1 $(MANDIR)/man1
+	install -o root -g root -m 644 serblink.1 $(MANDIR)/man1
+
+install-devel: install
+	install -o root -g root -m 555 libdatalink.so.1 $(LIBDIR)
 	install -o root -g bin -m 555 libdatalink.a $(LIBDIR)
 	install -o root -g bin -m 444 datalink.h $(INCDIR)
-	install -o root -g bin -m 4555 svgablink $(BINDIR)
-	install -o root -g bin -m 555 serblink $(BINDIR)
-	install -o root -g bin -m 555 setwatch $(BINDIR)
-	install -o root -g bin -m 555 settime $(BINDIR)
+
+uninstall:
+	rm -f $(BINDIR)/svgablink
+	rm -f $(BINDIR)/serblink
+	rm -f $(BINDIR)/setwatch
+	rm -f $(BINDIR)/settime
+	rm -f $(MANDIR)/man1/setwatch.1
+	rm -f $(MANDIR)/man1/settime.1
+	rm -f $(MANDIR)/man1/svgablink.1
+	rm -f $(MANDIR)/man1/serblink.1
+	rm -f $(LIBDIR)/libdatalink.so.1
+	rm -f $(LIBDIR)/libdatalink.a
+	rm -f $(INCDIR)/datalink.h
 
 clean:
 	rm -f $(OBJ) libdatalink.a libdatalink.so.1 Makefile.bak

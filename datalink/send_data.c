@@ -1,22 +1,21 @@
-/* This software is Copyright 1996 by Karl R. Hakimian
+/* 
+ * Copyright 1996-2002 - Karl R. Hakimian and David Fries
  *
- * datazap: Linux version of Timex/Microsoft SDK for Timex datalink watches.
+ * This file is part of datalink.
  *
- * Written by Karl R. Hakimian 10/3/96
+ * Datalink is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * Modified by David Fries <dfries@mail.win.org> 7/11/99
- * - Added support for the Timex Datalink Ironman Triathlon
- * 
- * Permission is hereby granted to copy, reproduce, redistribute or otherwise
- * use this software as long as: there is no monetary profit gained
- * specifically from the use or reproduction of this software, it is not
- * sold, rented, traded or otherwise marketed, and this copyright notice is
- * included prominently in any copy made. 
+ * Datalink is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. ANY USE OF THIS
- * SOFTWARE IS AT THE USER'S OWN RISK.
+ * You should have received a copy of the GNU General Public License
+ * along with datalink (see COPYING); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
 
@@ -44,6 +43,11 @@ int send_data(int type, unsigned char **packets, int npckts)
 /* Become root to set vga mode. */
 	seteuid(0);
 	vga_init();
+
+/* This is redundant - vga_init() should do this itself... */
+/* but there's no harm in being sure */
+	seteuid(getuid());
+
 #ifdef MACH64_HACK
 /* For some reason, the latest mach 64 svga driver requires root on the
    next call even though vga_init gave up root privileges. */

@@ -3,6 +3,23 @@ Added header files for libc functions we are already using, but weren't
 including the proper header files.
 Switched to using tmpfile instead of tmpnam for the temporary file,
 this will fix the compiler warnings.
+The newer bison required a semicolon and would not compile until it was
+added.
+-- David Fries <dfries@mail.win.org>
+
+12-16-2001:
+	-Changed license to GPL (with permission from all 4 authors).
+	-Added info to readme about GPL and about lack of support from Timex.
+	-Created manpages for svgablink, serblink, setwatch, and settime
+	 They still need work - I'll get to it when I can.
+	-Changed settime default to ironman for consistency w/ setwatch.
+	-Fixed apparent missing semicolon in dataread.y.
+	-Added DESTDIR to Makefile to be more friendly with Debian packaging.
+	-Split Makefile "install" rule into "install" (for basic datalink
+	 user requirements) and "install-devel" for items needed only for
+	 development.
+	-Added Makefile "uninstall" rule.
+-- Steaphan Greene <stea@cs.binghamton.edu>
 
 02-14-2001:
 The changes listed below from Frank Denis were incorporated with exception

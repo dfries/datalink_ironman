@@ -1,13 +1,31 @@
-/* setwatch: Example of Linux SDK for Timex watch.             */
-/* Written by Karl R. Hakimian 10/3/96                         */
-/*                                                             */
-/* Now warranty expressed or implied, use it as you see fit.   */
+/* 
+ * Copyright 1996-2002 - Karl R. Hakimian and David Fries
+ *
+ * This file is part of datalink.
+ *
+ * Datalink is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Datalink is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with datalink (see COPYING); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
 
- /*
-    *
-    * Modified by David Fries <dfries@mail.win.org> 7/11/99
-    * - Added support for the Timex Datalink Ironman Triathlon
-  */
+/*
+ * setwatch: Example of Linux SDK for Timex watch.
+ * Written by Karl R. Hakimian 10/3/96
+ *
+ * Modified by David Fries <dfries@mail.win.org> 7/11/99
+ * - Added support for the Timex Datalink Ironman Triathlon
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -302,6 +320,13 @@ int main(int argc, char **argv)
 
 		argc--;
 		argv++;
+	}
+
+	if (flags&ALARM && !(flags&PHONE))
+	{
+		printf("Warning: Sending alarm information has been known to "
+			"corrupt the phone list on the watch, please check "
+			"and add +phone if you find this is the case.\n");
 	}
 
 	if (flags == DEFAULT)

@@ -1,19 +1,21 @@
-/* This software is Copyright 1996 by Karl R. Hakimian
+/* 
+ * Copyright 1996-2002 - Karl R. Hakimian and David Fries
  *
- * datazap: Linux version of Timex/Microsoft SDK for Timex datalink watches.
+ * This file is part of datalink.
  *
- * Written by Karl R. Hakimian 10/3/96
- * 
- * Permission is hereby granted to copy, reproduce, redistribute or otherwise
- * use this software as long as: there is no monetary profit gained
- * specifically from the use or reproduction of this software, it is not
- * sold, rented, traded or otherwise marketed, and this copyright notice is
- * included prominently in any copy made. 
+ * Datalink is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. ANY USE OF THIS
- * SOFTWARE IS AT THE USER'S OWN RISK.
+ * Datalink is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with datalink (see COPYING); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
 

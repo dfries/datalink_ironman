@@ -1,20 +1,29 @@
-/* This software is Copyright 1997 by Harold Zatz
+/* 
+ * Copyright 1997-2002 - Harold Zatz <hzatz@alumni.caltech.edu>
  *
+ * This file is part of datalink.
+ *
+ * Datalink is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Datalink is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with datalink (see COPYING); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+/*
  * sgiglblink: SGI / Open GL program from writing to Timex datalink watches
- *
- * Written by Harold Zatz 5/19/97
- * 
- * Permission is hereby granted to copy, reproduce, redistribute or otherwise
- * use this software as long as: there is no monetary profit gained
- * specifically from the use or reproduction of this software, it is not
- * sold, rented, traded or otherwise marketed, and this copyright notice is
- * included prominently in any copy made. 
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. ANY USE OF THIS
- * SOFTWARE IS AT THE USER'S OWN RISK.
- *
+ * Note the Open GL implimentation must support switching the buffers durring
+ * the vertical retrace.  This program is SGI specific in the way it selects a
+ * 60Hz screen refresh.  Alternate code just doesn't exist.
  */
 
 #include <stdio.h>
