@@ -12,9 +12,9 @@ int main( int argc, char **argv)
 		cerr << "Error\n";
 		exit(1);
 	}
+	byte = input.get();
 	while( !input.eof() )
 	{
-		byte = input.get();
 		cout << hex << setfill('0') << setw(2) << byte;
 		if( linefeed )
 		{
@@ -25,6 +25,7 @@ int main( int argc, char **argv)
 		{
 			linefeed = 1;
 		}
+		byte = input.get();
 	}
 	cout << endl;
 	return 0;

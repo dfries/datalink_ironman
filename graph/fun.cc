@@ -6,6 +6,7 @@
 #include <iostream>
 #include <strstream.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define ExitOnTrue( file, msg ) if(file){ cout << msg ;\
 	cout << __FUNCTION__ << "() " << __FILE__ << ':' << __LINE__ << endl;\
@@ -31,6 +32,7 @@ const int numsignals = 2;
 //const char* syncfile = "/tmp/sync";
 //const char* syncfile = "/tmp/data/121blank";
 const char* syncfile = "sync";
+char * filename[2] = {"sync", "sync"};
 
 const int DefaultWidth = 737;
 const int DefaultHeight = 550;
@@ -113,7 +115,7 @@ graph_drawing_area::graph_drawing_area() : pixmap(0)
 	colormap = colormap.get_system();
 	for( int i = 0; i < numsignals; i++)
 	{
-		signal[i].file.open(syncfile, ios::in);
+		signal[i].file.open(filename[i], ios::in);
 		ExitOnTrue( !signal[i].file, "Error opening " 
 			<< syncfile);
 		signal[i].location = 0;
@@ -498,6 +500,12 @@ void graph_window::setfileoffset( int signal, int offset)
 
 int main ( int argc, char ** argv)
 {
+	if( argc > 2 )
+	{
+		filename[0] = *(argv+1);
+		filename[1] = *(argv+2);
+	}
+		
 	graph_window *window;
 	Gtk_Main myapp(&argc, &argv);
 
