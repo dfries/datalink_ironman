@@ -18,6 +18,7 @@
  */
 
 #include <stdio.h>
+#include <unistd.h>
 
 #include "datalink.h"
 #include "datalink_private.h"
@@ -25,9 +26,7 @@
 int dl_write_save(char *datafile, char *wristappfile, char *melodyfile)
 {
 	FILE *fp;
-	ItemPtr ip;
 	char bakfile[1024];
-	char buf[1024];
 	int last_warn = 0;
 	TimePtr tip;
 	AlarmPtr alp;
@@ -36,8 +35,6 @@ int dl_write_save(char *datafile, char *wristappfile, char *melodyfile)
 	PhonePtr pp;
 	AnniversaryPtr anp;
 	SystemPtr sp;
-	WristAppPtr wp;
-	MelodyPtr mp;
 	int hour, min;
 	int i;
 

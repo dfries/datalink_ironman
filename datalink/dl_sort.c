@@ -17,6 +17,7 @@
  *
  */
 
+#include <stdlib.h>
 #include "datalink.h"
 
 int dl_sort(ListPtr list, int (*cmp_proc) ())
@@ -76,4 +77,5 @@ int dl_sort(ListPtr list, int (*cmp_proc) ())
 	list->first = nl->first;
 	list->last = nl->last;
 	free(nl);
+	return 0;
 }

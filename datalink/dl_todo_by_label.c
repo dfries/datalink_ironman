@@ -21,7 +21,5 @@
 
 int dl_todo_by_label(ItemPtr a, ItemPtr b)
 {
-	int r;
-
 	return (strcmp(a->data.todo.label, b->data.todo.label));
 }

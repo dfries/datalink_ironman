@@ -21,7 +21,5 @@
 
 int dl_todo_by_prio(ItemPtr a, ItemPtr b)
 {
-	int r;
-
 	return (a->data.todo.priority - b->data.todo.priority);
 }
