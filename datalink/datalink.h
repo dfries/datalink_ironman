@@ -114,6 +114,7 @@ typedef struct watch_info_s {
 	int max_alarms;
 	int max_apps;
 	int max_phones;
+	int max_timer;
 	int max_todos;
 	int max_annivs;
 	int max_system;
@@ -124,7 +125,9 @@ typedef struct watch_info_s {
 	int mem_size;		/* Memory used. */
 	int max_str;		/* Max string length for this device. */
 	int max_alarm_str;	/* Max string length for an alarm on this device. */
-	int max_phone_str;	/* Max string length for an phone on this device. */
+	int max_cron_str;	/* Max string length for the cron on this device. */
+	int max_phone_str;	/* Max string length for a phone on this device. */
+	int max_timer_str;	/* Max string length for the timer on this device. */
 	int max_wristapp_len;
 	int max_mel_len;
 	int pre_notification_time;
