@@ -15,8 +15,9 @@ struct signalinfo
 	ifstream file;	// file to read from
 	int location;	// where in the file we are, -1 initially
 	short * buffer;	// where to put the temporary information
+	int buffersize;	// the size of the current buffer
 	GdkPoint *points;	// the point objects for this signal
-	double vloc;	// how high or low to display the signal
+	short vloc;	// how high or low to display the signal
 	double vzoomfact;	// how far to zoom vertically, higher is zoomout
 	Gdk_Color fg;	// the foreground color
 	Gdk_Color bg;	// the background color
@@ -48,10 +49,20 @@ public:
 			signal[i].file.open(syncfile, ios::in);
 			ExitOnTrue( !signal[i].file, "Error opening " 
 				<< syncfile);
-			signal[i].location = -1;
+			signal[i].location = 0;
+			signal[i].buffer = new short[DefaultWidth];
+			signal[i].buffersize = DefaultWidth;
+			signal[i].points = new GdkPoint[DefaultWidth];
 			signal[i].vloc = 6000;
 			signal[i].vzoomfact = 3;
 			signal[i].bg = colormap.black();
+
+			// read the file
+			signal[i].file.read( (char*)signal[i].buffer,
+				DefaultWidth*sizeof(short));
+			ExitOnTrue(!signal[i].file,
+				"Error reading file" );
+
 		}
 		signal[testsignal].fg.set_rgb_p( 0,1,0);
 		colormap.alloc( signal[testsignal].fg);
@@ -60,13 +71,16 @@ public:
 
 		black.set_rgb_p( 0, 0, 0);
 		colormap.alloc( black );
-
-		numpoints = DefaultWidth;
-		points = new GdkPoint[numpoints];
 	}
 
 	~graph_drawing_area()
 	{
+		for(int i = 0; i < numsignals; i++)
+		{
+			signal[i].file.close();
+			delete [] signal[i].buffer;
+			delete [] signal[i].points;
+		}
 	}
 
 	void setinputfile ( string name, int signalnum )
@@ -125,6 +139,7 @@ private:
 		return FALSE;
 	}
 
+#if 0
 	/* Draw the signals on the screen */
 	void draw_brush ( gdouble x, gdouble y)
 	{
@@ -155,6 +170,14 @@ private:
 		lastx = xcur;
 		lasty = ycur;
 	}
+#endif
+
+	/* Draw_Graph will load the file information from file if it
+	   isn't at the same location */
+	void draw_graph( int updatesignal, int xoffset, int yoffset );
+
+	/* */
+	void move_graph( int updatesignal, int xoffset, int yoffset );
 
 	gint button_press_event_impl (GdkEventButton *event)
 	{
@@ -179,11 +202,11 @@ private:
 			draw_graph( updatesignal, (int)(event->x - lastx),
 				(int)(event->y - lasty));
 		}
+		return TRUE;
 	}
 
 	gint motion_notify_event_impl (GdkEventMotion *event)
 	{
-		GdkModifierType state;
 		int x, y;
 		GdkModifierType state;
 		if (event->is_hint)
@@ -195,6 +218,7 @@ private:
 			state = (GdkModifierType) event->state;
 		}
 
+		int updatesignal = (y >= height()/2);
 		if(state& GDK_BUTTON1_MASK && pixmap )
 			move_graph( updatesignal, (int)(event->x - lastx),
 				(int)(event->y - lasty));
@@ -213,10 +237,97 @@ private:
 	Gdk_Colormap colormap;
 	signalinfo signal[numsignals];
 	GdkPoint *points;
-	int numpoints;
-
 };
 
+void graph_drawing_area::draw_graph( int updatesignal,
+	int xoffset, int yoffset )
+{
+	int sig;
+	int i;
+
+	ExitOnTrue(signal[updatesignal].buffersize!=width(),
+		"resizing not implimented yet");
+
+	// update offsets
+	signal[updatesignal].location += xoffset;
+	if(signal[updatesignal].location < 0)
+		signal[updatesignal].location = 0;
+	signal[updatesignal].vloc += yoffset;
+
+	// seek the file to location
+	signal[updatesignal].file.seekg(signal[updatesignal].location,
+		ios::beg );
+	ExitOnTrue(!signal[updatesignal].file, "Error seeking file" );
+	// read the file
+	signal[updatesignal].file.read( (char *)signal[updatesignal].buffer,
+		width()*sizeof(short));
+	ExitOnTrue(!signal[updatesignal].file, "Error reading file" );
+
+
+	// create the points
+	for( sig = 0; sig < numsignals; sig++)
+	for( i = 0; i < width(); i++)
+	{
+		signal[sig].points[i].x=i;
+		signal[sig].points[i].y = (int)
+			((signal[sig].buffer[i] + signal[sig].vloc)/
+			signal[sig].vzoomfact);
+	}
+
+	// clear the drawing area
+
+	gc = get_style()->gtkobj()->black_gc;
+	gc.set_foreground( black );
+	pixmap.draw_rectangle( gc,
+		TRUE,
+		0, 0,
+		width(),
+		height());
+
+	// draw the points for the signals
+	for( sig = 0; sig < numsignals; sig++)
+	{
+		gc.set_foreground( signal[sig].fg );
+		pixmap.draw_points( gc, signal[sig].points, width() );
+	}
+}
+
+void graph_drawing_area::move_graph( int updatesignal,
+	int xoffset, int yoffset )
+{
+	int sig;
+	int i;
+
+	ExitOnTrue(signal[updatesignal].buffersize!=width(),
+		"resizing not implimented yet");
+
+	// create the points
+	for( sig = 0; sig < numsignals; sig++)
+	for( i = 0; i < width(); i++)
+	{
+		signal[sig].points[i].x=i+xoffset;
+		signal[sig].points[i].y = (int)(yoffset +
+			(signal[sig].buffer[i] + signal[sig].vloc)/
+			signal[sig].vzoomfact);
+	}
+
+	// clear the drawing area
+
+	gc = get_style()->gtkobj()->black_gc;
+	gc.set_foreground( black );
+	pixmap.draw_rectangle( gc,
+		TRUE,
+		0, 0,
+		width(),
+		height());
+
+	// draw the points for the signals
+	for( sig = 0; sig < numsignals; sig++)
+	{
+		gc.set_foreground( signal[sig].fg );
+		pixmap.draw_points( gc, signal[sig].points, width() );
+	}
+}
 
 class graph_window : public Gtk_Window
 {
