@@ -338,6 +338,8 @@ ListPtr melody;
 		for (i = 0, ip = chron->first; ip; ip = ip->next, i++) {
 			memcpy((char *)&dl_download_data.chron[i],
 				(char *)&ip->data.chron, sizeof(Chron));
+			dl_download_data.chron[i].memused =
+				14 + 4*dl_download_data.chron[i].chron_laps;
 		}
 
 	}
