@@ -74,6 +74,31 @@ private:
 	GdkPoint *points;
 };
 
+class graph_window : public Gtk_Window
+{
+public:
+	graph_window();
+	void setfileoffset( int signal, int offset);
+private:
+
+	void changeflip();
+	int FSselectionclosed(GdkEventAny*);
+	void FSbuttoncanceled();
+	void FSbuttonpressed();
+	void showfileselection();
+	void quit();
+
+	Gtk_VBox vbox;
+	Gtk_HBox hbox;
+	graph_drawing_area drawing_area;
+	Gtk_Button FileSelectButton;
+	Gtk_Button button;
+	Gtk_FileSelection *fs;
+	Gtk_Label changeflipL;
+	Gtk_Entry changeflipE;
+	Gtk_Label fileoffset[numsignals];
+};
+
 graph_drawing_area::graph_drawing_area() : pixmap(0)
 {
 	set_events( GDK_EXPOSURE_MASK
@@ -351,133 +376,117 @@ void graph_drawing_area::move_graph( int updatesignal,
 	win.draw_pixmap( gc, pixmap, 0,0,0,0, width(), height() );
 }
 
-class graph_window : public Gtk_Window
+graph_window::graph_window() : Gtk_Window(GTK_WINDOW_TOPLEVEL),
+	vbox( FALSE, 0), hbox( FALSE, 0), FileSelectButton("Load File"),
+	button ("quit"), fs(0), changeflipL("Flip amount")
 {
-public:
-	graph_window() : Gtk_Window(GTK_WINDOW_TOPLEVEL),
-		vbox( FALSE, 0), hbox( FALSE, 0), FileSelectButton("Load File"),
-		button ("quit"), fs(0), changeflipL("Flip amount")
+	add(&vbox);
+
+	/* Creaet the drawing area */
+	drawing_area.size(DefaultWidth,DefaultHeight);
+	vbox.pack_start(drawing_area, TRUE, TRUE, 0);
+	drawing_area.graph_pointer = this;
+
+	/* Add the hbox to the buttom */
+	vbox.pack_start(hbox, FALSE, FALSE, 0);
+
+	hbox.pack_start( fileoffset[0], FALSE, FALSE, 0);
+	fileoffset[0].show();
+	hbox.pack_start( fileoffset[1], FALSE, FALSE, 10);
+	fileoffset[1].show();
+	setfileoffset(0, 0);
+	setfileoffset(1, 0);
+	
+	/* Add the button */
+	hbox.pack_start( button, FALSE, FALSE, 0);
+	connect_to_method ( button.clicked, this, &quit );
+
+	hbox.pack_start( FileSelectButton, FALSE, FALSE, 0);
+	connect_to_method ( FileSelectButton.clicked, this,
+		&showfileselection);
+	FileSelectButton.show();
+
+	hbox.pack_start( changeflipL, FALSE, FALSE, 0);
+	changeflipL.show();
+	hbox.pack_start( changeflipE, FALSE, FALSE, 0);
+	changeflipE.show();
+	connect_to_method( changeflipE.activate, this, &changeflip );
+
+	// set the text for the flip amount
+	char * buff = new char [5];
+	strstream membuff(buff, 5 );
+	membuff << DefaultWidth << (char)0 << flush;
+	int zero = 0;
+	changeflipE.insert_text( buff, strlen(buff), &zero );
+	delete buff;
+
+	connect_to_method ( destroy, this, &quit );
+
+	drawing_area.show();
+	button.show();
+	vbox.show();
+	hbox.show();
+
+}
+
+void graph_window::changeflip()
+{
+	cout << changeflipE.get_text() << endl;
+	drawing_area.setflipamount(
+		atof(changeflipE.get_text().c_str()));
+}
+
+int graph_window::FSselectionclosed(GdkEventAny*)
+{
+	cout << "Selection closed\n";
+	// according the the example program it is deleted by
+	// now so we don't bother
+	// fs->hide();
+	// fs=0;
+	return TRUE;
+}
+void graph_window::FSbuttoncanceled()
+{
+	cout << "File NOT selected " << fs->get_filename() << endl;
+	fs->hide();
+}
+
+void graph_window::FSbuttonpressed()
+{
+	cout << "File Selected " << fs->get_filename() << endl;
+	drawing_area.setinputfile( fs->get_filename(), testsignal);
+	fs->hide();
+}
+void graph_window::showfileselection()
+{
+	if(!fs)
 	{
-		add(&vbox);
-
-		/* Creaet the drawing area */
-		drawing_area.size(DefaultWidth,DefaultHeight);
-		vbox.pack_start(drawing_area, TRUE, TRUE, 0);
-		drawing_area.graph_pointer = this;
-
-		/* Add the hbox to the buttom */
-		vbox.pack_start(hbox, FALSE, FALSE, 0);
-
-		hbox.pack_start( fileoffset[0], FALSE, FALSE, 0);
-		fileoffset[0].show();
-		hbox.pack_start( fileoffset[1], FALSE, FALSE, 0);
-		fileoffset[1].show();
-		setfileoffset(0, 0);
-		setfileoffset(1, 0);
-		
-		/* Add the button */
-		hbox.pack_start( button, FALSE, FALSE, 0);
-		connect_to_method ( button.clicked, this, &quit );
-
-		hbox.pack_start( FileSelectButton, FALSE, FALSE, 0);
-		connect_to_method ( FileSelectButton.clicked, this,
-			&showfileselection);
-		FileSelectButton.show();
-
-		hbox.pack_start( changeflipL, FALSE, FALSE, 0);
-		changeflipL.show();
-		hbox.pack_start( changeflipE, FALSE, FALSE, 0);
-		changeflipE.show();
-		connect_to_method( changeflipE.activate, this, &changeflip );
-
-		// set the text for the flip amount
-		char * buff = new char [5];
-		strstream membuff(buff, 5 );
-		membuff << DefaultWidth << (char)0 << flush;
-		int zero = 0;
-		changeflipE.insert_text( buff, strlen(buff), &zero );
-		delete buff;
-
-		connect_to_method ( destroy, this, &quit );
-
-		drawing_area.show();
-		button.show();
-		vbox.show();
-		hbox.show();
-
+		fs=new Gtk_FileSelection("File Selection");
+		fs->set_filename("/tmp/data/");
+		connect_to_method(fs->get_ok_button()->clicked,
+			this, &FSbuttonpressed);
+		connect_to_method(fs->get_cancel_button()->clicked,
+			this, &FSbuttoncanceled);
+		connect_to_method(fs->delete_event,
+			this, &FSselectionclosed);
 	}
+	fs->show();
+}
+void graph_window::quit()
+{
+	gtk_exit(0);
+}
 
-	void setfileoffset( int signal, int offset)
-	{
-		// set the text for the flip amount
-		char * buff = new char [15];
-		strstream membuff(buff, 15 );
-		membuff << (signal ? "Sync " : "Test ") << offset
-			<< (char)0 << flush;
-		fileoffset[signal].set_text( buff );
-		delete buff;
-	}
-
-private:
-
-	void changeflip()
-	{
-		cout << changeflipE.get_text() << endl;
-		drawing_area.setflipamount(
-			atof(changeflipE.get_text().c_str()));
-	}
-
-	int FSselectionclosed(GdkEventAny*)
-	{
-		cout << "Selection closed\n";
-		// according the the example program it is deleted by
-		// now so we don't bother
-		// fs->hide();
-		// fs=0;
-		return TRUE;
-	}
-	void FSbuttoncanceled()
-	{
-		cout << "File NOT selected " << fs->get_filename() << endl;
-		fs->hide();
-	}
-
-	void FSbuttonpressed()
-	{
-		cout << "File Selected " << fs->get_filename() << endl;
-		drawing_area.setinputfile( fs->get_filename(), testsignal);
-		fs->hide();
-	}
-	void showfileselection()
-	{
-		if(!fs)
-		{
-			fs=new Gtk_FileSelection("File Selection");
-			fs->set_filename("/tmp/data/");
-			connect_to_method(fs->get_ok_button()->clicked,
-				this, &FSbuttonpressed);
-			connect_to_method(fs->get_cancel_button()->clicked,
-				this, &FSbuttoncanceled);
-			connect_to_method(fs->delete_event,
-				this, &FSselectionclosed);
-		}
-		fs->show();
-	}
-	void quit()
-	{
-		gtk_exit(0);
-	}
-
-	Gtk_VBox vbox;
-	Gtk_HBox hbox;
-	graph_drawing_area drawing_area;
-	Gtk_Button FileSelectButton;
-	Gtk_Button button;
-	Gtk_FileSelection *fs;
-	Gtk_Label changeflipL;
-	Gtk_Entry changeflipE;
-	Gtk_Label fileoffset[numsignals];
-};
+void graph_window::setfileoffset( int signal, int offset)
+{
+	// set the text for the flip amount
+	char * buff = new char [15];
+	strstream membuff(buff, 15 );
+	membuff << (signal ? "Sync " : "Test ") << offset
+		<< (char)0 << flush;
+	fileoffset[signal].set_text( buff );
+	delete buff;
+}
 
 int main ( int argc, char ** argv)
 {
