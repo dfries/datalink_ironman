@@ -11,6 +11,9 @@ watches and I have only tested the SVGA output program.  The original
 watches and serblink (serial blink) program may have been broken with
 my code changes, I have no way to test them.
 
+The watch has a Motorola 6805 microprocessor in it with the ability of the
+model 150 or 150s version to write and run programs on the watch.
+
 Compiling:
 Type make depend to make the dependences.
 	$ make depend
