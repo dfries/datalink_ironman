@@ -7,6 +7,8 @@
 	 until it was added.
 	-Replaced tmpnam() with mkstemp() because the compiler gave
 	 warnings about tmpnam being a possible security hole.
+	-Dependency information now goes in the file depend and will be
+	 calculated if the file doesn't exist.
 -- David Fries <dfries@mail.win.org>
 
 12-16-2001:

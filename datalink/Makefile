@@ -52,6 +52,7 @@ SEROBJ = serblink.o
 YACC = bison -y -p dl_ -oy.tab.c
 LEX = flex -Pdl_ -olex.yy.c
 
+.PHONY: all clean
 
 all: depend libdatalink.so.1 settime setwatch $(ENGINES)
 
@@ -139,6 +140,7 @@ clean:
 	rm -f parse.c dl_read_save.c y.tab.h
 	rm -f settime.o setwatch.o cvt.o
 	rm -f settime setwatch cvt $(ENGINES)
+	rm -f depend
 
 # The next line was used for makedepend
 include depend
