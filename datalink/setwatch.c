@@ -215,8 +215,8 @@ char **argv;
 	dl_set_error(my_error_proc);
 	dl_set_warn(my_warn_proc);
 
-	wi = dl_read_save(datafile, type, &times, &alarms, &timers, &apps, &todos, &phones,
-		&annivs, &system, &wristapp, &melody);
+	wi = dl_read_save(datafile, type, &times, &alarms, &chron, &timers,
+		&apps, &todos, &phones, &annivs, &system, &wristapp, &melody);
 
 /* Mark for download. */
 
