@@ -28,7 +28,7 @@ const int syncsignal = 1;
 const int numsignals = 2;
 const char* syncfile = "/tmp/sync";
 
-const int DefaultWidth = 400;
+const int DefaultWidth = 800;
 const int DefaultHeight = 400;
 
 class graph_drawing_area : public Gtk_DrawingArea
@@ -58,6 +58,7 @@ private:
 	Gdk_Visual visual;
 	int lastx;
 	int lasty;
+	int lastsignal;
 	Gdk_Color black;
 	Gdk_Colormap colormap;
 	signalinfo signal[numsignals];
@@ -69,6 +70,7 @@ graph_drawing_area::graph_drawing_area() : pixmap(0)
 	set_events( GDK_EXPOSURE_MASK
 		| GDK_LEAVE_NOTIFY_MASK
 		| GDK_BUTTON_PRESS_MASK
+		| GDK_BUTTON_RELEASE_MASK
 		| GDK_POINTER_MOTION_MASK
 		| GDK_POINTER_MOTION_HINT_MASK);
 	lastx = -1;
@@ -83,8 +85,8 @@ graph_drawing_area::graph_drawing_area() : pixmap(0)
 		signal[i].buffer = new short[DefaultWidth];
 		signal[i].buffersize = DefaultWidth;
 		signal[i].points = new GdkPoint[DefaultWidth];
-		signal[i].vloc = 6000;
-		signal[i].vzoomfact = 3;
+		signal[i].vloc = 165;
+		signal[i].vzoomfact = 36;
 		signal[i].bg = colormap.black();
 
 		// read the file
@@ -94,7 +96,7 @@ graph_drawing_area::graph_drawing_area() : pixmap(0)
 			"Error reading file" );
 
 	}
-	signal[testsignal].fg.set_rgb_p( 0,1,0);
+	signal[testsignal].fg.set_rgb_p( 0, 1, 0);
 	colormap.alloc( signal[testsignal].fg);
 	signal[syncsignal].fg.set_rgb_p( 1, 0, 0);
 	colormap.alloc( signal[syncsignal].fg);
@@ -166,13 +168,20 @@ int graph_drawing_area::expose_event_impl (GdkEventExpose *event)
 	return FALSE;
 }
 
-gint graph_drawing_area::button_release_event_impl (GdkEventButton *event)
+gint graph_drawing_area::button_press_event_impl (GdkEventButton *event)
 {
 	int updatesignal = (event->y >= height()/2);
-	if( event->button == 1 && pixmap)
+	lastsignal = updatesignal;
+	// right mouse button move the graph left
+	if(event->button == 3 && pixmap)
+		draw_graph( updatesignal, -width(), 0);
+	// left mouse button move the graph right
+	if(event->button == 2 && pixmap)
+		draw_graph( updatesignal, width(), 0);
+	if(event->button == 1 && pixmap)
 	{
-		draw_graph( updatesignal, (int)(event->x - lastx),
-			(int)(event->y - lasty));
+		lastx = (int)event->x;
+		lasty = (int)event->y;
 	}
 	return TRUE;
 }
@@ -190,27 +199,22 @@ gint graph_drawing_area::motion_notify_event_impl (GdkEventMotion *event)
 		state = (GdkModifierType) event->state;
 	}
 
-	int updatesignal = (y >= height()/2);
 	if(state& GDK_BUTTON1_MASK && pixmap )
-		move_graph( updatesignal, (int)(event->x - lastx),
+		move_graph( lastsignal, (int)(event->x - lastx),
 			(int)(event->y - lasty));
 	return TRUE;
 }
 
-gint graph_drawing_area::button_press_event_impl (GdkEventButton *event)
+gint graph_drawing_area::button_release_event_impl (GdkEventButton *event)
 {
-	int updatesignal = (event->y >= height()/2);
-	if(event->button == 2 && pixmap)
-		draw_graph( updatesignal, -width(), 0);
-	if(event->button == 3 && pixmap)
-		draw_graph( updatesignal, width(), 0);
-	if(event->button == 1 && pixmap)
+	if( event->button == 1 && pixmap)
 	{
-		lastx = (int)event->x;
-		lasty = (int)event->y;
+		draw_graph( lastsignal, (int)(event->x - lastx),
+			(int)(event->y - lasty));
 	}
 	return TRUE;
 }
+
 
 void graph_drawing_area::draw_graph( int updatesignal,
 	int xoffset, int yoffset )
@@ -221,8 +225,12 @@ void graph_drawing_area::draw_graph( int updatesignal,
 	ExitOnTrue(signal[updatesignal].buffersize!=width(),
 		"resizing not implimented yet");
 
+	// the x offset is the number of pixels to move it
+	// there are two bytes per short and one short per pixel
+	// so we need to move the file offset 2*xoffset
+	xoffset *=2;
 	// update offsets
-	signal[updatesignal].location += xoffset;
+	signal[updatesignal].location -= xoffset;
 	if(signal[updatesignal].location < 0)
 		signal[updatesignal].location = 0;
 	signal[updatesignal].vloc += yoffset;
@@ -237,14 +245,15 @@ void graph_drawing_area::draw_graph( int updatesignal,
 	ExitOnTrue(!signal[updatesignal].file, "Error reading file" );
 
 
+	// only need to update the modified signal
 	// create the points
-	for( sig = 0; sig < numsignals; sig++)
 	for( i = 0; i < width(); i++)
 	{
-		signal[sig].points[i].x=i;
-		signal[sig].points[i].y = (int)
-			((signal[sig].buffer[i] + signal[sig].vloc)/
-			signal[sig].vzoomfact);
+		signal[updatesignal].points[i].x=i;
+		signal[updatesignal].points[i].y = (int)
+			(signal[updatesignal].buffer[i]/
+			signal[updatesignal].vzoomfact+
+			signal[updatesignal].vloc);
 	}
 
 	// clear the drawing area
@@ -263,6 +272,14 @@ void graph_drawing_area::draw_graph( int updatesignal,
 		gc.set_foreground( signal[sig].fg );
 		pixmap.draw_points( gc, signal[sig].points, width() );
 	}
+	/*
+	win.draw_pixmap( gc,
+		pixmap,
+		event->area.x, event->area.y,
+		event->area.x, event->area.y,
+		event->area.width, event->area.height);
+	*/
+	win.draw_pixmap( gc, pixmap, 0,0,0,0, width(), height() );
 }
 
 void graph_drawing_area::move_graph( int updatesignal,
@@ -274,14 +291,15 @@ void graph_drawing_area::move_graph( int updatesignal,
 	ExitOnTrue(signal[updatesignal].buffersize!=width(),
 		"resizing not implimented yet");
 
+	// only need to create the moved updated signal
 	// create the points
-	for( sig = 0; sig < numsignals; sig++)
 	for( i = 0; i < width(); i++)
 	{
-		signal[sig].points[i].x=i+xoffset;
-		signal[sig].points[i].y = (int)(yoffset +
-			(signal[sig].buffer[i] + signal[sig].vloc)/
-			signal[sig].vzoomfact);
+		signal[updatesignal].points[i].x=i+xoffset;
+		signal[updatesignal].points[i].y = yoffset+(int)
+			(signal[updatesignal].buffer[i]/
+			signal[updatesignal].vzoomfact+
+			signal[updatesignal].vloc);
 	}
 
 	// clear the drawing area
@@ -300,6 +318,7 @@ void graph_drawing_area::move_graph( int updatesignal,
 		gc.set_foreground( signal[sig].fg );
 		pixmap.draw_points( gc, signal[sig].points, width() );
 	}
+	win.draw_pixmap( gc, pixmap, 0,0,0,0, width(), height() );
 }
 
 class graph_window : public Gtk_Window
@@ -364,6 +383,7 @@ private:
 		if(!fs)
 		{
 			fs=new Gtk_FileSelection("File Selection");
+			fs->set_filename("/tmp/data");
 			connect_to_method(fs->get_ok_button()->clicked,
 				this, &FSbuttonpressed);
 			connect_to_method(fs->get_cancel_button()->clicked,
