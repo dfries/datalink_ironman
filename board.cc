@@ -9,14 +9,16 @@
 #include <X11/Xaw/AsciiText.h>
 #include <X11/Xaw/Text.h>
 #include <sys/unistd.h>
+#include <sys/time.h>
+#include <time.h>
 
 int main( int argc, char ** argv)
 {
 	Display * dpy;
 	Window win;
 	XSetWindowAttributes xswa;
-	XGCValues gcvalues;
-	GC gc;
+	XGCValues gcwhitevalues, gcblackvalues;
+	GC gcwhite, gcblack;
 
 	dpy = XOpenDisplay(NULL);
 
@@ -43,9 +45,13 @@ int main( int argc, char ** argv)
 	xswa.colormap = cmap;
 	xswa.override_redirect = True;
 
-	gcvalues.foreground = white;
-	gcvalues.background = black;
-	gcvalues.line_width = 1;
+	gcwhitevalues.foreground = white;
+	gcwhitevalues.background = black;
+	gcwhitevalues.line_width = 1;
+
+	gcblackvalues.foreground = black;
+	gcblackvalues.background = white;
+	gcblackvalues.line_width = 1;
 
 	win = XCreateWindow(dpy, DefaultRootWindow(dpy), 10, 10, 640, 480, 1,
 		CopyFromParent, CopyFromParent, CopyFromParent,
@@ -53,24 +59,66 @@ int main( int argc, char ** argv)
 		| CWColormap , &xswa);
 	XMapWindow( dpy, win);
 
-	gc = XCreateGC( dpy, win, GCForeground | GCBackground | GCLineWidth,
-		&gcvalues );
+	gcwhite = XCreateGC( dpy, win, GCForeground | GCBackground |
+		GCLineWidth, &gcwhitevalues );
+	gcblack = XCreateGC( dpy, win, GCForeground | GCBackground |
+		GCLineWidth, &gcblackvalues );
 	
 	XClearWindow( dpy, win);
 	XFlush( dpy );
-	for( int x = 0; x < 600; x+=10)
+	int x;
+	/*
+	for( y = 0; y < 400; y+=10)
 	{
-		XDrawLine( dpy, win, gc, x, 0, x, 480 );
+		XDrawLine( dpy, win, gcwhite, 0, y, 640, y );
 		XFlush( dpy );
 	}
-	for( int y = 0; y < 400; y+=10)
+	for( x = 0; x < 600; x+=10)
 	{
-		XDrawLine( dpy, win, gc, 0, y, 640, y );
+		XDrawLine( dpy, win, gcblack, x, 0, x, 480 );
 		XFlush( dpy );
 	}
+	*/
+	timeval start, end;
+	int xvalues [] = {
+		90,
+		120,
+		150,
+		180,
+		210,
+		270,
+		300,
+		330,
+		360,
+		390,
+		0};
+
+	int time = 0;
+		for( int i = 0; xvalues[i] != 0; i++ )
+			XDrawLine( dpy, win, gcwhite, 0,
+				xvalues[i], 640, xvalues[i] );
+		XFlush( dpy );
+	/*
+	while ( time++ < 10000 )
+	{
+		for( int i = 0; xvalues[i] != 0; i++ )
+			XDrawLine( dpy, win, gcwhite, 0,
+				xvalues[i], 640, xvalues[i] );
+		XFlush( dpy );
+		nanosleep( &sleeptime, NULL );
+		for( int i = 0; xvalues[i] != 0; i++ )
+			XDrawLine( dpy, win, gcblack, 0,
+				xvalues[i], 640, xvalues[i] );
+		XFlush( dpy );
+		nanosleep( &sleeptime, NULL );
+	}
+	*/
+	cout << time << endl;
+
 	XFlush( dpy );
 	
-	sleep(10);
+	char exit;
+	cin >> exit;
 	
 	return 0;
 }
