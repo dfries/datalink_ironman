@@ -1,3 +1,12 @@
+01-05-2000:
+Added a patch from Scottie Shore <sshore@escape.ca> for a Y2K problem.
+As localtime(3) reads,
+       tm_year
+              The number of years since 1900.
+The watch is expecting the last two digits and displays A0 for the year instead of 00.  Fix is to take the year % 100.
+-- David Fries
+
+
 12-11-1999:
 Added a patch from Danilo Fiorenzano <danilo@telusplanet.net> to
 Added new function "maxPriority()" to switch to SCHED_RR kernel scheduling

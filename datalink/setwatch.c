@@ -76,7 +76,7 @@ ListPtr times;
 		tp->data.time.seconds = time_s->tm_sec;
 		tp->data.time.month = time_s->tm_mon + 1;
 		tp->data.time.day = time_s->tm_mday;
-		tp->data.time.year = time_s->tm_year;
+		tp->data.time.year = time_s->tm_year % 100;
 		tp->data.time.dow = (time_s->tm_wday + 6)%7;
 		tp->data.time.download = 1;
 #ifdef DEBUGGING
