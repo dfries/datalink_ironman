@@ -135,7 +135,7 @@ int main( int argc, char ** argv)
 				" -ironman]\nVersion "
 				"$Id$\n", argv[0]);
 			printf("The default is -model150 "
-				"is none is specified\n");
+				"if none is specified\n");
 			exit(1);
 		}
 	}
