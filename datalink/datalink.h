@@ -183,7 +183,7 @@ int dl_anniv_by_date(ItemPtr, ItemPtr);
 int dl_anniv_by_label(ItemPtr, ItemPtr);
 int dl_app_by_datetime(ItemPtr, ItemPtr);
 int dl_app_by_label(ItemPtr, ItemPtr);
-unsigned short int dl_docrc(unsigned char *);
+unsigned short int dl_docrc(unsigned char *, int);
 void dl_fill_pack_ascii(unsigned char *, unsigned char *, int, char);
 void dl_free_download(void);
 int dl_init_download(WatchInfoPtr, ListPtr, ListPtr, ListPtr,

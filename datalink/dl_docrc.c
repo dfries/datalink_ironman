@@ -24,8 +24,10 @@ static unsigned short int crc16_table[16]={
 };
 
 unsigned short int
-dl_docrc(data)
+dl_docrc(data, alligned)
 unsigned char *data;
+int alligned;	/* With most Ironman packets the crc checks are alligned
+		 * so they are sent in the same frame, not all packets are */
 {
 	int i;
 	unsigned short int t;
@@ -45,6 +47,13 @@ unsigned char *data;
 		crc = crc ^ t ^ crc16_table[(data[i] >> 4) & 0xF];
 	}
 
+
+	/* if it needs to be alligned and it is odd, add one, otherwise
+	 * lave it as it is */
+	if( alligned && l%2 )
+	{
+		l++;
+	}
 	data[l++] = crc>>8;
 	data[l] = crc&0xff;
 	return(crc);

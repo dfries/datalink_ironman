@@ -58,7 +58,7 @@ WatchInfoPtr wi;
 		bytes_left = *buf + size - MAX_PCKT + 2;
 		memcpy(&buf[buf[0]], data, size - bytes_left);
 		buf[0] = MAX_PCKT;
-		dl_docrc(buf);
+		dl_docrc(buf,0);
 
 		if (write(fd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write data to tmp file."));
@@ -126,7 +126,7 @@ int type;
 		buf[5] = 6;
 	}
 
-	dl_docrc(buf);
+	dl_docrc(buf,0);
 
 	if (write(ofd, buf, *buf) != *buf)
 		return((*dl_error_proc)("Can't write start to tmp file."));
@@ -157,7 +157,7 @@ int type;
 		if (wi->dl_device == DATALINK_70)
 			buf[1] = TIME_70;
 
-		dl_docrc(buf);
+		dl_docrc(buf,0);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write time to tmp file."));
@@ -167,7 +167,7 @@ int type;
 	if (dl_download_data.memory) {
 		memcpy(buf, dstart, *dstart);
 		buf[2] = 1;
-		dl_docrc(buf);
+		dl_docrc(buf,0);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write dstart to tmp file."));
@@ -201,7 +201,7 @@ int type;
 		if (wi->dl_device == DATALINK_70)
 			buf[1] = DATA_70;
 
-		dl_docrc(buf);
+		dl_docrc(buf,0);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write dinfo to tmp file."));
@@ -284,14 +284,14 @@ int type;
 		}
 
 		*buf += 2;
-		dl_docrc(buf);
+		dl_docrc(buf,0);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
 
 		memcpy(buf, dend, *dend);
 		buf[2] = 1;
-		dl_docrc(buf);
+		dl_docrc(buf,0);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -308,7 +308,7 @@ int type;
 		dl_fill_pack_ascii(&buf[7], dl_download_data.alarms[i].label,
 			dl_download_data.max_alarm_str, ' ');
 		buf[15] = dl_download_data.alarms[i].audible;
-		dl_docrc(buf);
+		dl_docrc(buf,0);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -319,7 +319,7 @@ int type;
 		wristapp = dl_download_data.wristapp;
 		memcpy(buf, dstart, *dstart);
 		buf[2] = 2;
-		dl_docrc(buf);
+		dl_docrc(buf,0);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -334,7 +334,7 @@ int type;
 		buf[4] = 1;
 		*buf = 7;
 
-		dl_docrc(buf);
+		dl_docrc(buf,0);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -352,7 +352,7 @@ int type;
 			return((*dl_error_proc)("Can't write to tmp file."));
 
 		if (*buf != 4) {
-			dl_docrc(buf);
+			dl_docrc(buf,0);
 
 			if (write(ofd, buf, *buf) != *buf)
 				return((*dl_error_proc)("Can't write to tmp file."));
@@ -361,7 +361,7 @@ int type;
 
 		memcpy(buf, dend, *dend);
 		buf[2] = 2;
-		dl_docrc(buf);
+		dl_docrc(buf,0);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -372,7 +372,7 @@ int type;
 		melody = dl_download_data.melody;
 		memcpy(buf, dstart, *dstart);
 		buf[2] = 3;
-		dl_docrc(buf);
+		dl_docrc(buf,0);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -387,7 +387,7 @@ int type;
 		buf[4] = 0xff - melody->len;
 		*buf = 7;
 
-		dl_docrc(buf);
+		dl_docrc(buf,0);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -405,7 +405,7 @@ int type;
 			return((*dl_error_proc)("Can't write to tmp file."));
 
 		if (*buf != 4) {
-			dl_docrc(buf);
+			dl_docrc(buf,0);
 
 			if (write(ofd, buf, *buf) != *buf)
 				return((*dl_error_proc)("Can't write to tmp file."));
@@ -414,7 +414,7 @@ int type;
 
 		memcpy(buf, dend, *dend);
 		buf[2] = 3;
-		dl_docrc(buf);
+		dl_docrc(buf,0);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -426,7 +426,7 @@ int type;
 		memcpy(buf, sysinfo, *sysinfo);
 		buf[2] = sys->chime;
 		buf[3] = sys->beep;
-		dl_docrc(buf);
+		dl_docrc(buf,0);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -434,7 +434,7 @@ int type;
 	}
 
 	memcpy(buf, end1, *end1);
-	dl_docrc(buf);
+	dl_docrc(buf,0);
 
 	if (write(ofd, buf, *buf) != *buf)
 		return((*dl_error_proc)("Can't write to tmp file."));
