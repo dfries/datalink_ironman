@@ -4,6 +4,7 @@
 #include <gtk--/fileselection.h>
 #include <fstream.h>
 #include <iostream>
+#include <strstream.h>
 #include <stdlib.h>
 
 #define ExitOnTrue( file, msg ) if(file){ cout << msg ;\
@@ -30,7 +31,7 @@ const int numsignals = 2;
 //const char* syncfile = "/tmp/sync";
 const char* syncfile = "/tmp/data/121blank";
 
-const int DefaultWidth = 735;
+const int DefaultWidth = 737;
 const int DefaultHeight = 550;
 
 const int DefaultMinMotion = 5;
@@ -41,7 +42,7 @@ public:
 	graph_drawing_area();
 	~graph_drawing_area();
 	void setinputfile ( string name, int signalnum );
-	void setflipamount( int amount );
+	void setflipamount( double amount );
 
 private:
 	/* Create a new backing pixmap of the appropriate size */
@@ -65,7 +66,7 @@ private:
 	int lasty;
 	int lastsignal;
 	int lastxflip;
-	int flipamount;
+	double flipamount;
 	Gdk_Color black;
 	Gdk_Colormap colormap;
 	signalinfo signal[numsignals];
@@ -122,7 +123,7 @@ graph_drawing_area::~graph_drawing_area()
 	}
 }
 
-void graph_drawing_area::setflipamount( int amount )
+void graph_drawing_area::setflipamount( double amount )
 {
 	flipamount = amount;
 }
@@ -189,10 +190,10 @@ gint graph_drawing_area::button_press_event_impl (GdkEventButton *event)
 	lastsignal = updatesignal;
 	// right mouse button move the graph left
 	if(event->button == 3 && pixmap)
-		draw_graph( updatesignal, -flipamount, 0);
+		draw_graph( updatesignal, (int)flipamount, 0);
 	// left mouse button move the graph right
 	if(event->button == 2 && pixmap)
-		draw_graph( updatesignal, flipamount, 0);
+		draw_graph( updatesignal, (int)-flipamount, 0);
 	// nothing to do when button one is pressed
 	lastx = (int)event->x;
 	lasty = (int)event->y;
@@ -219,7 +220,7 @@ gint graph_drawing_area::motion_notify_event_impl (GdkEventMotion *event)
 	{
 		int xx = (x-lastx)/DefaultMinMotion;
 		int diff = (lastxflip - lastx)/DefaultMinMotion;
-		draw_graph( lastsignal, -flipamount*(diff-xx),0);
+		draw_graph( lastsignal, (int)-flipamount*(diff-xx),0);
 		lastxflip = x;
 	}
 	return TRUE;
@@ -236,7 +237,7 @@ gint graph_drawing_area::button_release_event_impl (GdkEventButton *event)
 	{
 		int xx = ((int)event->x-lastx)/DefaultMinMotion;
 		int diff = (lastxflip - lastx)/DefaultMinMotion;
-		draw_graph( lastsignal, -flipamount*(diff-xx),0);
+		draw_graph( lastsignal, (int)-flipamount*(diff-xx),0);
 	}
 	return TRUE;
 }
@@ -378,6 +379,14 @@ public:
 		changeflipE.show();
 		connect_to_method( changeflipE.activate, this, &changeflip );
 
+		// set the text for the flip amount
+		char * buff = new char [5];
+		strstream membuff(buff, 5 );
+		membuff << DefaultWidth << (char)0 << flush;
+		int zero = 0;
+		changeflipE.insert_text( buff, strlen(buff), &zero );
+		delete buff;
+
 		connect_to_method ( destroy, this, &quit );
 
 		drawing_area.show();
@@ -393,7 +402,7 @@ private:
 	{
 		cout << changeflipE.get_text() << endl;
 		drawing_area.setflipamount(
-			atoi(changeflipE.get_text().c_str()));
+			atof(changeflipE.get_text().c_str()));
 	}
 
 	int FSselectionclosed(GdkEventAny*)
