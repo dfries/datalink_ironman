@@ -150,6 +150,8 @@ int graph_drawing_area::configure_event_impl (GdkEventConfigure * /* event */)
 		0, 0,
 		width(),
 		height());
+	draw_graph(0, 0, 0);
+	draw_graph(1, 0, 0);
 	return TRUE;
 }
 
@@ -383,7 +385,7 @@ private:
 		if(!fs)
 		{
 			fs=new Gtk_FileSelection("File Selection");
-			fs->set_filename("/tmp/data");
+			fs->set_filename("/tmp/data/");
 			connect_to_method(fs->get_ok_button()->clicked,
 				this, &FSbuttonpressed);
 			connect_to_method(fs->get_cancel_button()->clicked,
