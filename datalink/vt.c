@@ -17,8 +17,10 @@
  *
  */
 
+#include <unistd.h>
 #include <stdio.h>
 #include <sys/vt.h>
+#include <sys/ioctl.h>
 #include <sys/fcntl.h>
 
 #define VTFMT "/dev/tty%d"
