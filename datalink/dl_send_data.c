@@ -181,10 +181,6 @@ int type;
 			buf[p++] = dl_download_data.times[i].month;
 			buf[p++] = dl_download_data.times[i].day;
 			buf[p++] = dl_download_data.times[i].year;
-			printf("hours %d\n", dl_download_data.times[i].hours);
-			/*
-			buf[p++] = 3;
-			*/
 			buf[p++] = dl_download_data.times[i].dow;
 			buf[p++] = dl_download_data.times[i].seconds;
 		}
@@ -216,6 +212,38 @@ int type;
 			return((*dl_error_proc)("Can't write time to tmp file."));
 
 	}
+
+#if 0
+	/* timezone label pre-packet for IRONMAN watch */
+	if( wi->dl_device == DATALINK_IRONMAN && dl_download_data.num_times > 0)
+	{
+		p = 0;
+		buf[p++] = 4;
+		buf[p++] = 0x62;
+
+		dl_docrc(buf);
+
+		if (write(ofd, buf, *buf) != *buf)
+			return((*dl_error_proc)("Can't write timezone label to tmp file."));
+	}
+
+	/* timezone label packet for IRONMAN watch */
+	if( wi->dl_device == DATALINK_IRONMAN )
+	for (i = 0; i < dl_download_data.num_times; i++) {
+		p = 0;
+		buf[p++] = 8;
+		buf[p++] = 0x31;
+
+		buf[p++] = dl_download_data.times[i].tz_num;
+		buf[p++] = dl_pack_char(dl_download_data.times[i].label[0]);
+		buf[p++] = dl_pack_char(dl_download_data.times[i].label[1]);
+		buf[p++] = dl_pack_char(dl_download_data.times[i].label[2]);
+		dl_docrc(buf);
+
+		if (write(ofd, buf, *buf) != *buf)
+			return((*dl_error_proc)("Can't write timezone label to tmp file."));
+	}
+#endif
 
 	if (dl_download_data.memory) {
 		memcpy(buf, dstart, *dstart);
