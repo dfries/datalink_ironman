@@ -1,5 +1,7 @@
-CXXFLAGS  = -g -Wall `gtkmm-config --cflags`
-LDFLAGS = `gtkmm-config --libs`
+CXXFLAGS  = -g -Wall
+LDFLAGS =
+GDKFLAGS = `gtkmm-config --cflags`
+GDKLDFLAGS = `gtkmm-config --libs`
 
 ifdef efence
 LDFLAGS += -lstdc++-2-libc6.1-1-2.9.0 -lefence
@@ -11,7 +13,7 @@ signaldump: signaldump.cc
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 fun: fun.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(GDKFLAGS) $(GDKLDFLAGS ) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm -f *.o fun
+	rm -f *.o fun signaldump
