@@ -132,7 +132,8 @@ int main( int argc, char ** argv)
 		{
 			printf("Usage: %s [ -model70 | -70 | -model70 | "
 				"-150 | -model150 | -model150s | -150s |"
-				" -ironman]\nVersion $Id$\n", argv[0]);
+				" -ironman]\nVersion "
+				"$Id$\n", argv[0]);
 			printf("The default is -model150 "
 				"is none is specified\n");
 			exit(1);
