@@ -50,9 +50,10 @@
 		vga_waitretrace();} \
 }
 
+/* how many syncs to give to begin with, was 400 */
 #define SYNC { \
 	register int i; \
-	for (i = 0; i < 200; i++) { \
+	for (i = 0; i < 100; i++) { \
 		vga_waitretrace(); \
 		WRITE_BYTE1(1, 0x55) \
 		WRITE_BYTE2(1, 0x55) \

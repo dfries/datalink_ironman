@@ -30,59 +30,18 @@ WatchInfoPtr wi;
 ListPtr times;
 {
 	time_t now;
+	time_t tztime;
 	struct tm *time_s;
 	struct timezone tz;
-	int isdst;
 	ItemPtr tp;
+	int isdst;
 	char buf[1024];
 	int i;
 
 	now = time(NULL) + wi->time_adjust; /* Offset for sending to watch. */
+	time_s = localtime(&now);
 	isdst = (time_s->tm_isdst) ? 1 : 0;
 
-	if (!times->count)
-	{
-		tp = dl_new_item(wi, DL_TIME_TYPE);
-		tp->data.time.offset = 0;
-		dl_add_to_list(times, tp);
-
-		tp = dl_new_item(wi, DL_TIME_TYPE);
-		tp->data.time.offset = 0;
-		dl_add_to_list(times, tp);
-	}
-
-	for (i = 0, tp = times->first; i < times->count; i++, tp = tp->next)
-	{
-		printf("now %d, offset %d, dz %d, timezone %d\n", now, tp->data.time.offset, time_s->tm_isdst, timezone );
-		now = now - tp->data.time.offset*60 + (isdst) ? (timezone/60) - 60 : (timezone/60);
-		time_s = localtime(&now);
-
-		if (!*tp->data.time.label) {
-			tp->data.time.label = tzname[isdst];
-		/*	tp->data.time.offset = timezone/60; */
-			printf("offset %d,", timezone/60);
-		}
-
-		tp->data.time.hours = time_s->tm_hour;
-		tp->data.time.minutes = time_s->tm_min;
-		tp->data.time.seconds = time_s->tm_sec;
-		tp->data.time.month = time_s->tm_mon + 1;
-		tp->data.time.day = time_s->tm_mday;
-		tp->data.time.year = time_s->tm_year;
-		tp->data.time.dow = (time_s->tm_wday + 6)%7;
-		tp->data.time.download = 1;
-		printf("now %d, offset %d, dz %d, timezone %d\n", now, tp->data.time.offset, time_s->tm_isdst, timezone );
-		printf("%d:%d:%d %d/%d/%d DOW %d\n",
-			time_s->tm_hour,
-			time_s->tm_min,
-			time_s->tm_sec,
-			time_s->tm_mon + 1,
-			time_s->tm_mday,
-			time_s->tm_year,
-			(time_s->tm_wday + 6)%7 );
-	}
-
-	/*
 	if (!times->count) {
 		tp = dl_new_item(wi, DL_TIME_TYPE);
 		tp->data.time.label = tzname[isdst];
@@ -105,7 +64,7 @@ ListPtr times;
 		}
 
 		tztime = now - tp->data.time.offset*60;
-		time_s = gmtime(&tztime);
+		time_s = localtime(&tztime);
 		tp->data.time.hours = time_s->tm_hour;
 		tp->data.time.minutes = time_s->tm_min;
 		tp->data.time.seconds = time_s->tm_sec;
@@ -114,8 +73,19 @@ ListPtr times;
 		tp->data.time.year = time_s->tm_year;
 		tp->data.time.dow = (time_s->tm_wday + 6)%7;
 		tp->data.time.download = 1;
+#define DEBUGGING
+		printf("now %d, offset %d, dz %d, timezone %d\n", now, tp->data.time.offset, time_s->tm_isdst, timezone );
+		printf("%d:%d:%d %d/%d/%d DOW %d\n",
+			time_s->tm_hour,
+			time_s->tm_min,
+			time_s->tm_sec,
+			time_s->tm_mon + 1,
+			time_s->tm_mday,
+			time_s->tm_year,
+			(time_s->tm_wday + 6)%7 );
+#endif
+
 	}
-	*/
 
 	return(times);
 }

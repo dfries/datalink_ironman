@@ -163,22 +163,46 @@ int type;
 	for (i = 0; i < dl_download_data.num_times; i++) {
 		memcpy(buf, time, *time);
 		p = 2;
+		if( wi->dl_device == DATALINK_IRONMAN )
+		{
+			buf[0] = 0x0e;
+			buf[1] = 0x30;
+		}
+
 		buf[p++] = dl_download_data.times[i].tz_num;
 
-		if (wi->dl_device == DATALINK_150)
+		if (wi->dl_device == DATALINK_150 )
 			buf[p++] = dl_download_data.times[i].seconds;
 
-		buf[p++] = dl_download_data.times[i].hours;
-		buf[p++] = dl_download_data.times[i].minutes;
-		buf[p++] = dl_download_data.times[i].month;
-		buf[p++] = dl_download_data.times[i].day;
-		buf[p++] = dl_download_data.times[i].year;
-		buf[p++] = dl_pack_char(dl_download_data.times[i].label[0]);
-		buf[p++] = dl_pack_char(dl_download_data.times[i].label[1]);
-		buf[p++] = dl_pack_char(dl_download_data.times[i].label[2]);
-		buf[p++] = dl_download_data.times[i].dow;
+		if (wi->dl_device == DATALINK_IRONMAN )
+		{
+			buf[p++] = dl_download_data.times[i].hours;
+			buf[p++] = dl_download_data.times[i].minutes;
+			buf[p++] = dl_download_data.times[i].month;
+			buf[p++] = dl_download_data.times[i].day;
+			buf[p++] = dl_download_data.times[i].year;
+			printf("hours %d\n", dl_download_data.times[i].hours);
+			/*
+			buf[p++] = 3;
+			*/
+			buf[p++] = dl_download_data.times[i].dow;
+			buf[p++] = dl_download_data.times[i].seconds;
+		}
+		else
+		{
+			buf[p++] = dl_download_data.times[i].hours;
+			buf[p++] = dl_download_data.times[i].minutes;
+			buf[p++] = dl_download_data.times[i].month;
+			buf[p++] = dl_download_data.times[i].day;
+			buf[p++] = dl_download_data.times[i].year;
+			buf[p++] = dl_pack_char(dl_download_data.times[i].label[0]);
+			buf[p++] = dl_pack_char(dl_download_data.times[i].label[1]);
+			buf[p++] = dl_pack_char(dl_download_data.times[i].label[2]);
+			buf[p++] = dl_download_data.times[i].dow-1;
+		}
 
-		if (wi->dl_device == DATALINK_150) {
+		if (wi->dl_device == DATALINK_150 || wi->dl_device == DATALINK_IRONMAN)
+		{
 			buf[p++] = dl_download_data.times[i].hour_fmt;
 			buf[p++] = dl_download_data.times[i].date_fmt&0xFF;
 		}

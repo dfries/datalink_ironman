@@ -18,8 +18,9 @@ timer = 3, "00:30", "30 mins.", 0, 1
 # hourly chime, button beep
 system = 0, 0
 
-# timezone, timezone #, 3 characters label, offset, hour format, date format
-timezone = 1, "ABC", 3, 2, 1
+# timezone, timezone #, 3 characters label, offset from system clock in minutes, hour format 1=12hour, 2=24hour, date format US=0
+timezone = 1, "ABC", 0, 1, 0
+timezone = 2, "CBS", 0, 2, 0
 
 #wristapp = "~/.datalink/timer13.app"
 #wristapp = "~/.datalink/melody17.app"

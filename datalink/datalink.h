@@ -28,7 +28,7 @@ typedef struct time_s {
 	unsigned char month;
 	unsigned char day;
 	unsigned char year;
-	unsigned char dow;
+	unsigned char dow;	/* Day Of the Week */
 	unsigned char hour_fmt;
 	unsigned char date_fmt;
 	unsigned char download;
