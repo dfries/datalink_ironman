@@ -113,7 +113,11 @@ int main(int argc, char **argv)
 		case 'h':
 		case '?':
 			fprintf(stderr,
-				"%s [-d device] [-f file]\nTransmitt a file to a Timex Datalink watch useing an LED on a serial\nport.  Timex does not support this product, DO NOT ask them questions about\nit.  See http://csgrad.cs.vt.edu/~tjohnson/ for more info.\n",
+				"%s [-d device] [-f file]\n"
+				"Transmitt a file to a Timex Datalink watch useing an LED on a serial\n"
+				"port.  Timex does not support this product, DO NOT ask them questions about\n"
+				"it.  See http://csgrad.cs.vt.edu/~tjohnson/ for more info.\n"
+				"Version $Id$\n",
 				argv[0]);
 			exit(0);
 			break;
@@ -131,7 +135,10 @@ int main(int argc, char **argv)
 	else
 	{
 		fprintf(stderr,
-			"%s file\nTransmitt a file to a Timex Datalink watch useing an LED on a serial\nport.  Timex does not support this product, DO NOT ask them questions about\nit.  See http://csgrad.cs.vt.edu/~tjohnson/ for more info.\n",
+			"%s file\nTransmitt a file to a Timex Datalink watch useing an LED on a serial\n"
+			"port.  Timex does not support this product, DO NOT ask them questions about\n"
+			"it.  See http://csgrad.cs.vt.edu/~tjohnson/ for more info.\n"
+			"Version $Id$\n",
 			argv[0]);
 		exit(0);
 	}
