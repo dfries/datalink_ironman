@@ -50,7 +50,8 @@ void dumpdata( int buf[], int size )
 		<< setw(6) << (buf[size-1] - buf[size-2-1]) << endl;
 }
 
-const int minpeakvalue = 250;
+//int minpeakvalue = 1000;
+int minpeakvalue = 250;
 const int minbitspacing = 18;
 const double averagespacing = 21.75;
 const int maxbytelength = 200;
@@ -226,8 +227,17 @@ int main( int argc, char ** argv)
 {
 	if( argc < 2 || strcmp( *(argv+1), "--help") == 0 )
 	{
-		cout << "Usage: signaldump file offset amount\n";
+		cout << "Usage: signaldump file minpeakvalue amount offset amount\n";
 		exit(1);
+	}
+
+	if( argc > 3 && !strcmp(*(argv+2), "minpeakvalue"))
+	{
+		minpeakvalue = atoi( *(argv+3) );
+		if ( minpeakvalue < 1 || minpeakvalue > 32767 )
+		{
+			cout << "Invalid minpeakvalue value\n";
+		}
 	}
 
 	/*
