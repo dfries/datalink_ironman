@@ -20,6 +20,9 @@
  *
  */
 
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -58,8 +61,8 @@ static unsigned char dinfo[] = { 20, 0x90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 static unsigned char dspace[] = { 4, 0x91, 0, 0 };
 static unsigned char dend[] = { 5, 0x92, 0, 0, 0 };
-static unsigned char alarm[] = { 18, 0x50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0
+static unsigned char blank_alarm[] = { 18, 0x50, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0
 };
 static unsigned char timer[] =
     { 0x11, 0x43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -69,7 +72,7 @@ static unsigned char end1[] = { 4, 0x21, 0, 0 };
 static unsigned char pre60[] = { 6, 0x23, 2, 0x40, 0, 0 };
 static unsigned char numdatapackets[] = { 5, 0x60, 0, 0, 0 };
 
-_write_data(int fd, unsigned char *buf, unsigned char *data, int size,
+int _write_data(int fd, unsigned char *buf, unsigned char *data, int size,
 	int *pnum, int type, WatchInfoPtr wi)
 {
 	int bytes_left;
@@ -105,12 +108,13 @@ _write_data(int fd, unsigned char *buf, unsigned char *data, int size,
 	return (1);
 }
 
-dl_send_data(WatchInfoPtr wi, int type)
+int dl_send_data(WatchInfoPtr wi, int type)
 {
 	char fname[1024];
 	unsigned char buf[64];
 	unsigned char data[64];
 	unsigned short addr = 0x0236;
+	char *protocol;
 	AppointmentPtr ap;
 	ToDoPtr tp;
 	PhonePtr pp;
@@ -123,7 +127,7 @@ dl_send_data(WatchInfoPtr wi, int type)
 	int pnum;
 	int pid;
 	int status;
-	int ret;
+	int ret=0;
 	int p;
 
 	if (type == BLINK_FILE)
@@ -140,10 +144,16 @@ dl_send_data(WatchInfoPtr wi, int type)
 	memcpy(buf, start1, *start1);
 
 	if (wi->dl_device == DATALINK_70)
+	{
 		buf[4] = 1;
-	if (wi->dl_device == DATALINK_IRONMAN)
+	}
+	else if (wi->dl_device == DATALINK_IRONMAN)
 	{
 		buf[4] = 9;
+	}
+	else if (wi->dl_device == DATALINK_150S)
+	{
+		buf[4] = 4;
 	}
 
 	dl_docrc(buf);
@@ -180,7 +190,8 @@ dl_send_data(WatchInfoPtr wi, int type)
 
 		buf[p++] = dl_download_data.times[i].tz_num;
 
-		if (wi->dl_device == DATALINK_150)
+		if (wi->dl_device == DATALINK_150 ||
+			wi->dl_device == DATALINK_150S)
 			buf[p++] = dl_download_data.times[i].seconds;
 
 		if (wi->dl_device == DATALINK_IRONMAN)
@@ -211,8 +222,9 @@ dl_send_data(WatchInfoPtr wi, int type)
 			buf[p++] = dl_download_data.times[i].dow - 1;
 		}
 
-		if (wi->dl_device == DATALINK_150
-		    || wi->dl_device == DATALINK_IRONMAN)
+		if (wi->dl_device == DATALINK_150 ||
+			wi->dl_device == DATALINK_150 ||
+			wi->dl_device == DATALINK_IRONMAN)
 		{
 			buf[p++] = dl_download_data.times[i].hour_fmt;
 			buf[p++] =
@@ -542,7 +554,11 @@ dl_send_data(WatchInfoPtr wi, int type)
 
 	for (i = 0; i < dl_download_data.num_alarms; i++)
 	{
-		memcpy(buf, alarm, *alarm);
+		/* blank out buf with the blank_alarm data template,
+		 * *blank_alarm gives the first byte of the alarm data
+		 * and also the lenght which tells how much to copy
+		 */
+		memcpy(buf, blank_alarm, *blank_alarm);
 		buf[2] = dl_download_data.alarms[i].alarm_num;
 		buf[3] = dl_download_data.alarms[i].hours;
 		buf[4] = dl_download_data.alarms[i].minutes;
@@ -764,32 +780,30 @@ dl_send_data(WatchInfoPtr wi, int type)
 				("Could not execute svga blink engine."));
 			return (-1);
 		case 0:	/* Child */
-			sprintf(buf, "svgablink", BINDIR);
-
-			if (wi->dl_device == DATALINK_IRONMAN)
+			/* execute svgablink useing the version of
+			 * exec that will search the users active path,
+			 * if it isn't there (we can't run it).
+			 */
+			switch(wi->dl_device)
 			{
-				execlp(buf, "svgablink", "-ironman", fname,
-				       NULL);
-				sprintf(buf, "./svgablink", BINDIR);
-				execl(buf, "svgablink", "-ironman", fname,
-				      NULL);
-			} else if (wi->dl_device == DATALINK_150)
-			{
-				execlp(buf, "svgablink", "-150", fname,
-				       NULL);
-				sprintf(buf, "./svgablink", BINDIR);
-				execl(buf, "svgablink", "-150", fname,
-				      NULL);
-			} else
-			{
-				execlp(buf, "svgablink", "-70", fname,
-				       NULL);
-				sprintf(buf, "./svgablink", BINDIR);
-				execl(buf, "svgablink", "-70", fname,
-				      NULL);
+			case DATALINK_IRONMAN:
+				protocol="-ironman";
+				break;
+			case DATALINK_150:
+				protocol="-150";
+				break;
+			case DATALINK_150S:
+				protocol="-150S";
+				break;
+			case DATALINK_70:
+				protocol="-70";
+				break;
+			default:
+				(*dl_error_proc)
+				    ("Don't know what watch for svgablink.");
+				exit(-1);
 			}
-
-
+			execlp("svgablink", "svgablink", protocol, fname, NULL);
 
 			(*dl_error_proc)
 			    ("Could not execute svga blink engine.");
@@ -819,10 +833,11 @@ dl_send_data(WatchInfoPtr wi, int type)
 				("Could not fork child for serial blink engine."));
 			return (-1);
 		case 0:	/* Child */
-			sprintf(buf, "serblink", BINDIR);
-			execlp(buf, "serblink", fname, NULL);
-			sprintf(buf, "./serblink", BINDIR);
-			execl(buf, "serblink", fname, NULL);
+			/* execute serblink useing the version of
+			 * exec that will search the users active path,
+			 * if it isn't there (we can't run it).
+			 */
+			execlp("serblink", "serblink", fname, NULL);
 
 
 			(*dl_error_proc)
