@@ -203,7 +203,7 @@ void decodestream( int buf[], int size )
 	}
 
 	if( blanks != 0)
-		wide = blankstart;
+		wide = blankstart+1;
 
 	int entries = (int)ceil((double)wide/4);
 	for( int n = 0; n < entries ; n++)
