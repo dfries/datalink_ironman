@@ -1,3 +1,9 @@
+07-09-2002:
+Added header files for libc functions we are already using, but weren't
+including the proper header files.
+Switched to using tmpfile instead of tmpnam for the temporary file,
+this will fix the compiler warnings.
+
 02-14-2001:
 The changes listed below from Frank Denis were incorporated with exception
 of the time of the week information, I'll have to look into that later.
