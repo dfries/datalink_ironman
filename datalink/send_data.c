@@ -20,6 +20,7 @@
  *
  */
 
+#include <unistd.h>
 #include <stdio.h>
 #include <vga.h>
 #include "datalink_macros.h"
@@ -28,7 +29,7 @@
 #define MODEL_150 1
 #define MODEL_IRONMAN 2
 
-send_data(int type, unsigned char **packets, int npckts)
+int send_data(int type, unsigned char **packets, int npckts)
 {
 	int i;
 	register int j;
@@ -87,4 +88,5 @@ send_data(int type, unsigned char **packets, int npckts)
 	seteuid(getuid());
 #endif
 
+	return 0;
 }

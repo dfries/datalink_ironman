@@ -22,13 +22,14 @@
 **
 */
 
-#include<stdio.h>
-#include<fcntl.h>
-#include<stdlib.h>
-#include<termios.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <termios.h>
 
-#include<sys/time.h>
-#include<sys/resource.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #ifdef linux
 #define cfsetspeed cfsetospeed
@@ -69,7 +70,7 @@ void sendbyte(int fil, unsigned char dat)
 }
 
 /* For pauses between packets: */
-void pause(int fil, int count)
+static void __pause(int fil, int count)
 {
 	char buff[8192];
 	int i, c;
@@ -84,12 +85,12 @@ void pause(int fil, int count)
 #undef ONE
 #undef LEN
 
-main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
 	int port;
 	int data;
 	struct termios old, new;
-	int c, i, j, len, plen;
+	int i, j, len, plen;
 	unsigned char buff[4096];
 	char fil[1024];
 	char device[1024];
@@ -162,7 +163,7 @@ main(int argc, char *argv[])
 	}
 #if 0
 	while (1)
-		pause(port, 20);	/* used for hardware debugging */
+		__pause(port, 20);	/* used for hardware debugging */
 #endif
 	printf("sync1\n");
 	for (i = 0; i < 500; i++)
@@ -183,12 +184,13 @@ main(int argc, char *argv[])
 			sendbyte(port, buff[i++]);
 		if (plen & 1)
 			sendbyte(port, 0);
-		pause(port, 240);
+		__pause(port, 240);
 	}
 	while (i < len);
 
-	pause(port, 240);
+	__pause(port, 240);
 	tcsetattr(port, TCSADRAIN, &new);
 	sleep(1);
 	close(port);
+	return 0;
 }
