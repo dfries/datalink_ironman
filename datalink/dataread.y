@@ -436,7 +436,7 @@ value		: INTEGER ',' DATE ',' TIME ',' STRING ',' INTEGER
 				$$ = ALARM;
 			}
 			
-			| INTEGER ',' TIME ',' STRING ',' INTEGER ',' INTEGER
+			| INTEGER ',' STRING ',' STRING ',' INTEGER ',' INTEGER
 			/* Timer */
 			{
 				pos = $1;

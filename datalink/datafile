@@ -1,0 +1,26 @@
+#time_adjust = 5
+
+# valid characters 0-9, A-Z, space, !"#$%&'()*+,-./:\ (division sign) = (bell symbol) ?
+# alarm #, Month/Day, 24 hour time, "label", on/off
+#   1-10, 0/0 anytime; 0/day a day per month; mon/day that day, hh:mm, "up to 16 characters and special values", 1/0
+alarm = 1, 0/0, 20:55, "DS9", 1
+alarm = 2, 0/0, 19:55, "Voyager", 1
+
+# timer #, "hh:mm:ss", "8 char label" repeat, chron ; only one of repeat or chron can be true
+# the time is treated as a string to get the seconds, so it must have quotes
+timer = 1, "12:34:11", "test 123", 0, 0
+timer = 2, "00:15", "15 mins.", 1, 0
+timer = 3, "00:30", "30 mins.", 0, 1
+
+#phone = "5093363720 C", "Garren"
+
+# hourly chime, button beep
+system = 0, 0
+
+# timezone, 3 characters
+#timezone = "ABC"
+
+#wristapp = "~/.datalink/timer13.app"
+#wristapp = "~/.datalink/melody17.app"
+#melody = "~/.datalink/mainline.spc"
+#melody = "~/src/watch/xx"
