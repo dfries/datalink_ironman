@@ -2,6 +2,7 @@
 #include <fstream.h>
 #include <stdlib.h>
 #include <iomanip.h>
+#include <math.h>
 #include <unistd.h>
 
 #define ExitOnTrue( file, msg ) if(file){ cout << msg ;\
@@ -61,10 +62,43 @@ int findpeak( int buf[], int start, int end )
 	return -1;
 }
 
+// round, >= .5 up, else down
+int round( double value)
+{
+	int integer = (int)floor(value);
+	if( value - integer >= .5)
+		return integer+1;
+	return integer;
+}
+
+const int minbitspacing = 18;
+const double averagespacing = 21.75;
+const int maxbytelength = 200;
+int decodebyte( int buf[], int bytestart )
+{
+	int location = bytestart;
+	int i;
+	unsigned char byte = 0;
+	int bit;
+	for( i = 0; i < 8 ; i++ )
+	{
+		location = findpeak( buf, location+minbitspacing,
+			bytestart+maxbytelength);
+		// next peak not found, return what we have
+		if(location == -1 )
+			return byte;
+		bit = round( (location - bytestart)/averagespacing);
+		byte |= ( 1<<(bit-1));
+	}
+	return byte;
+}
+
 // decode a frame worth of data
 void decodeframe( int buf[], int size )
 {
 	int location = findpeak( buf, 0, 200);
+	cout << "byte is 0x" << setbase(16) << decodebyte( buf, location )
+		<< endl;
 	cout << "Location found was " << location << endl;
 }
 
