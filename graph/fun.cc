@@ -34,199 +34,24 @@ const int DefaultHeight = 400;
 class graph_drawing_area : public Gtk_DrawingArea
 {
 public:
-	graph_drawing_area() : pixmap(0)
-	{
-		set_events( GDK_EXPOSURE_MASK
-			| GDK_LEAVE_NOTIFY_MASK
-			| GDK_BUTTON_PRESS_MASK
-			| GDK_POINTER_MOTION_MASK
-			| GDK_POINTER_MOTION_HINT_MASK);
-		lastx = -1;
-		lasty = -1;
-		colormap = colormap.get_system();
-		for( int i = 0; i < numsignals; i++)
-		{
-			signal[i].file.open(syncfile, ios::in);
-			ExitOnTrue( !signal[i].file, "Error opening " 
-				<< syncfile);
-			signal[i].location = 0;
-			signal[i].buffer = new short[DefaultWidth];
-			signal[i].buffersize = DefaultWidth;
-			signal[i].points = new GdkPoint[DefaultWidth];
-			signal[i].vloc = 6000;
-			signal[i].vzoomfact = 3;
-			signal[i].bg = colormap.black();
+	graph_drawing_area();
+	~graph_drawing_area();
+	void setinputfile ( string name, int signalnum );
 
-			// read the file
-			signal[i].file.read( (char*)signal[i].buffer,
-				DefaultWidth*sizeof(short));
-			ExitOnTrue(!signal[i].file,
-				"Error reading file" );
-
-		}
-		signal[testsignal].fg.set_rgb_p( 0,1,0);
-		colormap.alloc( signal[testsignal].fg);
-		signal[syncsignal].fg.set_rgb_p( 1, 0, 0);
-		colormap.alloc( signal[syncsignal].fg);
-
-		black.set_rgb_p( 0, 0, 0);
-		colormap.alloc( black );
-	}
-
-	~graph_drawing_area()
-	{
-		for(int i = 0; i < numsignals; i++)
-		{
-			signal[i].file.close();
-			delete [] signal[i].buffer;
-			delete [] signal[i].points;
-		}
-	}
-
-	void setinputfile ( string name, int signalnum )
-	{
-		if( signalnum < 0 || signalnum >= numsignals )
-		{
-			cerr << "Trying to set the file " << name
-				<< " to a nonexisting signal " << signalnum
-				<< endl;
-		}
-
-		signal[signalnum].file.close();
-		signal[signalnum].file.open( name.c_str() );
-		ExitOnTrue( !signal[signalnum].file, "Error opening "
-			<< name );
-		signal[signalnum].location = 0;
-	}
 private:
-
 	/* Create a new backing pixmap of the appropriate size */
-	int configure_event_impl (GdkEventConfigure * /* event */)
-	{
-		win = get_window();
-		visual = win.get_visual();
-
-		if (pixmap)
-		{
-			pixmap.free();
-		}
-		//gc = get_style()->gtkobj()->white_gc;
-		gc = get_style()->gtkobj()->black_gc;
-		gc.set_foreground( black );
-		pixmap.create(get_window(), width(), height());
-
-		pixmap.draw_rectangle( gc,
-			TRUE,
-			0, 0,
-			width(),
-			height());
-		return TRUE;
-	}
-
+	int configure_event_impl (GdkEventConfigure * /* event */);
 	/* Redraw the screen from the backing pixmap */
-	int expose_event_impl (GdkEventExpose *event)
-	{
-		gc = get_style()->gtkobj()->fg_gc
-			[GTK_WIDGET_STATE (GTK_WIDGET(gtkobj()))];
-		gc.set_foreground( black );
-		// Same like above + Gtk_Widget has set_state function but
-		// no get_state function.
-		win.draw_pixmap( gc,
-			pixmap,
-			event->area.x, event->area.y,
-			event->area.x, event->area.y,
-			event->area.width, event->area.height);
-		return FALSE;
-	}
-
-#if 0
-	/* Draw the signals on the screen */
-	void draw_brush ( gdouble x, gdouble y)
-	{
-		GdkRectangle update_rect;
-		int xcur = (int)x;
-		int ycur = (int)y;
-		if( lastx == -1 )
-		{
-			lastx = xcur;
-			lasty = ycur;
-		}
-		//gc = get_style()->gtkobj()->white_gc;
-		gc.set_foreground( fgcolor );
-		gc.set_background( fgcolor );
-			
-		pixmap.draw_line(
-			gc,
-			lastx,lasty,
-			xcur,ycur );
-		/* -1 and +2 makes the box one pixel bigger on all sides */
-		update_rect.x = ((lastx < xcur ) ? lastx : xcur)-1;
-		update_rect.y = ((lasty < ycur ) ? lasty : ycur)-1;
-		update_rect.width = 
-			((lastx < xcur) ? xcur-lastx : lastx-xcur)+2;
-		update_rect.height =
-			((lasty < ycur) ? ycur-lasty : lasty-ycur)+2;
-		draw( &update_rect);
-		lastx = xcur;
-		lasty = ycur;
-	}
-#endif
-
+	int expose_event_impl (GdkEventExpose *event);
 	/* Draw_Graph will load the file information from file if it
 	   isn't at the same location */
 	void draw_graph( int updatesignal, int xoffset, int yoffset );
-
-	/* */
 	void move_graph( int updatesignal, int xoffset, int yoffset );
-
-	gint button_press_event_impl (GdkEventButton *event)
-	{
-		int updatesignal = (event->y >= height()/2);
-		if(event->button == 2 && pixmap)
-			draw_graph( updatesignal, -width(), 0);
-		if(event->button == 3 && pixmap)
-			draw_graph( updatesignal, width(), 0);
-		if(event->button == 1 && pixmap)
-		{
-			lastx = (int)event->x;
-			lasty = (int)event->y;
-		}
-		return TRUE;
-	}
-
-	gint button_release_event_impl (GdkEventButton *event)
-	{
-		int updatesignal = (event->y >= height()/2);
-		if( event->button == 1 && pixmap)
-		{
-			draw_graph( updatesignal, (int)(event->x - lastx),
-				(int)(event->y - lasty));
-		}
-		return TRUE;
-	}
-
-	gint motion_notify_event_impl (GdkEventMotion *event)
-	{
-		int x, y;
-		GdkModifierType state;
-		if (event->is_hint)
-			gdk_window_get_pointer( event->window, &x, &y, &state);
-		else
-		{
-			x=(int)event->x;
-			y=(int)event->y;
-			state = (GdkModifierType) event->state;
-		}
-
-		int updatesignal = (y >= height()/2);
-		if(state& GDK_BUTTON1_MASK && pixmap )
-			move_graph( updatesignal, (int)(event->x - lastx),
-				(int)(event->y - lasty));
-		return TRUE;
-	}
+	gint button_press_event_impl (GdkEventButton *event);
+	gint button_release_event_impl (GdkEventButton *event);
+	gint motion_notify_event_impl (GdkEventMotion *event);
 
 	/* Backing pixmap for drawing area */
-
 	Gdk_Pixmap pixmap;
 	Gdk_GC gc;
 	Gdk_Window win;
@@ -238,6 +63,154 @@ private:
 	signalinfo signal[numsignals];
 	GdkPoint *points;
 };
+
+graph_drawing_area::graph_drawing_area() : pixmap(0)
+{
+	set_events( GDK_EXPOSURE_MASK
+		| GDK_LEAVE_NOTIFY_MASK
+		| GDK_BUTTON_PRESS_MASK
+		| GDK_POINTER_MOTION_MASK
+		| GDK_POINTER_MOTION_HINT_MASK);
+	lastx = -1;
+	lasty = -1;
+	colormap = colormap.get_system();
+	for( int i = 0; i < numsignals; i++)
+	{
+		signal[i].file.open(syncfile, ios::in);
+		ExitOnTrue( !signal[i].file, "Error opening " 
+			<< syncfile);
+		signal[i].location = 0;
+		signal[i].buffer = new short[DefaultWidth];
+		signal[i].buffersize = DefaultWidth;
+		signal[i].points = new GdkPoint[DefaultWidth];
+		signal[i].vloc = 6000;
+		signal[i].vzoomfact = 3;
+		signal[i].bg = colormap.black();
+
+		// read the file
+		signal[i].file.read( (char*)signal[i].buffer,
+			DefaultWidth*sizeof(short));
+		ExitOnTrue(!signal[i].file,
+			"Error reading file" );
+
+	}
+	signal[testsignal].fg.set_rgb_p( 0,1,0);
+	colormap.alloc( signal[testsignal].fg);
+	signal[syncsignal].fg.set_rgb_p( 1, 0, 0);
+	colormap.alloc( signal[syncsignal].fg);
+
+	black.set_rgb_p( 0, 0, 0);
+	colormap.alloc( black );
+}
+
+graph_drawing_area::~graph_drawing_area()
+{
+	for(int i = 0; i < numsignals; i++)
+	{
+		signal[i].file.close();
+		delete [] signal[i].buffer;
+		delete [] signal[i].points;
+	}
+}
+
+void graph_drawing_area::setinputfile ( string name, int signalnum )
+{
+	if( signalnum < 0 || signalnum >= numsignals )
+	{
+		cerr << "Trying to set the file " << name
+			<< " to a nonexisting signal " << signalnum
+			<< endl;
+	}
+
+	signal[signalnum].file.close();
+	signal[signalnum].file.open( name.c_str() );
+	ExitOnTrue( !signal[signalnum].file, "Error opening "
+		<< name );
+	signal[signalnum].location = 0;
+}
+
+int graph_drawing_area::configure_event_impl (GdkEventConfigure * /* event */)
+{
+	win = get_window();
+	visual = win.get_visual();
+
+	if (pixmap)
+	{
+		pixmap.free();
+	}
+	//gc = get_style()->gtkobj()->white_gc;
+	gc = get_style()->gtkobj()->black_gc;
+	gc.set_foreground( black );
+	pixmap.create(get_window(), width(), height());
+
+	pixmap.draw_rectangle( gc,
+		TRUE,
+		0, 0,
+		width(),
+		height());
+	return TRUE;
+}
+
+int graph_drawing_area::expose_event_impl (GdkEventExpose *event)
+{
+	gc = get_style()->gtkobj()->fg_gc
+		[GTK_WIDGET_STATE (GTK_WIDGET(gtkobj()))];
+	gc.set_foreground( black );
+	// Same like above + Gtk_Widget has set_state function but
+	// no get_state function.
+	win.draw_pixmap( gc,
+		pixmap,
+		event->area.x, event->area.y,
+		event->area.x, event->area.y,
+		event->area.width, event->area.height);
+	return FALSE;
+}
+
+gint graph_drawing_area::button_release_event_impl (GdkEventButton *event)
+{
+	int updatesignal = (event->y >= height()/2);
+	if( event->button == 1 && pixmap)
+	{
+		draw_graph( updatesignal, (int)(event->x - lastx),
+			(int)(event->y - lasty));
+	}
+	return TRUE;
+}
+
+gint graph_drawing_area::motion_notify_event_impl (GdkEventMotion *event)
+{
+	int x, y;
+	GdkModifierType state;
+	if (event->is_hint)
+		gdk_window_get_pointer( event->window, &x, &y, &state);
+	else
+	{
+		x=(int)event->x;
+		y=(int)event->y;
+		state = (GdkModifierType) event->state;
+	}
+
+	int updatesignal = (y >= height()/2);
+	if(state& GDK_BUTTON1_MASK && pixmap )
+		move_graph( updatesignal, (int)(event->x - lastx),
+			(int)(event->y - lasty));
+	return TRUE;
+}
+
+gint graph_drawing_area::button_press_event_impl (GdkEventButton *event)
+{
+	int updatesignal = (event->y >= height()/2);
+	if(event->button == 2 && pixmap)
+		draw_graph( updatesignal, -width(), 0);
+	if(event->button == 3 && pixmap)
+		draw_graph( updatesignal, width(), 0);
+	if(event->button == 1 && pixmap)
+	{
+		lastx = (int)event->x;
+		lasty = (int)event->y;
+	}
+	return TRUE;
+}
 
 void graph_drawing_area::draw_graph( int updatesignal,
 	int xoffset, int yoffset )
