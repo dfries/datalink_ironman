@@ -118,7 +118,16 @@ dl_anniv_by_label.o: datalink.h
 dl_app_by_datetime.o: datalink.h
 dl_app_by_label.o: datalink.h
 dl_fill_pack_ascii.o: datalink.h
-dl_free_download.o: datalink.h datalink_private.h
+dl_free_download.o: /usr/include/stdlib.h /usr/include/features.h
+dl_free_download.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+dl_free_download.o: /usr/lib/gcc-lib/i386-linux/2.95.2/include/stddef.h
+dl_free_download.o: /usr/include/sys/types.h /usr/include/bits/types.h
+dl_free_download.o: /usr/include/bits/pthreadtypes.h
+dl_free_download.o: /usr/include/bits/sched.h /usr/include/time.h
+dl_free_download.o: /usr/include/endian.h /usr/include/bits/endian.h
+dl_free_download.o: /usr/include/sys/select.h /usr/include/bits/select.h
+dl_free_download.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+dl_free_download.o: /usr/include/alloca.h datalink.h datalink_private.h
 dl_init_download.o: /usr/include/stdio.h /usr/include/features.h
 dl_init_download.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 dl_init_download.o: /usr/lib/gcc-lib/i386-linux/2.95.2/include/stddef.h
@@ -270,17 +279,22 @@ svgablink.o: /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h
 svgablink.o: /usr/include/asm/ioctls.h /usr/include/asm/ioctl.h
 svgablink.o: /usr/include/bits/ioctl-types.h /usr/include/sys/ttydefaults.h
 svgablink.o: /usr/include/sys/mman.h /usr/include/bits/mman.h datalink.h
-vt.o: /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h
-vt.o: /usr/include/gnu/stubs.h
+vt.o: /usr/include/unistd.h /usr/include/features.h /usr/include/sys/cdefs.h
+vt.o: /usr/include/gnu/stubs.h /usr/include/bits/posix_opt.h
+vt.o: /usr/include/bits/types.h
 vt.o: /usr/lib/gcc-lib/i386-linux/2.95.2/include/stddef.h
+vt.o: /usr/include/bits/pthreadtypes.h /usr/include/bits/sched.h
+vt.o: /usr/include/bits/confname.h /usr/include/getopt.h /usr/include/stdio.h
 vt.o: /usr/lib/gcc-lib/i386-linux/2.95.2/include/stdarg.h
-vt.o: /usr/include/bits/types.h /usr/include/bits/pthreadtypes.h
-vt.o: /usr/include/bits/sched.h /usr/include/libio.h /usr/include/_G_config.h
-vt.o: /usr/include/wchar.h /usr/include/bits/wchar.h /usr/include/gconv.h
+vt.o: /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h
+vt.o: /usr/include/bits/wchar.h /usr/include/gconv.h
 vt.o: /usr/include/bits/stdio_lim.h /usr/include/sys/vt.h
-vt.o: /usr/include/linux/vt.h /usr/include/sys/fcntl.h /usr/include/fcntl.h
-vt.o: /usr/include/bits/fcntl.h /usr/include/sys/types.h /usr/include/time.h
-vt.o: /usr/include/endian.h /usr/include/bits/endian.h
+vt.o: /usr/include/linux/vt.h /usr/include/sys/ioctl.h
+vt.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
+vt.o: /usr/include/asm/ioctl.h /usr/include/bits/ioctl-types.h
+vt.o: /usr/include/sys/ttydefaults.h /usr/include/sys/fcntl.h
+vt.o: /usr/include/fcntl.h /usr/include/bits/fcntl.h /usr/include/sys/types.h
+vt.o: /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h
 vt.o: /usr/include/sys/select.h /usr/include/bits/select.h
 vt.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
 send_data.o: /usr/include/unistd.h /usr/include/features.h
