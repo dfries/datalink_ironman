@@ -29,7 +29,8 @@ const int testsignal = 0;
 const int syncsignal = 1;
 const int numsignals = 2;
 //const char* syncfile = "/tmp/sync";
-const char* syncfile = "/tmp/data/121blank";
+//const char* syncfile = "/tmp/data/121blank";
+const char* syncfile = "sync";
 
 const int DefaultWidth = 737;
 const int DefaultHeight = 550;
@@ -389,7 +390,7 @@ graph_window::graph_window() : Gtk_Window(GTK_WINDOW_TOPLEVEL),
 {
 	add(&vbox);
 
-	/* Creaet the drawing area */
+	/* Create the drawing area */
 	drawing_area.size(DefaultWidth,DefaultHeight);
 	vbox.pack_start(drawing_area, TRUE, TRUE, 0);
 	drawing_area.graph_pointer = this;
