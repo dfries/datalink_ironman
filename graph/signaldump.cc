@@ -145,12 +145,38 @@ unsigned short decodeframe( int buf[], int &lastlocation, int size )
 void decodestream( int buf[], int size )
 {
 	int current = findsignal( buf, size );
+	int wide = 1;
+	const int framesperline = 4;
 	while( current < size-2*framelength )
 	{
-		cout << "0x" << setbase(16) << setw(4) << setfill('0')
-			<< decodeframe( buf, current, size);
-		cout << setbase(10) << ", position is now "
-			<< current << endl;
+		cout << "0x" << setbase(16) << setw(4) << setfill('0');
+		buf[2*(wide-1)] = decodeframe( buf, current, size);
+		buf[2*(wide-1)+1] = current;
+		cout << buf[2*(wide-1)];
+		cout << setbase(10) << ", " << setfill(' ')
+			<< setw(7) << current;
+		if( !(wide++ % 4) )
+			cout << endl;
+		else
+			cout << ";  ";
+	}
+	cout << "----------------------------------------------\n";
+
+	int entries = (int)ceil((double)wide/4);
+	for( int n = 0; n < entries ; n++)
+	{
+	for( int i = 0; i < framesperline; i++)
+	{
+		cout << "0x" << setbase(16) << setw(4) << setfill('0');
+		cout << buf[2*(i*entries+n)];
+		cout << setbase(10) << ", " << setfill(' ')
+			<< setw(7) << buf[2*(i*entries+n)+1];
+		if( (i*entries+n)+3 > wide )
+			break;
+		else
+			cout << ";  ";
+	}
+		cout << endl;
 	}
 }
 
