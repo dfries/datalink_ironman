@@ -107,7 +107,7 @@ char **argv;
 	int (*todo_sort)() = dl_todo_by_prio;
 	int (*phone_sort)() = dl_phone_by_label;
 	int (*anniv_sort)() = dl_anniv_by_date;
-	int type = DATALINK_150;
+	int type = DATALINK_IRONMAN;
 
 	while (argc > 1 && (*argv[1] == '-' || *argv[1] == '+')) {
 
