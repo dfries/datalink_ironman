@@ -2,6 +2,7 @@
 	-Fixed the setwatch options of -app and +app to say appointments
 	 instead of wristapp.
 	-setwatch was trying to run svgablink with -150S instead of -150s
+	-The -file (for creating a DEBUGOUTPUT) was broken, fixed.
 07-17-2002: aka 1.0.0
 	-Added header files for libc functions we are already using,
 	 but weren't including the proper header files.

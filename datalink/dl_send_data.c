@@ -166,11 +166,11 @@ int dl_send_data(WatchInfoPtr wi, int type)
 		}
 		strcpy(fname, tmpdir);
 		strcat(fname, template);
-	}
-	if ((ofd = mkstemp(fname)) == -1)
-	{
-		sprintf(buf, "Can't open %s for writing.", fname);
-		return ((*dl_error_proc) (buf));
+		if ((ofd = mkstemp(fname)) == -1)
+		{
+			sprintf(buf, "Can't open %s for writing.", fname);
+			return ((*dl_error_proc) (buf));
+		}
 	}
 
 	memcpy(buf, start1, *start1);
