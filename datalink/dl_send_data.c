@@ -31,6 +31,19 @@
 #define DEND_70 0x62
 
 static unsigned char start1[] = {7, 0x20, 0, 0, 3, 0, 0};
+static unsigned char datablock1[] = {	0x20, 0x70, 0x02, 0x40,
+					0x05, 0xa9, 0x22, 0x5f,
+					0xe6, 0xb2, 0xe8, 0xbb,
+					0xe7, 0xb2, 0xe8, 0xbb,
+					0xe7, 0xbb, 0xe8, 0xb2,
+					0xe7, 0xb2, 0x5c, 0xa3,
+					0x09, 0x26, 0xed, 0x15,
+					0xa9, 0x01, 0x00, 0x00 };
+static unsigned char datablock2[] = {	0x14, 0x70, 0x02, 0x5a,
+					0xa9, 0x02, 0x14, 0xa9,
+					0xb6, 0xa9, 0xa4, 0x07,
+					0x47, 0xb7, 0xa9, 0xcc,
+					0x74, 0x6f, 0x00, 0x00};
 static unsigned char time[] = {17, 0x32, 0, 0, 0, 0, 0, 0 , 0, 0, 0, 0, 0,
 							    1, 0, 0, 0};
 static unsigned char dstart[] = {5, 0x93, 0, 0, 0};
@@ -41,6 +54,7 @@ static unsigned char dend[] = {5, 0x92, 0, 0, 0};
 static unsigned char alarm[] = {18, 0x50, 0, 0, 0, 0, 0, 0 , 0, 0, 0, 0, 0,
 							     0, 0, 0, 0, 0};
 static unsigned char sysinfo[] = {6, 0x71, 0, 0, 0, 0};
+static unsigned char sysinfoironman[] = {5, 0x32, 0, 0, 0};
 static unsigned char end1[] = {4, 0x21, 0, 0};
 
 _write_data(fd, buf, data, size, pnum, type, wi)
@@ -58,7 +72,7 @@ WatchInfoPtr wi;
 		bytes_left = *buf + size - MAX_PCKT + 2;
 		memcpy(&buf[buf[0]], data, size - bytes_left);
 		buf[0] = MAX_PCKT;
-		dl_docrc(buf,0);
+		dl_docrc(buf);
 
 		if (write(fd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write data to tmp file."));
@@ -111,7 +125,7 @@ int type;
 	else if (!tmpnam(fname))
 		return((*dl_error_proc)("Can't create tmp file."));
 
-	if ((ofd = open(fname, O_WRONLY|O_CREAT|O_TRUNC, 0644)) < 0) {
+	if ((ofd = open(fname, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
 		sprintf(buf, "Can't open %s for writing.", fname);
 		return((*dl_error_proc)(buf));
 	}
@@ -123,13 +137,28 @@ int type;
 	if (wi->dl_device == DATALINK_IRONMAN)
 	{
 		buf[4] = 9;
-		buf[5] = 6;
 	}
 
-	dl_docrc(buf,0);
-
+	dl_docrc(buf);
+ 
 	if (write(ofd, buf, *buf) != *buf)
 		return((*dl_error_proc)("Can't write start to tmp file."));
+
+	if( wi->dl_device == DATALINK_IRONMAN )
+	{
+		memcpy(buf, datablock1, *datablock1);
+		dl_docrc(buf);
+		if (write(ofd, buf, *buf) != *buf)
+			return((*dl_error_proc)(
+				"Can't write start block1 to tmp file."));
+
+		memcpy(buf, datablock2, *datablock1);
+		dl_docrc(buf);
+		if (write(ofd, buf, *buf) != *buf)
+			return((*dl_error_proc)(
+				"Can't write start block2 to tmp file."));
+	}
+
 
 	for (i = 0; i < dl_download_data.num_times; i++) {
 		memcpy(buf, time, *time);
@@ -157,7 +186,7 @@ int type;
 		if (wi->dl_device == DATALINK_70)
 			buf[1] = TIME_70;
 
-		dl_docrc(buf,0);
+		dl_docrc(buf);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write time to tmp file."));
@@ -167,7 +196,7 @@ int type;
 	if (dl_download_data.memory) {
 		memcpy(buf, dstart, *dstart);
 		buf[2] = 1;
-		dl_docrc(buf,0);
+		dl_docrc(buf);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write dstart to tmp file."));
@@ -201,7 +230,7 @@ int type;
 		if (wi->dl_device == DATALINK_70)
 			buf[1] = DATA_70;
 
-		dl_docrc(buf,0);
+		dl_docrc(buf);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write dinfo to tmp file."));
@@ -284,14 +313,14 @@ int type;
 		}
 
 		*buf += 2;
-		dl_docrc(buf,0);
+		dl_docrc(buf);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
 
 		memcpy(buf, dend, *dend);
 		buf[2] = 1;
-		dl_docrc(buf,0);
+		dl_docrc(buf);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -308,7 +337,7 @@ int type;
 		dl_fill_pack_ascii(&buf[7], dl_download_data.alarms[i].label,
 			dl_download_data.max_alarm_str, ' ');
 		buf[15] = dl_download_data.alarms[i].audible;
-		dl_docrc(buf,0);
+		dl_docrc(buf);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -319,7 +348,7 @@ int type;
 		wristapp = dl_download_data.wristapp;
 		memcpy(buf, dstart, *dstart);
 		buf[2] = 2;
-		dl_docrc(buf,0);
+		dl_docrc(buf);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -334,7 +363,7 @@ int type;
 		buf[4] = 1;
 		*buf = 7;
 
-		dl_docrc(buf,0);
+		dl_docrc(buf);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -352,7 +381,7 @@ int type;
 			return((*dl_error_proc)("Can't write to tmp file."));
 
 		if (*buf != 4) {
-			dl_docrc(buf,0);
+			dl_docrc(buf);
 
 			if (write(ofd, buf, *buf) != *buf)
 				return((*dl_error_proc)("Can't write to tmp file."));
@@ -361,7 +390,7 @@ int type;
 
 		memcpy(buf, dend, *dend);
 		buf[2] = 2;
-		dl_docrc(buf,0);
+		dl_docrc(buf);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -372,7 +401,7 @@ int type;
 		melody = dl_download_data.melody;
 		memcpy(buf, dstart, *dstart);
 		buf[2] = 3;
-		dl_docrc(buf,0);
+		dl_docrc(buf);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -387,7 +416,7 @@ int type;
 		buf[4] = 0xff - melody->len;
 		*buf = 7;
 
-		dl_docrc(buf,0);
+		dl_docrc(buf);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -405,7 +434,7 @@ int type;
 			return((*dl_error_proc)("Can't write to tmp file."));
 
 		if (*buf != 4) {
-			dl_docrc(buf,0);
+			dl_docrc(buf);
 
 			if (write(ofd, buf, *buf) != *buf)
 				return((*dl_error_proc)("Can't write to tmp file."));
@@ -414,7 +443,7 @@ int type;
 
 		memcpy(buf, dend, *dend);
 		buf[2] = 3;
-		dl_docrc(buf,0);
+		dl_docrc(buf);
 
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
@@ -423,18 +452,27 @@ int type;
 
 	if (dl_download_data.num_system) {
 		sys = dl_download_data.system;
-		memcpy(buf, sysinfo, *sysinfo);
-		buf[2] = sys->chime;
-		buf[3] = sys->beep;
-		dl_docrc(buf,0);
+		if( wi->dl_device == DATALINK_IRONMAN)
+		{
+			memcpy(buf, sysinfoironman, *sysinfoironman);
+			buf[2] = sys->chime;
+			buf[2] |= sys->beep << 1;
+		}
+		else
+		{
+			memcpy(buf, sysinfo, *sysinfo);
+			buf[2] = sys->chime;
+			buf[3] = sys->beep;
+		}
 
+		dl_docrc(buf);
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write to tmp file."));
 
 	}
 
 	memcpy(buf, end1, *end1);
-	dl_docrc(buf,0);
+	dl_docrc(buf);
 
 	if (write(ofd, buf, *buf) != *buf)
 		return((*dl_error_proc)("Can't write to tmp file."));
@@ -454,11 +492,18 @@ int type;
 		case 0:	/* Child */
 			sprintf(buf, "svgablink", BINDIR);
 
+			if (wi->dl_device == DATALINK_IRONMAN)
+			{
+				execlp(buf, "svgablink", "-ironman", fname, NULL);
+				sprintf(buf, "./svgablink", BINDIR);
+				execl(buf, "svgablink", "-ironman", fname, NULL);
+			}
+			else
 			if (wi->dl_device == DATALINK_150)
 			{
-				execlp(buf, "svgablink", fname, NULL);
+				execlp(buf, "svgablink", "-150", fname, NULL);
 				sprintf(buf, "./svgablink", BINDIR);
-				execl(buf, "svgablink", fname, NULL);
+				execl(buf, "svgablink", "-150", fname, NULL);
 			}
 			else
 			{
