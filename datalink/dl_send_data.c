@@ -825,7 +825,7 @@ int dl_send_data(WatchInfoPtr wi, int type)
 				protocol="-150";
 				break;
 			case DATALINK_150S:
-				protocol="-150S";
+				protocol="-150s";
 				break;
 			case DATALINK_70:
 				protocol="-70";

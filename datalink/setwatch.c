@@ -145,8 +145,8 @@ void Usage()
 	printf("  +timer\talso send timer information\n");
 	printf("  -wristapp\tonly send wristapp information\n");
 	printf("  +wristapp\talso send wristapp information\n");
-	printf("  -app\tonly send wristapp information\n");
-	printf("  +app\talso send wristapp information\n");
+	printf("  -app\tonly send appointment information\n");
+	printf("  +app\talso send appointment information\n");
 	printf("  -melody\tonly send melody information\n");
 	printf("  +melody\talso send melody information\n");
 	printf("  -phone\tonly send phone information\n");
@@ -175,16 +175,27 @@ void Usage()
 	printf("Version $Id$\n");
 }
 
+// ability to set the time
 #define TIME		0x001
+// ability to send alarms
 #define ALARM		0x002
+// ability to set appointments
 #define APP		0x004
+// ability to send todo 
 #define TODO		0x008
+// ability to send phone list
 #define PHONE		0x010
+// ability to set anniversary
 #define ANNIV		0x020
+// ability to set key beep and hour beep
 #define SYSTEM		0x040
+// ability to send a program
 #define WRISTAPP	0x080
+// ability to set the beep sound
 #define MELODY		0x100
+// ability to preset timers and label
 #define TIMER		0x200
+// ability to set the lap count and label
 #define CHRON		0x400
 
 /* All would be 0x755 */

@@ -28,8 +28,11 @@
  *
  */
 
+// This defines which line to start field 1 at
 #define START1 70
+// The line to start field 2 at
 #define START2 255
+// the distance between lines in each field
 #define SPACE 15
 
 #define WRITE_BYTE1(sb, byte) { \
