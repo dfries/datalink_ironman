@@ -120,6 +120,8 @@ dl_free_download.o: datalink.h datalink_private.h
 dl_init_download.o: datalink.h datalink_private.h
 dl_init_watch.o: /usr/include/stdio.h /usr/include/features.h
 dl_init_watch.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+dl_init_watch.o: /usr/lib/gcc-lib/i486-linux/egcs-2.91.66/include/stddef.h
+dl_init_watch.o: /usr/lib/gcc-lib/i486-linux/egcs-2.91.66/include/stdarg.h
 dl_init_watch.o: /usr/include/bits/types.h /usr/include/libio.h
 dl_init_watch.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
 dl_init_watch.o: datalink.h datalink_private.h
@@ -131,13 +133,14 @@ dl_phone_by_label.o: datalink.h
 dl_send_data.o: /usr/include/fcntl.h /usr/include/features.h
 dl_send_data.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 dl_send_data.o: /usr/include/bits/fcntl.h /usr/include/sys/types.h
-dl_send_data.o: /usr/include/bits/types.h /usr/include/time.h
-dl_send_data.o: /usr/include/endian.h /usr/include/bits/endian.h
-dl_send_data.o: /usr/include/sys/select.h /usr/include/bits/select.h
-dl_send_data.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
-dl_send_data.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
-dl_send_data.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
-dl_send_data.o: datalink.h datalink_private.h
+dl_send_data.o: /usr/include/bits/types.h
+dl_send_data.o: /usr/lib/gcc-lib/i486-linux/egcs-2.91.66/include/stddef.h
+dl_send_data.o: /usr/include/time.h /usr/include/endian.h
+dl_send_data.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+dl_send_data.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+dl_send_data.o: /usr/include/sys/sysmacros.h /usr/include/sys/wait.h
+dl_send_data.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
+dl_send_data.o: /usr/include/bits/siginfo.h datalink.h datalink_private.h
 dl_set_error.o: datalink.h
 dl_set_warn.o: datalink.h
 dl_sizeof_item.o: datalink.h datalink_private.h
@@ -148,11 +151,15 @@ dl_todo_by_label.o: datalink.h
 dl_todo_by_prio.o: datalink.h
 dl_write_save.o: /usr/include/stdio.h /usr/include/features.h
 dl_write_save.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+dl_write_save.o: /usr/lib/gcc-lib/i486-linux/egcs-2.91.66/include/stddef.h
+dl_write_save.o: /usr/lib/gcc-lib/i486-linux/egcs-2.91.66/include/stdarg.h
 dl_write_save.o: /usr/include/bits/types.h /usr/include/libio.h
 dl_write_save.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
 dl_write_save.o: datalink.h datalink_private.h
 svgablink.o: /usr/include/stdio.h /usr/include/features.h
 svgablink.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+svgablink.o: /usr/lib/gcc-lib/i486-linux/egcs-2.91.66/include/stddef.h
+svgablink.o: /usr/lib/gcc-lib/i486-linux/egcs-2.91.66/include/stdarg.h
 svgablink.o: /usr/include/bits/types.h /usr/include/libio.h
 svgablink.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
 svgablink.o: /usr/include/sys/fcntl.h /usr/include/fcntl.h
@@ -165,15 +172,20 @@ svgablink.o: /usr/include/bits/signum.h /usr/include/bits/siginfo.h
 svgablink.o: /usr/include/bits/sigaction.h /usr/include/bits/sigcontext.h
 svgablink.o: /usr/include/asm/sigcontext.h /usr/include/bits/sigstack.h
 vt.o: /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h
-vt.o: /usr/include/gnu/stubs.h /usr/include/bits/types.h /usr/include/libio.h
-vt.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
-vt.o: /usr/include/sys/vt.h /usr/include/linux/vt.h /usr/include/sys/fcntl.h
-vt.o: /usr/include/fcntl.h /usr/include/bits/fcntl.h /usr/include/sys/types.h
-vt.o: /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h
+vt.o: /usr/include/gnu/stubs.h
+vt.o: /usr/lib/gcc-lib/i486-linux/egcs-2.91.66/include/stddef.h
+vt.o: /usr/lib/gcc-lib/i486-linux/egcs-2.91.66/include/stdarg.h
+vt.o: /usr/include/bits/types.h /usr/include/libio.h /usr/include/_G_config.h
+vt.o: /usr/include/bits/stdio_lim.h /usr/include/sys/vt.h
+vt.o: /usr/include/linux/vt.h /usr/include/sys/fcntl.h /usr/include/fcntl.h
+vt.o: /usr/include/bits/fcntl.h /usr/include/sys/types.h /usr/include/time.h
+vt.o: /usr/include/endian.h /usr/include/bits/endian.h
 vt.o: /usr/include/sys/select.h /usr/include/bits/select.h
 vt.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
 send_data.o: /usr/include/stdio.h /usr/include/features.h
 send_data.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+send_data.o: /usr/lib/gcc-lib/i486-linux/egcs-2.91.66/include/stddef.h
+send_data.o: /usr/lib/gcc-lib/i486-linux/egcs-2.91.66/include/stdarg.h
 send_data.o: /usr/include/bits/types.h /usr/include/libio.h
 send_data.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
 send_data.o: /usr/include/vga.h /usr/include/sys/types.h /usr/include/time.h
@@ -184,6 +196,8 @@ send_data.o: /usr/include/sys/time.h /usr/include/bits/time.h
 send_data.o: datalink_macros.h
 serblink.o: /usr/include/stdio.h /usr/include/features.h
 serblink.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+serblink.o: /usr/lib/gcc-lib/i486-linux/egcs-2.91.66/include/stddef.h
+serblink.o: /usr/lib/gcc-lib/i486-linux/egcs-2.91.66/include/stdarg.h
 serblink.o: /usr/include/bits/types.h /usr/include/libio.h
 serblink.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
 serblink.o: /usr/include/fcntl.h /usr/include/bits/fcntl.h
