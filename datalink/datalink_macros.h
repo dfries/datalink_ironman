@@ -43,13 +43,11 @@
 }
 
 #define END_PACKET { \
-	printf(" Sync "); \
 	vga_waitretrace(); \
 	WRITE_BYTE1(0, 0xff) \
 	WRITE_BYTE2(0, 0xff) \
 	{int i; for (i = 0; i < (10+((type==MODEL_IRONMAN)?2:0)); i++) \
-	{	printf(" Sync "); \
-		vga_waitretrace();}} \
+		vga_waitretrace();} \
 }
 
 #define SYNC { \
