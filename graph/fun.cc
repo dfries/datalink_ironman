@@ -26,10 +26,13 @@ struct signalinfo
 const int testsignal = 0;
 const int syncsignal = 1;
 const int numsignals = 2;
-const char* syncfile = "/tmp/sync";
+//const char* syncfile = "/tmp/sync";
+const char* syncfile = "/tmp/data/121blank";
 
-const int DefaultWidth = 800;
-const int DefaultHeight = 400;
+const int DefaultWidth = 735;
+const int DefaultHeight = 600;
+
+const int DefaultMinMotion = 5;
 
 class graph_drawing_area : public Gtk_DrawingArea
 {
@@ -59,13 +62,17 @@ private:
 	int lastx;
 	int lasty;
 	int lastsignal;
+	int lastxflip;
+	int flipamount;
 	Gdk_Color black;
 	Gdk_Colormap colormap;
 	signalinfo signal[numsignals];
 	GdkPoint *points;
+	Gtk_Label changeflipL;
+	Gtk_Entry changeflipE;
 };
 
-graph_drawing_area::graph_drawing_area() : pixmap(0)
+graph_drawing_area::graph_drawing_area() : pixmap(0), changeflipL("Flip amount")
 {
 	set_events( GDK_EXPOSURE_MASK
 		| GDK_LEAVE_NOTIFY_MASK
@@ -152,6 +159,7 @@ int graph_drawing_area::configure_event_impl (GdkEventConfigure * /* event */)
 		height());
 	draw_graph(0, 0, 0);
 	draw_graph(1, 0, 0);
+	flipamount = width();
 	return TRUE;
 }
 
@@ -176,15 +184,14 @@ gint graph_drawing_area::button_press_event_impl (GdkEventButton *event)
 	lastsignal = updatesignal;
 	// right mouse button move the graph left
 	if(event->button == 3 && pixmap)
-		draw_graph( updatesignal, -width(), 0);
+		draw_graph( updatesignal, -flipamount, 0);
 	// left mouse button move the graph right
 	if(event->button == 2 && pixmap)
-		draw_graph( updatesignal, width(), 0);
-	if(event->button == 1 && pixmap)
-	{
-		lastx = (int)event->x;
-		lasty = (int)event->y;
-	}
+		draw_graph( updatesignal, flipamount, 0);
+	// nothing to do when button one is pressed
+	lastx = (int)event->x;
+	lasty = (int)event->y;
+	lastxflip = lastx;
 	return TRUE;
 }
 
@@ -202,8 +209,14 @@ gint graph_drawing_area::motion_notify_event_impl (GdkEventMotion *event)
 	}
 
 	if(state& GDK_BUTTON1_MASK && pixmap )
-		move_graph( lastsignal, (int)(event->x - lastx),
-			(int)(event->y - lasty));
+		move_graph( lastsignal, x - lastx, y - lasty);
+	if((state& GDK_BUTTON2_MASK||state& GDK_BUTTON3_MASK) && pixmap )
+	{
+		int xx = (x-lastx)/DefaultMinMotion;
+		int diff = (lastxflip - lastx)/DefaultMinMotion;
+		draw_graph( lastsignal, -flipamount*(diff-xx),0);
+		lastxflip = x;
+	}
 	return TRUE;
 }
 
@@ -213,6 +226,12 @@ gint graph_drawing_area::button_release_event_impl (GdkEventButton *event)
 	{
 		draw_graph( lastsignal, (int)(event->x - lastx),
 			(int)(event->y - lasty));
+	}
+	if( (event->button == 2 || event->button == 3)&& pixmap )
+	{
+		int xx = ((int)event->x-lastx)/DefaultMinMotion;
+		int diff = (lastxflip - lastx)/DefaultMinMotion;
+		draw_graph( lastsignal, -flipamount*(diff-xx),0);
 	}
 	return TRUE;
 }
