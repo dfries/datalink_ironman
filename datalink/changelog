@@ -1,0 +1,6 @@
+12-11-1999:
+Added a patch from Danilo Fiorenzano <danilo@telusplanet.net> to
+Added new function "maxPriority()" to switch to SCHED_RR kernel scheduling
+policy at maximum priority and lock all pages into real memory, in order
+to improve timing accuracy.
+-- David Fries
