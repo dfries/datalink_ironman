@@ -167,6 +167,8 @@ char **argv;
 			type = DATALINK_70;
 		else if (strcmp("-70", argv[1]) == 0)
 			type = DATALINK_70;
+		else if (strcmp("-ironman", artv[1]) == 0)
+			type = DATALINK_IRONMAN;
 		else {
 			fprintf(stderr, "%s: Unknown option (%s).\n", prog, argv[1]);
 			exit(-1);
