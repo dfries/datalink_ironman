@@ -1,10 +1,12 @@
 07-09-2002:
-Added header files for libc functions we are already using, but weren't
-including the proper header files.
-Switched to using tmpfile instead of tmpnam for the temporary file,
-this will fix the compiler warnings.
-The newer bison required a semicolon and would not compile until it was
-added.
+	-Added header files for libc functions we are already using,
+	 but weren't including the proper header files.
+	-Switched to using tmpfile instead of tmpnam for the temporary
+	 file, this will fix the compiler warnings.
+	-The newer bison required a semicolon and would not compile
+	 until it was added.
+	-Replaced tmpnam() with mkstemp() because the compiler gave
+	 warnings about tmpnam being a possible security hole.
 -- David Fries <dfries@mail.win.org>
 
 12-16-2001:

@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <string.h>
+#include <limits.h>
 #include "datalink.h"
 #include "datalink_private.h"
 
@@ -108,12 +109,14 @@ int _write_data(int fd, unsigned char *buf, unsigned char *data, int size,
 	return (1);
 }
 
-/* TODO: If there is any errors we currently leak a file descriptor (or a
- * FILE * stream), maybe all the returns should be modified not to sometime.
+/* TODO: If there is any errors we currently leak a file descriptor,
+ * it might be nice to close the file first.
  */
 int dl_send_data(WatchInfoPtr wi, int type)
 {
-	char fname[1024];
+	char fname[PATH_MAX];
+	char * tmpdir;
+	char * template="/datalink_XXXXXX";
 	unsigned char buf[64];
 	unsigned char data[64];
 	unsigned short addr = 0x0236;
@@ -132,31 +135,42 @@ int dl_send_data(WatchInfoPtr wi, int type)
 	int status;
 	int ret=0;
 	int p;
-	FILE * ftmp=0;
 
 	if (type == BLINK_FILE)
 	{
 		strcpy(fname, "DEBUGOUTPUT");
-		if ((ofd = open(fname, O_WRONLY | O_CREAT | O_TRUNC, 0644))
-			== -1)
+		if ((ofd = open(fname,
+			O_WRONLY | O_CREAT | O_TRUNC, 0644)) == -1)
 		{
 			sprintf(buf, "Can't open %s for writing.", fname);
 			return ((*dl_error_proc) (buf));
 		}
 	}
 	else
-	if ((ftmp=tmpfile()))
 	{
-		ofd = fileno(ftmp);
-		if(ofd==-1)
+		/* Try to get the directory for a temporary file from
+		 * 	the envinronment variable TMPDIR
+		 * Try P_tmpdir if that fails
+		 * Fallback to /tmp if need be
+		 */
+		if(tmpdir=getenv("TMPDIR"))
+			if(strlen(tmpdir)+strlen(template)+1 >= PATH_MAX)
+				tmpdir=0; // invalid path, string too long
+		if(!tmpdir)
 		{
-			fclose(ftmp);
-			return ((*dl_error_proc) ("Can't create tmp file."));
+			#ifdef P_tmpdir
+				tmpdir=P_tmpdir;
+			#else
+				tmpdir="/tmp";
+			#endif
 		}
+		strcpy(fname, tmpdir);
+		strcat(fname, template);
 	}
-	else
+	if ((ofd = mkstemp(fname)) == -1)
 	{
-		return ((*dl_error_proc) ("Can't create tmp file."));
+		sprintf(buf, "Can't open %s for writing.", fname);
+		return ((*dl_error_proc) (buf));
 	}
 
 	memcpy(buf, start1, *start1);
@@ -438,7 +452,7 @@ int dl_send_data(WatchInfoPtr wi, int type)
 			memdata[p++] = 0;
 			memdata[p++] = 0xe;
 			memdata[p++] = 0;
-#warning has dl_download_data.chron[i].memused been initalized
+#warning TODO has dl_download_data.chron[i].memused been initalized
 			memdata[p++] = dl_download_data.chron[i].memused;
 			memdata[p++] =
 			    dl_download_data.chron[i].chron_laps;
@@ -782,10 +796,7 @@ int dl_send_data(WatchInfoPtr wi, int type)
 	if (write(ofd, buf, *buf) != *buf)
 		return ((*dl_error_proc) ("Can't write to tmp file."));
 
-	if(ftmp)
-		fclose(ftmp);
-	else
-		close(ofd);
+	close(ofd);
 
 	switch (type)
 	{
