@@ -21,6 +21,7 @@ struct signalinfo
 {
 	ifstream file;	// file to read from
 	int location;	// where in the file we are, -1 initially
+	double fraction; // the fractional part of the location
 	short * buffer;	// where to put the temporary information
 	int buffersize;	// the size of the current buffer
 	GdkPoint *points;	// the point objects for this signal
@@ -59,8 +60,8 @@ private:
 	int expose_event_impl (GdkEventExpose *event);
 	/* Draw_Graph will load the file information from file if it
 	   isn't at the same location */
-	void draw_graph( int updatesignal, int xoffset, int yoffset );
-	void move_graph( int updatesignal, int xoffset, int yoffset );
+	void draw_graph( int updatesignal, double xoffset, int yoffset );
+	void move_graph( int updatesignal, double xoffset, int yoffset );
 	gint button_press_event_impl (GdkEventButton *event);
 	gint button_release_event_impl (GdkEventButton *event);
 	gint motion_notify_event_impl (GdkEventMotion *event);
@@ -123,6 +124,7 @@ graph_drawing_area::graph_drawing_area() : pixmap(0)
 		ExitOnTrue( !signal[i].file, "Error opening " 
 			<< syncfile);
 		signal[i].location = 0;
+		signal[i].fraction = 0;
 		signal[i].buffer = new short[DefaultWidth];
 		signal[i].buffersize = DefaultWidth;
 		signal[i].points = new GdkPoint[DefaultWidth];
@@ -175,6 +177,7 @@ void graph_drawing_area::setinputfile ( string name, int signalnum )
 	ExitOnTrue( !signal[signalnum].file, "Error opening \""
 		<< name << "\" " );
 	signal[signalnum].location = 0;
+	signal[signalnum].fraction = 0;
 }
 
 int graph_drawing_area::configure_event_impl (GdkEventConfigure * /* event */)
@@ -225,10 +228,10 @@ gint graph_drawing_area::button_press_event_impl (GdkEventButton *event)
 	lastsignal = updatesignal;
 	// right mouse button move the graph left
 	if(event->button == 3 && pixmap)
-		draw_graph( updatesignal, (int)flipamount, 0);
+		draw_graph( updatesignal, flipamount, 0);
 	// left mouse button move the graph right
 	if(event->button == 2 && pixmap)
-		draw_graph( updatesignal, (int)-flipamount, 0);
+		draw_graph( updatesignal, -flipamount, 0);
 	// nothing to do when button one is pressed
 	lastx = (int)event->x;
 	lasty = (int)event->y;
@@ -255,7 +258,7 @@ gint graph_drawing_area::motion_notify_event_impl (GdkEventMotion *event)
 	{
 		int xx = (x-lastx)/DefaultMinMotion;
 		int diff = (lastxflip - lastx)/DefaultMinMotion;
-		draw_graph( lastsignal, (int)-flipamount*(diff-xx),0);
+		draw_graph( lastsignal, -flipamount*(diff-xx),0);
 		lastxflip = x;
 	}
 	return TRUE;
@@ -265,21 +268,21 @@ gint graph_drawing_area::button_release_event_impl (GdkEventButton *event)
 {
 	if( event->button == 1 && pixmap)
 	{
-		draw_graph( lastsignal, (int)(event->x - lastx),
+		draw_graph( lastsignal, (event->x - lastx),
 			(int)(event->y - lasty));
 	}
 	if( (event->button == 2 || event->button == 3)&& pixmap )
 	{
 		int xx = ((int)event->x-lastx)/DefaultMinMotion;
 		int diff = (lastxflip - lastx)/DefaultMinMotion;
-		draw_graph( lastsignal, (int)-flipamount*(diff-xx),0);
+		draw_graph( lastsignal, -flipamount*(diff-xx),0);
 	}
 	return TRUE;
 }
 
 
 void graph_drawing_area::draw_graph( int updatesignal,
-	int xoffset, int yoffset )
+	double xoffset, int yoffset )
 {
 	int sig;
 	int i;
@@ -290,11 +293,26 @@ void graph_drawing_area::draw_graph( int updatesignal,
 	// the x offset is the number of pixels to move it
 	// there are two bytes per short and one short per pixel
 	// so we need to move the file offset 2*xoffset
-	xoffset *=2;
+	int xint = (int)xoffset;
+	xint *=2;
 	// update offsets
-	signal[updatesignal].location -= xoffset;
+	signal[updatesignal].location -= (int)xint;
+	signal[updatesignal].fraction -= xoffset*2-(int)xint;
+	// only update location in multiples of two
+	if((int)signal[updatesignal].fraction/2 )
+	{
+		// discard the odd or fractional portion
+		int f = (int)(signal[updatesignal].fraction/2);
+		f *= 2;
+
+		signal[updatesignal].location += f;
+		signal[updatesignal].fraction -= f;
+	}
 	if(signal[updatesignal].location < 0)
+	{
 		signal[updatesignal].location = 0;
+		signal[updatesignal].fraction =0;
+	}
 	signal[updatesignal].vloc += yoffset;
 
 	// seek the file to location
@@ -354,7 +372,7 @@ void graph_drawing_area::draw_graph( int updatesignal,
 }
 
 void graph_drawing_area::move_graph( int updatesignal,
-	int xoffset, int yoffset )
+	double xoffset, int yoffset )
 {
 	int sig;
 	int i;
@@ -366,7 +384,7 @@ void graph_drawing_area::move_graph( int updatesignal,
 	// create the points
 	for( i = 0; i < width(); i++)
 	{
-		signal[updatesignal].points[i].x=i+xoffset;
+		signal[updatesignal].points[i].x=i+(int)xoffset;
 		signal[updatesignal].points[i].y = yoffset+(int)
 			(signal[updatesignal].buffer[i]/
 			signal[updatesignal].vzoomfact+
@@ -430,9 +448,10 @@ graph_window::graph_window() : Gtk::Window(GTK_WINDOW_TOPLEVEL),
 	changeflipE.activate.connect(slot(this,&graph_window::changeflip));
 
 	// set the text for the flip amount
-	char * buff = new char [5];
-	strstream membuff(buff, 5 );
-	membuff << DefaultWidth << (char)0 << flush;
+	char * buff = new char [40];
+	strstream membuff(buff, 40 );
+	// stress that a floating point value is acceptable
+	membuff << DefaultWidth << ".0" << (char)0 << flush;
 	int zero = 0;
 	changeflipE.insert_text( buff, strlen(buff), &zero );
 	delete buff;
