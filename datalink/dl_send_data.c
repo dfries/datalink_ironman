@@ -54,7 +54,6 @@ static unsigned char dend[] = {5, 0x92, 0, 0, 0};
 static unsigned char alarm[] = {18, 0x50, 0, 0, 0, 0, 0, 0 , 0, 0, 0, 0, 0,
 							     0, 0, 0, 0, 0};
 static unsigned char sysinfo[] = {6, 0x71, 0, 0, 0, 0};
-static unsigned char sysinfoironman[] = {5, 0x32, 0, 0, 0};
 static unsigned char end1[] = {4, 0x21, 0, 0};
 
 _write_data(fd, buf, data, size, pnum, type, wi)
@@ -334,9 +333,20 @@ int type;
 		buf[4] = dl_download_data.alarms[i].minutes;
 		buf[5] = dl_download_data.alarms[i].month;
 		buf[6] = dl_download_data.alarms[i].day;
+		if( wi->dl_device == DATALINK_IRONMAN)
+		{
+			buf[7] = dl_download_data.alarms[i].audible;
+			dl_fill_pack_ascii(&buf[8], dl_download_data.alarms[i].label,
+				dl_download_data.max_alarm_str, ' ');
+			buf[0] = 0x1a;
+			buf[1] = 0x50;
+		}
+		else
+		{
 		dl_fill_pack_ascii(&buf[7], dl_download_data.alarms[i].label,
 			dl_download_data.max_alarm_str, ' ');
 		buf[15] = dl_download_data.alarms[i].audible;
+		}
 		dl_docrc(buf);
 
 		if (write(ofd, buf, *buf) != *buf)
@@ -452,15 +462,16 @@ int type;
 
 	if (dl_download_data.num_system) {
 		sys = dl_download_data.system;
+		memcpy(buf, sysinfo, *sysinfo);
 		if( wi->dl_device == DATALINK_IRONMAN)
 		{
-			memcpy(buf, sysinfoironman, *sysinfoironman);
+			buf[0] = 5;
+			buf[1] = 0x32;
 			buf[2] = sys->chime;
 			buf[2] |= sys->beep << 1;
 		}
 		else
 		{
-			memcpy(buf, sysinfo, *sysinfo);
 			buf[2] = sys->chime;
 			buf[3] = sys->beep;
 		}
