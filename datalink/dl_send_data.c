@@ -380,12 +380,16 @@ int type;
 			dl_fill_pack_ascii(&memdata[p], dl_download_data.chron[i].label,
 				dl_download_data.max_chron_str, ' ');
 			p += 8;
-			memdata[p++] = 0x13;
 		}
 
 		for (i = 0; i < dl_download_data.num_phones; i++) {
 			pp = &dl_download_data.phones[i];
 			labelsize = dl_pack_size(pp->label);
+			/* This is the size taken up by this phone entry,
+			 * the size of the label + 6 for the digits and
+			 * one for this byte
+			 */
+			memdata[p++] = labelsize + 7; 
 			printf("label is %s, size is %d\n", pp->label, labelsize );
 			dl_pack_phone(&memdata[p], pp->number, dl_download_data.max_phone_str);
 			p += 6;
@@ -396,7 +400,6 @@ int type;
 			}
 			p += labelsize;
 			#warning there should be more rime or reason to this
-			memdata[p++] = 0x10;
 		}
 
 		if (p > maxdatasize )
