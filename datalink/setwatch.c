@@ -158,6 +158,17 @@ char **argv;
 			flags = MELODY;
 		else if (strcmp("+melody", argv[1]) == 0)
 			flags |= MELODY;
+		/* on IRONMAN to send phone information we must
+		 * also send chron information
+		 */
+		else if (strcmp("-phone", argv[1]) == 0)
+			flags = PHONE|CHRON;
+		else if (strcmp("+phone", argv[1]) == 0)
+			flags |= PHONE|CHRON;
+		else if (strcmp("-chron", argv[1]) == 0)
+			flags = CHRON;
+		else if (strcmp("+chron", argv[1]) == 0)
+			flags |= CHRON;
 		else if (strcmp("-system", argv[1]) == 0)
 			flags = SYSTEM;
 		else if (strcmp("+system", argv[1]) == 0)
