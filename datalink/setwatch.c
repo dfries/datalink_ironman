@@ -100,7 +100,7 @@ void Usage()
 {
 	printf("DataLink Library Karl Hakimian <hakimian@eecs.wsu.edu>\n");
 	printf("\tIronman support added by David Fries <dfries@mail.win.org>\n");
-	printf("Usage: datalink [watch type] options\n");
+	printf("Usage: datalink [watch type] [options] [datafile]\n");
 	printf("watchtype (ironman is default, must be specified before other options)\n");
 	printf("  -model70\t use if you have this watch\n");
 	printf("  -70\t use if you have this watch\n");
@@ -112,6 +112,7 @@ void Usage()
 	printf("\tNot all options are available for all watches\n");
 	printf("\tIf you specify any of the send only... options following\n");
 	printf("\twill affect what other data is also sent\n");
+	printf("\tYou must specify at least one option to send data.\n");
 	printf("  -all\tsend all data to watch\n");
 	printf("  -db\tsend only database information\n");
 	printf("  -db\talso send database information\n");
@@ -144,7 +145,8 @@ void Usage()
 	printf("  -sort-anniv-by-label\n");
 	printf("  -file\t dump data to DEBUGOUTPUT and do not display\n");
 	printf("  -serial\t send with the serial link\n");
-	exit(-1);
+	printf("datafile: If not specified ~/.datalink/datafile is used\n");
+	printf("  If any option is after the datafile, it will be ignored\n");
 }
 
 #define TIME		0x001
@@ -273,9 +275,15 @@ char **argv;
 		else if (strcmp("-ironman", argv[1]) == 0)
 			type = DATALINK_IRONMAN;
 		else if (strcmp("--help", argv[1]) == 0)
-			Usage();
+			{
+				Usage();
+				exit(-1);
+			}
 		else if (strcmp("-h", argv[1]) == 0)
-			Usage();
+			{
+				Usage();
+				exit(-1);
+			}
 		else {
 			fprintf(stderr, "%s: Unknown option (%s).\n", prog, argv[1]);
 			Usage();
@@ -284,6 +292,14 @@ char **argv;
 
 		argc--;
 		argv++;
+	}
+
+	if (flags == DEFAULT )
+	{
+		Usage();
+		printf("**************** ERROR ****************\n");
+		printf("Error: the given options specify that no data be sent to the watch\n");
+		exit(-1);
 	}
 
 	if (argc == 2)
