@@ -11,18 +11,19 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 #include <sys/time.h>
 #include <unistd.h>
 #include <datalink.h>
 
-my_error_proc(char *msg)
+int my_error_proc(char *msg)
 {
 	fprintf(stderr, "ERROR: %s\n", msg);
 	exit(-1);
 }
 
-my_warn_proc(char *msg)
+int my_warn_proc(char *msg)
 {
 	fprintf(stderr, "WARNING: %s\n", msg);
 	return (0);
@@ -33,10 +34,8 @@ ListPtr set_time(WatchInfoPtr wi, ListPtr times)
 	time_t now;
 	time_t tztime;
 	struct tm *time_s;
-	struct timezone tz;
 	ItemPtr tp;
 	int isdst;
-	char buf[1024];
 	int i;
 
 	now = time(NULL) + wi->time_adjust;	/* Offset for sending to watch. */
@@ -78,6 +77,7 @@ ListPtr set_time(WatchInfoPtr wi, ListPtr times)
 		tp->data.time.month = time_s->tm_mon + 1;
 		tp->data.time.day = time_s->tm_mday;
 		tp->data.time.year = time_s->tm_year % 100;
+	/* TODO: investigate, see change log about day of week */
 		tp->data.time.dow = (time_s->tm_wday + 6) % 7;
 		tp->data.time.download = 1;
 #ifdef DEBUGGING
@@ -107,6 +107,8 @@ void Usage()
 	printf("  -model70\t use if you have this watch\n");
 	printf("  -150\t use if you have this watch\n");
 	printf("  -model150\t use if you have this watch\n");
+	printf("  -150s\t use if you have this watch\n");
+	printf("  -model150s\t use if you have this watch\n");
 	printf("  -ironman\t use if you have this watch\n");
 	printf("options:\n");
 	printf("\tNot all options are available for all watches\n");
@@ -176,7 +178,7 @@ void Usage()
 */
 #define DEFAULT 0
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	char *prog = argv[0];
 	WatchInfoPtr wi;
@@ -198,7 +200,7 @@ main(int argc, char **argv)
 		{
 			if (type == DATALINK_70)
 				flags = ALL70;
-			if (type == DATALINK_150)
+			if (type == DATALINK_150 || type == DATALINK_150S)
 				flags = ALL150;
 			if (type == DATALINK_IRONMAN)
 				flags = ALLIRONMAN;
@@ -276,6 +278,10 @@ main(int argc, char **argv)
 			type = DATALINK_150;
 		else if (strcmp("-150", argv[1]) == 0)
 			type = DATALINK_150;
+		else if (strcmp("-model150s", argv[1]) == 0)
+			type = DATALINK_150S;
+		else if (strcmp("-150s", argv[1]) == 0)
+			type = DATALINK_150S;
 		else if (strcmp("-ironman", argv[1]) == 0)
 			type = DATALINK_IRONMAN;
 		else if (strcmp("--help", argv[1]) == 0)
@@ -397,5 +403,5 @@ main(int argc, char **argv)
 	dl_init_download(wi, times, alarms, chron, timers, apps, todos,
 			 phones, annivs, system, wristapp, melody);
 	dl_send_data(wi, output);
-	exit(0);
+	return 0;
 }
