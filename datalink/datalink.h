@@ -105,6 +105,7 @@ typedef struct item_s {
 	union {
 		Time time;
 		Alarm alarm;
+		Chron chron;
 		Timer timer;
 		System sys;
 		Appointment app;
@@ -151,6 +152,7 @@ typedef struct watch_info_s {
 	int time_adjust;
 	List times;
 	List alarms;
+	List chron;
 	List timers;
 	List system;
 	List apps;
@@ -210,7 +212,7 @@ unsigned short int dl_docrc(unsigned char *);
 void dl_fill_pack_ascii(unsigned char *, unsigned char *, int, char);
 void dl_free_download(void);
 int dl_init_download(WatchInfoPtr, ListPtr, ListPtr, ListPtr, ListPtr,
-	ListPtr, ListPtr, ListPtr, ListPtr, ListPtr, ListPtr);
+	ListPtr, ListPtr, ListPtr, ListPtr, ListPtr, ListPtr, ListPtr);
 WatchInfoPtr dl_init_watch(int);
 int dl_item_ok(WatchInfoPtr, ItemPtr);
 ItemPtr dl_new_item(WatchInfoPtr, int);

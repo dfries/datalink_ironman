@@ -18,8 +18,9 @@ extern int line_num;
 #define TIMEZONE 8
 #define DATA 9
 #define INTVAL 10
-#define NUMLISTS 12
 #define TIMER 11
+#define CHRON 12
+#define NUMLISTS 13
 
 static ListPtr *lists = NULL;
 static ItemPtr ip = NULL;
@@ -117,6 +118,34 @@ item		: NAME '=' value '\n'
 		strncpy(ip->data.alarm.label, msg, l);
 		ip->data.alarm.label[l] = '\0';
 		dl_add_to_list(lists[ALARM], ip);
+		break;
+
+	case CHRON:
+		if (strcmp($1, "chron")) {
+			sprintf(buf, "Bad entry, %s = chron.", $1);
+			dl_error(buf);
+			return(-1);
+		}
+
+		if (!(ip = dl_new_item(wi, DL_CHRON_TYPE))) {
+			dl_error("Could not allocate chron item.");
+			return(-1);
+		}
+
+		ip->data.chron.chron_laps = pos;
+		l = strlen(msg);
+
+		if (l > wi->max_chron_str)
+			l = wi->max_chron_str;
+
+		if ((ip->data.chron.label = (char *)malloc(l + 1)) == NULL) {
+			dl_error("Could not allocate chron label.");
+			return(-1);
+		}
+
+		strncpy(ip->data.chron.label, msg, l);
+		ip->data.chron.label[l] = '\0';
+		dl_add_to_list(lists[TIMER], ip);
 		break;
 
 	case TIMER:
@@ -446,6 +475,14 @@ value		: INTEGER ',' DATE ',' TIME ',' STRING ',' INTEGER
 				chron = $9;
 				$$ = TIMER;
 			}
+			
+			| STRING ',' INTEGER
+			/* Chron */
+			{
+				strcpy(msg, $1);
+				pos = $3;
+				$$ = CHRON;
+			}
 
 			| DATE ',' TIME ',' STRING
 			/* Appointment */
@@ -518,12 +555,13 @@ char *s;
 extern FILE *dl_in;
 
 WatchInfoPtr
-dl_read_save(datafile, type, times, alarms, timers, apps, todos, phones, annivs,
-	system, wristapp, melody)
+dl_read_save(datafile, type, times, alarms, chron, timers, apps, todos,
+	phones, annivs, system, wristapp, melody)
 char *datafile;
 int type;
 ListPtr *times;
 ListPtr *alarms;
+ListPtr *chron;
 ListPtr *timers;
 ListPtr *apps;
 ListPtr *todos;
@@ -557,6 +595,7 @@ ListPtr *melody;
 		return(NULL);
 
 	*alarms = lists[ALARM];
+	*chron = lists[CHRON];
 	*timers = lists[TIMER];
 	*apps = lists[APP];
 	*phones = lists[PHONE];

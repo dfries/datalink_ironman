@@ -100,6 +100,7 @@ ListPtr times;
 #define WRISTAPP 0x080
 #define MELODY 0x100
 #define TIMER 0x200
+#define CHRON 0x400
 
 #define ALL 0x1FF
 #define DB 0x03C
@@ -114,7 +115,7 @@ char **argv;
 {
 	char *prog = argv[0];
 	WatchInfoPtr wi;
-	ListPtr times, alarms, timers, apps, todos, phones, annivs;
+	ListPtr times, alarms, chron, timers, apps, todos, phones, annivs;
 	ListPtr system, wristapp, melody;
 	char datafile[1024];
 	int output = SVGA_BLINK;
@@ -220,6 +221,9 @@ char **argv;
 
 /* Mark for download. */
 
+	if ((flags&CHRON) && chron->count)
+		chron->download = 1;
+
 	if ((flags&ALARM) && alarms->count)
 		alarms->download = 1;
 
@@ -276,8 +280,8 @@ char **argv;
 /*
  Send it to the watch
 */
-	dl_init_download(wi, times, alarms, timers, apps, todos, phones, annivs, system,
-		wristapp, melody);
+	dl_init_download(wi, times, alarms, chron, timers, apps, todos, phones,
+		annivs, system, wristapp, melody);
 	dl_send_data(wi, output);
 	exit(0);
 }

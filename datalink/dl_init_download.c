@@ -21,10 +21,12 @@
 #include "datalink_private.h"
 
 int
-dl_init_download(wi, times, alarms, timers, apps, todos, phones, annivs, system, wristapp, melody)
+dl_init_download(wi, times, alarms, chron, timers, apps, todos, phones,
+	annivs, system, wristapp, melody)
 WatchInfoPtr wi;
 ListPtr times;
 ListPtr alarms;
+ListPtr chron;
 ListPtr timers;
 ListPtr system;
 ListPtr apps;
