@@ -73,7 +73,7 @@ parse.c: dataread.l dl_read_save.c y.tab.h
 	$(LEX) dataread.l
 	mv lex.yy.c $@
 
-depend: parse.c dl_read_save.c
+depend: Makefile
 	makedepend -f- -o.o $(CFLAGS) $(SRC) $(SVGASRC) $(SERSRC) > depend
 	@echo "Dependencies have been made, re-run make to build"
 	@false
