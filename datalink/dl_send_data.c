@@ -109,6 +109,9 @@ int _write_data(int fd, unsigned char *buf, unsigned char *data, int size,
 	return (1);
 }
 
+/* TODO: If there is any errors we currently leak a file descriptor (or a
+ * FILE * stream), maybe all the returns should be modified not to sometime.
+ */
 int dl_send_data(WatchInfoPtr wi, int type)
 {
 	char fname[1024];
@@ -130,16 +133,31 @@ int dl_send_data(WatchInfoPtr wi, int type)
 	int status;
 	int ret=0;
 	int p;
+	FILE * ftmp=0;
 
 	if (type == BLINK_FILE)
-		strcpy(fname, "DEBUGOUTPUT");
-	else if (!tmpnam(fname))
-		return ((*dl_error_proc) ("Can't create tmp file."));
-
-	if ((ofd = open(fname, O_WRONLY | O_CREAT | O_TRUNC, 0644)) == -1)
 	{
-		sprintf(buf, "Can't open %s for writing.", fname);
-		return ((*dl_error_proc) (buf));
+		strcpy(fname, "DEBUGOUTPUT");
+		if ((ofd = open(fname, O_WRONLY | O_CREAT | O_TRUNC, 0644))
+			== -1)
+		{
+			sprintf(buf, "Can't open %s for writing.", fname);
+			return ((*dl_error_proc) (buf));
+		}
+	}
+	else
+	if ((ftmp=tmpfile()))
+	{
+		ofd = fileno(ftmp);
+		if(ofd==-1)
+		{
+			fclose(ftmp);
+			return ((*dl_error_proc) ("Can't create tmp file."));
+		}
+	}
+	else
+	{
+		return ((*dl_error_proc) ("Can't create tmp file."));
 	}
 
 	memcpy(buf, start1, *start1);
@@ -765,7 +783,10 @@ int dl_send_data(WatchInfoPtr wi, int type)
 	if (write(ofd, buf, *buf) != *buf)
 		return ((*dl_error_proc) ("Can't write to tmp file."));
 
-	close(ofd);
+	if(ftmp)
+		fclose(ftmp);
+	else
+		close(ofd);
 
 	switch (type)
 	{
