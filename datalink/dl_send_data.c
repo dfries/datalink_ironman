@@ -216,7 +216,7 @@ int type;
 
 	}
 
-	if (dl_download_data.memory) {
+	if (wi->dl_device != DATALINK_IRONMAN && dl_download_data.memory) {
 		memcpy(buf, dstart, *dstart);
 		buf[2] = 1;
 		dl_docrc(buf);
@@ -350,7 +350,7 @@ int type;
 
 	}
 
-	if ( dl_download_data.chron )
+	if( wi->dl_device == DATALINK_IRONMAN && dl_download_data.chron )
 	{
 		/* The memdata is a where all the data is stored and when all the
 		 * information to be sent that inclues the chron label and laps, and the
