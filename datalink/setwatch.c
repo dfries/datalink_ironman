@@ -90,7 +90,10 @@ ListPtr times;
 
 #define ALL 0x1FF
 #define DB 0x03C
+/*
 #define DEFAULT 0x03F
+*/
+#define DEFAULT 0
 
 main(argc, argv)
 int argc;
