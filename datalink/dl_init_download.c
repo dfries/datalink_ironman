@@ -53,6 +53,7 @@ ListPtr melody;
 	dl_download_data.max_alarm_str = wi->max_alarm_str;
 	dl_download_data.max_timer_str = wi->max_timer_str;
 	dl_download_data.max_phone_str = wi->max_phone_str;
+	dl_download_data.max_chron_str = wi->max_chron_str;
 
 /* Count and verify items. */
 	if (times && times->download) {
