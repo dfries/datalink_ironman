@@ -15,6 +15,11 @@ public:
 			| GDK_POINTER_MOTION_HINT_MASK);
 		lastx = -1;
 		lasty = -1;
+		//fgcolor.set_rgb( 30000, 0, 10000);
+		fgcolor.set_rgb_p( 0, 0, 1);
+		colormap = colormap.get_system();
+		//fgcolor = colormap.black();
+		colormap.alloc( fgcolor );
 	}
 private:
 	/* Backing pixmap for drawing area */
@@ -25,6 +30,8 @@ private:
 	Gdk_Visual visual;
 	int lastx;
 	int lasty;
+	Gdk_Color fgcolor;
+	Gdk_Colormap colormap;
 
 	/* Create a new backing pixmap of the appropriate size */
 	int configure_event_impl (GdkEventConfigure * /* event */)
@@ -36,8 +43,8 @@ private:
 		{
 			pixmap.free();
 		}
-		gc = get_style()->gtkobj()->white_gc;
-		//gc = get_style()->gtkobj()->black_gc;
+		//gc = get_style()->gtkobj()->white_gc;
+		gc = get_style()->gtkobj()->black_gc;
 		pixmap.create(get_window(), width(), height());
 
 		pixmap.draw_rectangle( gc,
@@ -63,7 +70,7 @@ private:
 		return FALSE;
 	}
 
-	/* Draw a rectangle on the screen */
+	/* Draw a line on the screen */
 	void draw_brush ( gdouble x, gdouble y)
 	{
 		GdkRectangle update_rect;
@@ -74,6 +81,9 @@ private:
 			lastx = xcur;
 			lasty = ycur;
 		}
+		//gc = get_style()->gtkobj()->white_gc;
+		gc.set_foreground( fgcolor );
+		gc.set_background( fgcolor );
 			
 		pixmap.draw_line(
 			gc,
