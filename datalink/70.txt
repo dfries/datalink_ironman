@@ -1,0 +1,177 @@
+The latest version of the document, and other info including my test
+data and decoding program, can be found at
+http://csgrad.cs.vt.edu/~tjohnson/timex/
+
+This version is incomplete (not because I cut out information, but because
+I don't know).
+
+Disclaimer:
+I am not associated with Timex in any way, OTHER than wanting to use their
+datalink watch on a civilized OS (read: Unix).  All this info has been
+discovered by watching the behavior of the FREELY AVAILABLE software
+found on the Timex WWW server.   (http://www.timex.com)
+
+Timex and DataLink are trademarks of Timex.
+
+If you buy, or would buy, a DataLink watch because of the availabilty of
+this information, please email me.  I would like to give Timex a count of
+the number of customers this information has generated.  Perhaps that
+will inspire them to be more open in the future.
+
+-Tommy Johnson
+tjohnson@csgrad.cs.vt.edu
+http://csgrad.cs.vt.edu/~tjohnson/
+
+Physical level:
+The serial data is drawn on the display as a series of 9 horizontal
+lines.  It is convered to serial by the raster scanning the image, one
+word per frame.  The top line is always on, it functions as a start
+bit.  This is why LCD's don't work: they are not scanned in the same
+order.
+
+The words are transfered least significant bit first, bright lines are
+zero, dark lines are one.
+
+The sync signal is the word 0x55 a great many times.  After the 0x55's,
+there are 40 0xAA's, followed by data in packets.
+
+The packets are seperated by 6 empty frames (no start bit either).
+
+Logical level:
+
+The data is sent in packets from 4 to 32 bytes long.
+byte 1      - length
+byte 2      - type
+              0x20  - START1               (one)
+              0x30  - TIME                 (several)
+              0x60  - START2    counts?    (one)
+              0x61  - DATA1                (several)
+              0x62  - END1                 (one)
+              0x50  - ALARM                (several)
+              0x70  - ????                 (several, alternating with ALARM)
+              0x31  - ????
+              0x21  - END2                 (one)
+              In DATA1 and ALARM packets, byte 3 is the packet number
+              (starting at 1)
+
+byte len-1 - check 0
+byte len   - check 1     checksum of come kind
+
+I havn't the foggiest idea what the function for the checksum is.  16 bit CRC?
+
+Next Logical level:
+The packets are sent in this order:
+(from here on, byte 1 is byte 3 in the above list)
+
+one packet type START1 0x20
+byte 1     - 0
+byte 2     - 0
+byte 3     - 1
+Unknown, may be a protocol version, or magic number.  I have never seen
+these numbers change in all my test data.
+
+zero or more packet type TIME 0x30
+byte 1     - timezone   (the watch has two timezones, 1 or 2)
+byte 2     - hour
+byte 3     - minute
+byte 4     - month
+byte 5     - day
+byte 6     -
+byte 7     -
+byte 8     -
+byte 9     -
+byte 10    -
+To indicate the timezone, the computer converts, and just sends a time.
+
+one packet type START2 0x60
+byte 1     - number of DATA1 packets to follow
+
+number from packet START2 packets type DATA1 0x20
+In the first DATA1 packet, the first 15 bytes are:
+byte 1     - sequence number  (1)
+byte 2,3   - start address of appointments
+byte 4,5   - start address of todos
+byte 6,7   - start address of phone numbers
+byte 8,9   - start address of aniversaries
+byte 10    - number of appointments
+byte 11    - number of todos
+byte 12    - number of phone numbers
+byte 13    - number of aniversaries
+byte 14    - 0x60    ?
+byte 15    - how long to beep early, in 5 minute units
+
+In the rest of the DATA1 packets, there are variable length records of the
+following formats, there is no padding to fill the DATA1 packets evenly.
+byte 10 appointments
+byte 11 todos
+byte 12 phone numbers
+byte 14 aniversaries
+
+one packet type END1
+No data, just a checksum
+
+zero or five ALARM packets, one per alarm.  If an alarm is inaudable, its
+ALARM packet is followed by a 0x70 packet.
+Alarms are in ALARM packets.
+byte 1     - count,   1 to 5
+byte 2     - hour
+byte 3     - minute
+byte 4     - month     Set to 0 for every month
+byte 5     - day       Set to 0 for every day
+byte 6-13  - label, in watch char set, 1 char per byte  (NOT packed)
+byte 14    -   1 if audible, 0 otherwise
+
+type 0x70 packet:
+byte 1     - 0  ?
+byte 2     - number of the preceding alarm + 0x61   ?????
+byte 3     - 0  ?
+
+zero or one packet type 0x31
+No idea.  but it only shows up when the time is set.
+
+one packet type END2 0x21
+
+Thats it.
+
+char set for labels is:   (6 bits per char)
+0-9 : digits
+10-36: letters
+37-63: symbols:
+space !"#$%&'()*+,-./;\
+divide =
+bell (image, not sound)
+?
+
+These 4 record types are found in DATA1 packets:
+
+An appointment:
+byte 1      - length
+byte 2      - month
+byte 3      - day
+byte 4      - time
+              bits are: 16 8 4 2 1 0.5 0.25  hours
+byte 5-len-1- label
+              6 bits per char, packed 4 chars to 3 bytes
+                11000000
+                22221111
+                33333322
+byte len   - 0xFC      ?
+
+A ToDo:
+byte 1     - length
+byte 2     - priority
+byte 3-len-1 - label    same as appointment
+byte len   - 0xFD    ?
+
+A Phone number:
+byte 1    - length
+byte 2-6  - phone number, 4 bits per digit, LSnibble first
+byte 7-len-1 - label    same as appointment
+byte len  - 0xF    ?
+
+An anniversary:
+byte 1      - length
+byte 2      - month
+byte 3      - day
+byte 4-len-1 - label    same as appointment
+byte len    - 0xFC   ?
