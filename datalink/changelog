@@ -1,4 +1,17 @@
-02-4-2001:
+02-14-2001:
+The changes listed below from Frank Denis were incorporated with exception
+of the time of the week information, I'll have to look into that later.
+More important user visible changes are as follows,
+	It will now only search in the users path for serblink and svgablink
+		not any hard-coded paths.  Previous behavior was to try
+		the user path and if it wasn't found, try executing
+		the program in the current working directory.
+	settime is now installed by default and will accept a command line for
+		the different types of watches
+	For me, svgablink no longer hangs on exit
+-- David Fries <dfries@mail.win.org>
+
+02-04-2001:
 I don't see the problem with the day of week.  I'm reverting back to
 the previous code.  Will have to investigate sometime.  On my watch
 the code is correct as it used to be (and is now again).
