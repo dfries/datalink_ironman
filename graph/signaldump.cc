@@ -103,7 +103,7 @@ unsigned char decodebyte( int buf[], int bytestart )
 {
 	int location = bytestart;
 	int i;
-	unsigned char byte = 0;
+	unsigned char byte = 0xff;
 	int bit;
 	for( i = 0; i < 8 ; i++ )
 	{
@@ -113,7 +113,7 @@ unsigned char decodebyte( int buf[], int bytestart )
 		if(location == -1 )
 			return byte;
 		bit = round( (location - bytestart)/averagespacing);
-		byte |= ( 1<<(bit-1));
+		byte ^= ( 1<<(bit-1));
 	}
 	return byte;
 }
@@ -129,7 +129,7 @@ unsigned short decodeframe( int buf[], int &lastlocation, int size )
 		lastlocation += framelength;
 		return 0;
 	}
-	byte = (unsigned short) decodebyte( buf, location ) << 8*sizeof(char);;
+	byte = decodebyte( buf, location);
 	lastlocation = location+2*maxbytelength;
 	location = findpeak( buf, location+maxbytelength,
 		location+2*maxbytelength);
@@ -138,7 +138,7 @@ unsigned short decodeframe( int buf[], int &lastlocation, int size )
 		return byte;
 	}
 	lastlocation = location + maxbytelength;
-	byte |= decodebyte( buf, location);
+	byte |= decodebyte( buf, location ) << 8*sizeof(char);
 	return byte;
 }
 
