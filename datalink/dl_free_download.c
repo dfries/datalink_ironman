@@ -37,6 +37,9 @@ dl_free_download()
 	if (dl_download_data.apps)
 		free(dl_download_data.apps);
 
+	if (dl_download_data.chron)
+		free(dl_download_data.chron);
+
 	if (dl_download_data.phones)
 		free(dl_download_data.phones);
 
