@@ -205,6 +205,10 @@ char **argv;
 			type = DATALINK_70;
 		else if (strcmp("-70", argv[1]) == 0)
 			type = DATALINK_70;
+		else if (strcmp("-model150", argv[1]) == 0)
+			type = DATALINK_150;
+		else if (strcmp("-150", argv[1]) == 0)
+			type = DATALINK_150;
 		else if (strcmp("-ironman", argv[1]) == 0)
 			type = DATALINK_IRONMAN;
 		else {
