@@ -79,6 +79,27 @@ ListPtr melody;
 
 	}
 
+	if (chron && chron->download) {
+
+		for (i = 0, ip = chron->first; ip; ip = ip->next, i++) {
+
+			if (!dl_item_ok(wi, ip)) {
+				sprintf(buf, "Bad chron item #%d", i + 1);
+				return((*dl_error_proc)(buf));
+			}
+
+			if (i >= wi->max_chrons)
+				return((*dl_error_proc)("Too many chron items."));
+
+		}
+
+		if (i != chron->count) {
+			last_warn = (*dl_warn_proc)("Chron count value incorrect.");
+			chron->count = i;
+		}
+
+	}
+
 	if (alarms && alarms->download) {
 
 		for (i = 0, ip = alarms->first; ip; ip = ip->next, i++) {
@@ -301,6 +322,21 @@ ListPtr melody;
 		for (i = 0, ip = times->first; ip; ip = ip->next, i++) {
 			memcpy((char *)&dl_download_data.times[i],
 				(char *)&ip->data.time, sizeof(Time));
+		}
+
+	}
+
+	if (chron && chron->download) {
+
+	   if ((dl_download_data.chron =
+			   (ChronPtr)calloc(chron->count, sizeof(Chron))) == NULL)
+			return((*dl_error_proc)("Can't allocate chron download data."));
+
+		dl_download_data.num_chron = chron->count;
+
+		for (i = 0, ip = chron->first; ip; ip = ip->next, i++) {
+			memcpy((char *)&dl_download_data.chron[i],
+				(char *)&ip->data.chron, sizeof(Chron));
 		}
 
 	}
