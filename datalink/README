@@ -12,7 +12,9 @@ watches and serblink (serial blink) program may have been broken with
 my code changes, I have no way to test them.
 
 Compiling:
-Just type `make` on the command line.
+Type make depend to make the dependences.
+	$ make depend
+Then just type `make` on the command line.
 	$ make
 
 Installing:
