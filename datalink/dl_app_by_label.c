@@ -21,7 +21,5 @@
 
 int dl_app_by_label(ItemPtr a, ItemPtr b)
 {
-	int r;
-
 	return (strcmp(a->data.app.label, b->data.app.label));
 }

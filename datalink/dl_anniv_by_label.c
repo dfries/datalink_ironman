@@ -21,7 +21,5 @@
 
 int dl_anniv_by_label(ItemPtr a, ItemPtr b)
 {
-	int r;
-
 	return (strcmp(a->data.anniv.label, b->data.anniv.label));
 }

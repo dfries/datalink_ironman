@@ -17,10 +17,11 @@
  *
  */
 
+#include "datalink.h"
+
 void dl_fill_pack_ascii(unsigned char * to, unsigned char * from, int size,
 	char fill)
 {
-	int c;
 	int l = strlen(from);
 	int i;
 
