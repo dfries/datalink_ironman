@@ -466,20 +466,6 @@ int type;
 		}
 	}
 
-#if 0
-	/* timezone label pre-packet for IRONMAN watch */
-	if( wi->dl_device == DATALINK_IRONMAN && dl_download_data.num_times > 0)
-	{
-		p = 0;
-		buf[p++] = 4;
-		buf[p++] = 0x62;
-
-		dl_docrc(buf);
-
-		if (write(ofd, buf, *buf) != *buf)
-			return((*dl_error_proc)("Can't write timezone label to tmp file."));
-	}
-
 	/* timezone label packet for IRONMAN watch */
 	if( wi->dl_device == DATALINK_IRONMAN )
 	for (i = 0; i < dl_download_data.num_times; i++) {
@@ -496,7 +482,6 @@ int type;
 		if (write(ofd, buf, *buf) != *buf)
 			return((*dl_error_proc)("Can't write timezone label to tmp file."));
 	}
-#endif
 
 
 
