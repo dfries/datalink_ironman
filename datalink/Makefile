@@ -102,6 +102,7 @@ cvt: cvt.o
 	$(CC) $(CFLAGS) -o $@
 
 install: all
+	mkdir -p $(BINDIR) $(MANDIR)/man1
 	install -o root -g video -m 4750 svgablink $(BINDIR)
 	install -o root -g root -m 755 serblink $(BINDIR)
 	install -o root -g root -m 755 setwatch $(BINDIR)
@@ -112,6 +113,7 @@ install: all
 	install -o root -g root -m 644 serblink.1 $(MANDIR)/man1
 
 install-devel: install
+	mkdir -p $(LIBDIR) $(INCDIR)
 	install -o root -g root -m 555 libdatalink.so.1 $(LIBDIR)
 	install -o root -g bin -m 555 libdatalink.a $(LIBDIR)
 	install -o root -g bin -m 444 datalink.h $(INCDIR)
