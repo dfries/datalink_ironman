@@ -6,6 +6,11 @@
  *
  * Modified by David Fries <dfries@mail.win.org> 7/11/99
  * - Added support for the Timex Datalink Ironman Triathlon
+ *
+ * Modified by Danilo Fiorenzano <danilo@telusplanet.net> 9 Dec. 1999
+ * - Added new function "maxPriority()" to switch to SCHED_RR kernel scheduling
+ *   policy at maximum priority and lock all pages into real memory, in order
+ *   to improve timing accuracy.
  * 
  * Permission is hereby granted to copy, reproduce, redistribute or otherwise
  * use this software as long as: there is no monetary profit gained
@@ -23,10 +28,15 @@
 #include <stdio.h>
 #include <sys/fcntl.h>
 #include <signal.h>
+#include <sched.h>
+#include <string.h>
+#include <sys/mman.h>
 
 #define MODEL_70 0
 #define MODEL_150 1
 #define MODEL_IRONMAN 2
+
+void maxPriority(void);
 
 main(argc, argv)
 int argc;
@@ -118,10 +128,25 @@ char **argv;
 	}
 
 /* The rest of this needs to be as root, open_vt, will raise privileges */
+	
 	if ((oldvt = open_vt()) < 0)
 		exit(-1);
 
+	maxPriority();
 	send_data(type, data, p);
 	close_vt(oldvt);
 	exit(0);
+}
+
+
+void maxPriority(void) {
+    struct sched_param scp;
+    
+    memset(&scp, '\0', sizeof(scp));
+    scp.sched_priority = sched_get_priority_max(SCHED_RR);
+    if (sched_setscheduler(0, SCHED_RR, &scp) < 0) 
+	fprintf(stderr, "WARNING: Cannot set RR-scheduler.\n");
+    if (mlockall(MCL_CURRENT|MCL_FUTURE) < 0)
+	fprintf(stderr, "WARNING: Cannot disable paging.\n");
+    
 }
