@@ -295,7 +295,14 @@ void graph_drawing_area::draw_graph( int updatesignal,
 	// read the file
 	signal[updatesignal].file.read( (char *)signal[updatesignal].buffer,
 		width()*sizeof(short));
+	/*
 	ExitOnTrue(!signal[updatesignal].file, "Error reading file" );
+	*/
+	if(!signal[updatesignal].file)
+	{
+		cout << "Warning, error on file read\n";
+		signal[updatesignal].file.clear();
+	}
 	graph_pointer->setfileoffset(updatesignal,
 		signal[updatesignal].location);
 
