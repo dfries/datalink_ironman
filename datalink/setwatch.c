@@ -102,7 +102,7 @@ ListPtr times;
 #define TIMER 0x200
 #define CHRON 0x400
 
-#define ALL 0x1FF
+#define ALL 0x7FF
 #define DB 0x03C
 /*
 #define DEFAULT 0x03F
