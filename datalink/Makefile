@@ -5,7 +5,7 @@ BINDIR=$(PREFIX)/bin
 LIBDIR=$(PREFIX)/lib
 INCDIR=$(PREFIX)/include
 
-CFLAGS = -g -DBINDIR=\"$(BINDIR)\"
+CFLAGS = -Wall -g -DBINDIR=\"$(BINDIR)\"
 #CFLAGS = -O2 -DBINDIR=\"$(BINDIR)\"
 
 PORT = /dev/ttyS0
