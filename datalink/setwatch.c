@@ -73,7 +73,7 @@ ListPtr times;
 		tp->data.time.year = time_s->tm_year;
 		tp->data.time.dow = (time_s->tm_wday + 6)%7;
 		tp->data.time.download = 1;
-#define DEBUGGING
+#ifdef DEBUGGING
 		printf("now %d, offset %d, dz %d, timezone %d\n", now, tp->data.time.offset, time_s->tm_isdst, timezone );
 		printf("%d:%d:%d %d/%d/%d DOW %d\n",
 			time_s->tm_hour,
