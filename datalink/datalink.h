@@ -48,6 +48,7 @@ typedef struct alarm_s {
 
 typedef struct chron_s {
 	unsigned char chron_laps;
+	int memused;
 	char *label;
 } Chron, *ChronPtr;
 

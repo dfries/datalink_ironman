@@ -213,38 +213,6 @@ int type;
 
 	}
 
-#if 0
-	/* timezone label pre-packet for IRONMAN watch */
-	if( wi->dl_device == DATALINK_IRONMAN && dl_download_data.num_times > 0)
-	{
-		p = 0;
-		buf[p++] = 4;
-		buf[p++] = 0x62;
-
-		dl_docrc(buf);
-
-		if (write(ofd, buf, *buf) != *buf)
-			return((*dl_error_proc)("Can't write timezone label to tmp file."));
-	}
-
-	/* timezone label packet for IRONMAN watch */
-	if( wi->dl_device == DATALINK_IRONMAN )
-	for (i = 0; i < dl_download_data.num_times; i++) {
-		p = 0;
-		buf[p++] = 8;
-		buf[p++] = 0x31;
-
-		buf[p++] = dl_download_data.times[i].tz_num;
-		buf[p++] = dl_pack_char(dl_download_data.times[i].label[0]);
-		buf[p++] = dl_pack_char(dl_download_data.times[i].label[1]);
-		buf[p++] = dl_pack_char(dl_download_data.times[i].label[2]);
-		dl_docrc(buf);
-
-		if (write(ofd, buf, *buf) != *buf)
-			return((*dl_error_proc)("Can't write timezone label to tmp file."));
-	}
-#endif
-
 	if (dl_download_data.memory) {
 		memcpy(buf, dstart, *dstart);
 		buf[2] = 1;
@@ -378,6 +346,94 @@ int type;
 			return((*dl_error_proc)("Can't write to tmp file."));
 
 	}
+
+	if ( dl_download_data.chron )
+	{
+		/* The memdata is a where all the data is stored and when all the
+		 * information to be sent that inclues the chron label and laps, and the
+		 * phone data.  The information is broken up into packets and sent one at
+		 * a time.
+		 */
+		char memdata[4096] = { 0 };
+		int p = 0;
+		int labelsize;
+
+		for (i = 0; i < dl_download_data.num_chron; i++) {
+			memdata[p++] = 0;
+			memdata[p++] = 0xe;
+			memdata[p++] = 0;
+			memdata[p++] = dl_download_data.chron[i].memused;
+			memdata[p++] = dl_download_data.chron[i].chron_laps;
+			if ( dl_download_data.num_phones )
+				memdata[p++] = dl_download_data.num_phones;
+			else
+				memdata[p++] = 0;
+			dl_fill_pack_ascii(&memdata[p], dl_download_data.chron[i].label,
+				dl_download_data.max_chron_str, ' ');
+			p += 8;
+		}
+
+		for (i = 0; i < dl_download_data.num_phones; i++) {
+			pp = &dl_download_data.phones[i];
+			labelsize = dl_pack_size(pp->label);
+			printf("label is %s, size is %d\n", pp->label, labelsize );
+			dl_pack_phone(&memdata[p], pp->number, dl_download_data.max_phone_str);
+			p += 6;
+
+			if (labelsize != dl_pack_ascii(&memdata[p], pp->label)) {
+				printf("ERROR Bad pack_ascii.\n");
+				exit(-1);
+			}
+			p += labelsize;
+		}
+
+		/*
+		dl_docrc(buf);
+
+		if (write(ofd, buf, *buf) != *buf)
+			return((*dl_error_proc)("Can't write to tmp file."));
+		*/
+		for( i = 0; i < p; i++ )
+		{
+			printf(" 0x%2x", memdata[i] );
+			if( !p%8 )
+				printf("\n");
+		}
+	}
+
+#if 0
+	/* timezone label pre-packet for IRONMAN watch */
+	if( wi->dl_device == DATALINK_IRONMAN && dl_download_data.num_times > 0)
+	{
+		p = 0;
+		buf[p++] = 4;
+		buf[p++] = 0x62;
+
+		dl_docrc(buf);
+
+		if (write(ofd, buf, *buf) != *buf)
+			return((*dl_error_proc)("Can't write timezone label to tmp file."));
+	}
+
+	/* timezone label packet for IRONMAN watch */
+	if( wi->dl_device == DATALINK_IRONMAN )
+	for (i = 0; i < dl_download_data.num_times; i++) {
+		p = 0;
+		buf[p++] = 8;
+		buf[p++] = 0x31;
+
+		buf[p++] = dl_download_data.times[i].tz_num;
+		buf[p++] = dl_pack_char(dl_download_data.times[i].label[0]);
+		buf[p++] = dl_pack_char(dl_download_data.times[i].label[1]);
+		buf[p++] = dl_pack_char(dl_download_data.times[i].label[2]);
+		dl_docrc(buf);
+
+		if (write(ofd, buf, *buf) != *buf)
+			return((*dl_error_proc)("Can't write timezone label to tmp file."));
+	}
+#endif
+
+
 
 	for (i = 0; i < dl_download_data.num_alarms; i++) {
 		memcpy(buf, alarm, *alarm);

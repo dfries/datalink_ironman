@@ -145,7 +145,7 @@ item		: NAME '=' value '\n'
 
 		strncpy(ip->data.chron.label, msg, l);
 		ip->data.chron.label[l] = '\0';
-		dl_add_to_list(lists[TIMER], ip);
+		dl_add_to_list(lists[CHRON], ip);
 		break;
 
 	case TIMER:

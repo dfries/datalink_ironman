@@ -25,6 +25,9 @@ typedef struct download_s {
 	TimePtr times;
 	int num_alarms;
 	AlarmPtr alarms;
+	int num_chron;
+	int max_chron_str;
+	ChronPtr chron;
 	int num_timers;
 	TimerPtr timers;
 	int memory;
