@@ -466,6 +466,7 @@ item		: NAME '=' value '\n'
 value		: INTEGER ',' DATE ',' TIME ',' STRING ',' INTEGER
 			/* Alarm */
 			{
+				month=day=year=hour=minute=second=audible=0;
 				pos = $1;
 				sscanf($3, "%d/%d/%d", &month, &day, &year);
 				sscanf($5, "%d:%d:%d", &hour, &minute, &second);
@@ -477,6 +478,7 @@ value		: INTEGER ',' DATE ',' TIME ',' STRING ',' INTEGER
 			| INTEGER ',' STRING ',' STRING ',' INTEGER ',' INTEGER
 			/* Timer */
 			{
+				hour=minute=second=repeat=chron=0;
 				pos = $1;
 				sscanf($3, "%d:%d:%d", &hour, &minute, &second);
 				strcpy(msg, $5);
@@ -496,6 +498,7 @@ value		: INTEGER ',' DATE ',' TIME ',' STRING ',' INTEGER
 			| DATE ',' TIME ',' STRING
 			/* Appointment */
 			{
+				month=day=year=hour=minute=second=0;
 				sscanf($1, "%d/%d/%d", &month, &day, &year);
 				sscanf($3, "%d:%d:%d", &hour, &minute, &second);
 				strcpy(msg, $5);
@@ -518,6 +521,7 @@ value		: INTEGER ',' DATE ',' TIME ',' STRING ',' INTEGER
 			| DATE ',' STRING
 			/* Anniversary */
 			{
+				month=day=year=0;
 				sscanf($1, "%d/%d/%d", &month, &day, &year);
 				strcpy(msg, $3);
 				$$ = ANNIV;
@@ -525,6 +529,7 @@ value		: INTEGER ',' DATE ',' TIME ',' STRING ',' INTEGER
 			| INTEGER ',' INTEGER
 			/* System */
 			{
+				chime=beep=0;
 				chime =  $1;
 				beep =  $3;
 				$$ = SYSTEM;
@@ -532,6 +537,7 @@ value		: INTEGER ',' DATE ',' TIME ',' STRING ',' INTEGER
 			| INTEGER ',' STRING ',' INTEGER ',' INTEGER ',' INTEGER
 			/* Timezone */
 			{
+				minute=tfmt=dfmt;
 				pos = $1;
 				strcpy(msg, $3);
 				minute = $5;
