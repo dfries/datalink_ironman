@@ -111,6 +111,7 @@ void close_vt(int oldvt)
 {
 	int fd;
 	struct vt_stat vts;
+	struct vt_mode VT;
 	int vt;
 
 	if (!oldvt)
@@ -118,6 +119,22 @@ void close_vt(int oldvt)
 
 /* Need to become root again to deal with vt's */
 	seteuid(0);
+
+/* SVGA lib sets the tty change mode to require a call back.
+ * We aren't in graphics mode, so set it back to auto.
+ */
+	if( ioctl(0, VT_GETMODE, &VT) == -1)
+	{
+		perror("VT_GETMODE");
+		return;
+	}
+
+	VT.mode = VT_AUTO;
+	if( ioctl(0, VT_SETMODE, &VT)== -1)
+	{
+		perror("VT_SETMODE");
+		return;
+	}
 
 /* Get info on current vt. */
 	if (ioctl(0, VT_GETSTATE, &vts) == -1)
