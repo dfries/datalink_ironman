@@ -35,7 +35,7 @@ int open_vt()
 /* Need to become root again to deal with vt's */
 	seteuid(0);
 
-	if ((fd = open("/dev/tty", O_RDWR)) < 0)
+	if ((fd = open("/dev/tty", O_RDWR)) == -1)
 	{
 		perror("open");
 		return (-1);
@@ -51,40 +51,40 @@ int open_vt()
 /* We are not on a VT, switch to one. */
 	close(fd);
 
-	if ((fd = open("/dev/tty0", O_RDWR)) < 0)
+	if ((fd = open("/dev/tty0", O_RDWR)) == -1)
 	{
 		perror("open");
 		return (-1);
 	}
 
 /* Get info on current vt. */
-	if (ioctl(fd, VT_GETSTATE, &vts) < 0)
+	if (ioctl(fd, VT_GETSTATE, &vts) == -1)
 	{
 		perror("VT_GETSTATE");
 		return (-1);
 	}
 
 /* Open a new vt. */
-	if (ioctl(fd, VT_OPENQRY, &newvt) < 0)
+	if (ioctl(fd, VT_OPENQRY, &newvt) == -1)
 	{
 		perror("VT_OPENQRY");
 		return (-1);
 	}
 
-	if (newvt < 1)
+	if (newvt == -1)
 	{
 		fprintf(stderr, "No free vts to open\n");
 		return (-1);
 	}
 
 /* Make the new vt, the active vt. */
-	if (ioctl(fd, VT_ACTIVATE, newvt) < 0)
+	if (ioctl(fd, VT_ACTIVATE, newvt) == -1)
 	{
 		perror("VT_ACTIVATE");
 		return (-1);
 	}
 
-	if (ioctl(fd, VT_WAITACTIVE, newvt) < 0)
+	if (ioctl(fd, VT_WAITACTIVE, newvt) == -1)
 	{
 		perror("VT_WAITACTIVE");
 		return (-1);
@@ -120,7 +120,7 @@ void close_vt(int oldvt)
 	seteuid(0);
 
 /* Get info on current vt. */
-	if (ioctl(0, VT_GETSTATE, &vts) < 0)
+	if (ioctl(0, VT_GETSTATE, &vts) == -1)
 	{
 		perror("VT_GETSTATE");
 		return;
@@ -130,13 +130,13 @@ void close_vt(int oldvt)
 
 /* Switch back to previous vt. */
 
-	if (ioctl(0, VT_ACTIVATE, oldvt) < 0)
+	if (ioctl(0, VT_ACTIVATE, oldvt) == -1)
 	{
 		perror("VT_ACTIVATE");
 		return;
 	}
 
-	if (ioctl(0, VT_WAITACTIVE, oldvt) < 0)
+	if (ioctl(0, VT_WAITACTIVE, oldvt) == -1)
 	{
 		perror("VT_WAITACTIVE");
 		return;
@@ -148,14 +148,14 @@ void close_vt(int oldvt)
 	setsid();
 
 /* Open current vt. */
-	if ((fd = open("/dev/tty0", O_RDWR)) < 0)
+	if ((fd = open("/dev/tty0", O_RDWR)) == -1)
 	{
 		perror("open");
 		return;
 	}
 
 /* Free up our old vt. */
-	if (ioctl(fd, VT_DISALLOCATE, vt) < 0)
+	if (ioctl(fd, VT_DISALLOCATE, vt) == -1)
 	{
 		perror("VT_DISALLOCATE");
 		return;
