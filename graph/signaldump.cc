@@ -129,7 +129,7 @@ unsigned short decodeframe( int buf[], int &lastlocation, int size )
 		lastlocation += framelength;
 		return 0;
 	}
-	byte = decodebyte( buf, location);
+	byte = decodebyte( buf, location ) << 8*sizeof(char);
 	lastlocation = location+2*maxbytelength;
 	location = findpeak( buf, location+maxbytelength,
 		location+2*maxbytelength);
@@ -138,7 +138,7 @@ unsigned short decodeframe( int buf[], int &lastlocation, int size )
 		return byte;
 	}
 	lastlocation = location + maxbytelength;
-	byte |= decodebyte( buf, location ) << 8*sizeof(char);
+	byte |= decodebyte( buf, location);
 	return byte;
 }
 
@@ -147,20 +147,43 @@ void decodestream( int buf[], int size )
 	int current = findsignal( buf, size );
 	int wide = 1;
 	const int framesperline = 4;
+	int recorddata = 0;
+	int blanks = 0;
+	int foundsync = 0;
 	while( current < size-2*framelength )
 	{
-		cout << "0x" << setbase(16) << setw(4) << setfill('0');
 		buf[2*(wide-1)] = decodeframe( buf, current, size);
 		buf[2*(wide-1)+1] = current;
+#ifdef DUMPDATA
+		cout << "0x" << setbase(16) << setw(4) << setfill('0');
 		cout << buf[2*(wide-1)];
 		cout << setbase(10) << ", " << setfill(' ')
 			<< setw(7) << current;
-		if( !(wide++ % 4) )
+#endif
+		if( !foundsync && (buf[2*(wide-1)]!=0x5555||
+			buf[2*(wide-1)]!=0xaa00) )
+			continue;
+		else
+			foundsync = 1;
+		if( !recorddata && 
+			(buf[2*(wide-1)]==0x5555||
+			buf[2*(wide-1)]==0xaa00||
+			buf[2*(wide-1)]==0x0000))
+			continue;
+		recorddata=1;
+		if( buf[2*(wide-1)] == 0x0000 )
+		if( blanks > 20 )
+			break;
+		else
+			blanks++;
+#ifdef DUMPDATA
+		if( !(wide % 4) )
 			cout << endl;
 		else
 			cout << ";  ";
+#endif
+		wide++;
 	}
-	cout << "----------------------------------------------\n";
 
 	int entries = (int)ceil((double)wide/4);
 	for( int n = 0; n < entries ; n++)
