@@ -355,34 +355,6 @@ int type;
 
 	}
 
-	for (i = 0; i < dl_download_data.num_alarms; i++) {
-		memcpy(buf, alarm, *alarm);
-		buf[2] = dl_download_data.alarms[i].alarm_num;
-		buf[3] = dl_download_data.alarms[i].hours;
-		buf[4] = dl_download_data.alarms[i].minutes;
-		buf[5] = dl_download_data.alarms[i].month;
-		buf[6] = dl_download_data.alarms[i].day;
-		if( wi->dl_device == DATALINK_IRONMAN)
-		{
-			buf[7] = dl_download_data.alarms[i].audible;
-			dl_fill_pack_ascii(&buf[8], dl_download_data.alarms[i].label,
-				dl_download_data.max_alarm_str, ' ');
-			buf[0] = 0x1a;
-			buf[1] = 0x50;
-		}
-		else
-		{
-		dl_fill_pack_ascii(&buf[7], dl_download_data.alarms[i].label,
-			dl_download_data.max_alarm_str, ' ');
-		buf[15] = dl_download_data.alarms[i].audible;
-		}
-		dl_docrc(buf);
-
-		if (write(ofd, buf, *buf) != *buf)
-			return((*dl_error_proc)("Can't write to tmp file."));
-
-	}
-
 	for (i = 0; i < dl_download_data.num_timers; i++) {
 		memcpy(buf, timer, *timer);
 		buf[2] = dl_download_data.timers[i].timer_num;
