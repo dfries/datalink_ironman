@@ -20,6 +20,8 @@
  *
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include "datalink.h"
 #include "datalink_private.h"
 
@@ -233,13 +235,6 @@ int dl_item_ok(WatchInfoPtr wi, ItemPtr ip)
 
 		break;
 	case DL_CHRON_TYPE:
-
-		if (ip->data.chron.chron_laps < 0)
-		{
-			sprintf(buf,
-				"Negative laps not allowed in chron.");
-			(*dl_warn_proc) (buf);
-		}
 
 		if (!dl_string_ok(ip->data.chron.label, wi->max_chron_str))
 		{
