@@ -149,6 +149,7 @@ void decodestream( int buf[], int size )
 	const int framesperline = 4;
 	int recorddata = 0;
 	int blanks = 0;
+	int blankstart = 0;
 	int foundsync = 0;
 	while( current < size-2*framelength )
 	{
@@ -160,7 +161,7 @@ void decodestream( int buf[], int size )
 		cout << setbase(10) << ", " << setfill(' ')
 			<< setw(7) << current;
 #endif
-		if( !foundsync && (buf[2*(wide-1)]!=0x5555||
+		if( !foundsync && (buf[2*(wide-1)]!=0x5555&&
 			buf[2*(wide-1)]!=0xaa00) )
 			continue;
 		else
@@ -172,10 +173,15 @@ void decodestream( int buf[], int size )
 			continue;
 		recorddata=1;
 		if( buf[2*(wide-1)] == 0x0000 )
-		if( blanks > 20 )
-			break;
+			if( blanks > 15 )
+				break;
+			else
+				blanks++;
 		else
-			blanks++;
+		{
+			blanks = 0;
+			blankstart = wide;
+		}
 #ifdef DUMPDATA
 		if( !(wide % 4) )
 			cout << endl;
@@ -185,19 +191,21 @@ void decodestream( int buf[], int size )
 		wide++;
 	}
 
+	if( blanks != 0)
+		wide = blankstart;
+
 	int entries = (int)ceil((double)wide/4);
 	for( int n = 0; n < entries ; n++)
 	{
 	for( int i = 0; i < framesperline; i++)
 	{
+		if( (i*entries+n) >= wide )
+			break;
 		cout << "0x" << setbase(16) << setw(4) << setfill('0');
 		cout << buf[2*(i*entries+n)];
 		cout << setbase(10) << ", " << setfill(' ')
 			<< setw(7) << buf[2*(i*entries+n)+1];
-		if( (i*entries+n)+3 > wide )
-			break;
-		else
-			cout << ";  ";
+		cout << ";  ";
 	}
 		cout << endl;
 	}
