@@ -120,6 +120,11 @@ int type;
 
 	if (wi->dl_device == DATALINK_70)
 		buf[4] = 1;
+	if (wi->dl_device == DATALINK_IRONMAN)
+	{
+		buf[4] = 9;
+		buf[5] = 6;
+	}
 
 	dl_docrc(buf);
 
