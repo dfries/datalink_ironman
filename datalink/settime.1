@@ -1,0 +1,76 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH DATALINK 1 "December  1, 2001"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+setwatch, settime \- programs to send data to your Timex Datalink watch
+.SH SYNOPSIS
+.B setwatch
+.RI [ WATCH_TYPE ]\ [ OPTIONS ]\ [ DATAFILE ]
+.br
+.B settime
+.RI [ WATCH_TYPE ]
+.SH DESCRIPTION
+This manual page documents briefly the
+.B setwatch
+and
+.B settime
+commands.
+This manual page was written for the Debian GNU/Linux distribution
+because the original programs do not have manual pages.
+.PP
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics, 
+.\" respectively.
+\fBsetwatch\fP is the main program in the datalink suite that can send
+data to your Timex Datalink watch.  It can send all types of data used
+by these watches.
+.PP
+\fBsettime\fP is a simple utility that will just update the time on your
+watch. It will only accept a watch-type argument (defaulting to
+-ironman) and sends just the time.
+.SH WATCH_TYPE
+.TP
+.B \-\-help
+Show summary of options.
+.TP
+.B \-ironman
+Use if you have an Ironman Datalink watch.  This is the default.
+.TP
+.B \-70, \-\-model70
+Use if you have a model 70 watch.
+.TP
+.B \-150s, \-\-model150
+Use if you have a model 150 watch.
+.TP
+.B \-150, \-\-model150s
+Use if you have a model 150s watch.
+.SH OPTIONS
+Run "setwatch -help" for options summary.
+.SH DATAFILE
+By default, the datafile will be loaded from ~/.datalink/datafile.  Just
+copy the example file (/usr/doc/datalink/datafile) to this location and
+edit it as you please before running setwatch.  Note that if you specify
+no options, nothing will happen.  Perhaps you want to try the -all
+option to start.
+.SH AUTHOR
+The original watchlink software was written by Karl R. Hakimian.
+.PP
+The datalink software, based on watchlink, was written by David Fries
+<dfries@mail.win.org>
+.PP
+This manual page was written by Steaphan Greene <stea@cs.binghamton.edu>,
+for the Debian GNU/Linux system (but may be used by others).

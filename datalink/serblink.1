@@ -1,0 +1,50 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH DATALINK 1 "December  1, 2001"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+svgablink, serblink \- programs to send raw data to your Timex Datalink watch
+.SH SYNOPSIS
+.B svgablink
+.RI <DATA_FILE>
+.br
+.B serblink
+.RI <DATA_FILE>
+.SH DESCRIPTION
+This manual page documents briefly the
+.B svgablink
+and
+.B serblink
+commands.
+This manual page was written for the Debian GNU/Linux distribution
+because the original programs do not have manual pages.
+.PP
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics, 
+.\" respectively.
+\fBsvgablink\fP and \fBserblink\fP are programs that send data to the
+screen or serial transmitter (respectively) to communicate with a Timex
+Datalink watch.  They are used by the programs "setwatch" and "settime".
+.SH "SEE ALSO"
+setwatch(1), settime(1).
+.SH AUTHOR
+The original watchlink software was written by Karl R. Hakimian.
+.PP
+The datalink software, based on watchlink, was written by David Fries
+<dfries@mail.win.org>
+.PP
+This manual page was written by Steaphan Greene <stea@cs.binghamton.edu>,
+for the Debian GNU/Linux system (but may be used by others).
