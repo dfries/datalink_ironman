@@ -17,6 +17,12 @@ phone = "111111111111", "000000000000000"
 phone = "9119119111 W", "call me"
 phone = "5093363720 C", "Garren"
 
+# appointment (model 70 and 150)
+# appointment = MM/DD/YY, hh:mm:ss, "15 char message"
+#appointment = 10/29/99, 14:30, "this is a test"
+# do appointments not take a year?
+appointment = 10/29, 14:30, "this is a test"
+
 # chrono label and number of laps, "8 char label", laps range from 2 to 50
 # default entry
 #chron = "  Chrono", 8
