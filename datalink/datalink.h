@@ -46,6 +46,11 @@ typedef struct alarm_s {
 	unsigned char audible;
 } Alarm, *AlarmPtr;
 
+typedef struct chron_s {
+	unsigned char chron_laps;
+	char *label;
+} Chron, *ChronPtr;
+
 typedef struct timer_s {
 	unsigned char timer_num;
 	unsigned char hours;
@@ -124,6 +129,7 @@ typedef struct watch_info_s {
 	int max_tz;
 	int max_alarms;
 	int max_apps;
+	int max_chrons;
 	int max_phones;
 	int max_timers;
 	int max_todos;
