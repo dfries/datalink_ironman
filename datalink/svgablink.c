@@ -37,19 +37,21 @@ char **argv;
 	int n;
 	int p = 0;
 	int type = MODEL_IRONMAN;
-	int odd = 0;
 
 	while (argc > 1 && *argv[1] == '-') {
 
+		if (strcmp(argv[1], "-ironman") == 0 || strcmp(argv[1], "-modelironman") == 0)
+			type = MODEL_IRONMAN;
+		else
 		if (strcmp(argv[1], "-150") == 0 || strcmp(argv[1], "-model150") == 0)
 			type = MODEL_150;
-		else {
+		else
 		if (strcmp(argv[1], "-70") == 0 || strcmp(argv[1], "-model70") == 0)
 			type = MODEL_70;
-		else {
+		else
+		{
 			fprintf(stderr, "Unknown option %s.\n", argv[1]);
 			exit(-1);
-		}
 		}
 
 		argc--;
@@ -77,28 +79,20 @@ char **argv;
 
 /* Read in packets. */
 	while ((n = read(fd, &size, 1)) == 1) {
-
-		/* if size is odd, read an additional byte, unless 
-		 * it is one of the special sizes
-		 */
-		if(type == MODEL_IRONMAN && size%2 )
-			odd = 1;
-		else
-			odd = 0;
-		
 		size--;
-		if ((n = read(fd, buf, size+odd)) != size+odd)
+
+		if ((n = read(fd, buf, size)) != size)
 			break;
 
 		size++;
 
-		if ((data[p] = (char *)malloc(size+odd)) == NULL) {
+		if ((data[p] = (char *)malloc(size)) == NULL) {
 			fprintf(stderr, "Could not allocate data buffer.\n");
 			exit(-1);
 		}
 
 		*data[p] = size;
-		memcpy(&data[p++][1], buf, size +odd- 1);
+		memcpy(&data[p++][1], buf, size - 1);
 	};
 
 	if (n != 0) {
