@@ -4,6 +4,8 @@
  * Modified by David Fries <dfries@mail.win.org> 7/11/99
  * - Added support for the Timex Datalink Ironman Triathlon
  */
+#include <unistd.h>
+#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/stat.h>
