@@ -2,6 +2,11 @@
 /* Written by Karl R. Hakimian 10/3/96                         */
 /*                                                             */
 /* Now warranty expressed or implied, use it as you see fit.   */
+ /*
+ *
+ * Modified by David Fries <dfries@mail.win.org> 7/11/99
+ * - Added support for the Timex Datalink Ironman Triathlon
+ */
 
 #include <stdio.h>
 #include <time.h>

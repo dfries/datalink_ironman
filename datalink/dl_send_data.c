@@ -3,6 +3,9 @@
  * datazap: Linux version of Timex/Microsoft SDK for Timex datalink watches.
  *
  * Written by Karl R. Hakimian 10/3/96
+ *
+ * Modified by David Fries <dfries@mail.win.org> 7/11/99
+ * - Added support for the Timex Datalink Ironman Triathlon
  * 
  * Permission is hereby granted to copy, reproduce, redistribute or otherwise
  * use this software as long as: there is no monetary profit gained
@@ -399,7 +402,6 @@ int type;
 				exit(-1);
 			}
 			p += labelsize;
-			#warning there should be more rime or reason to this
 		}
 
 		if (p > maxdatasize )

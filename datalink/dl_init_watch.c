@@ -3,6 +3,9 @@
  * datalink: Timex Data Link Watch download Library
  *
  * Written by Karl R. Hakimian 10/3/96
+ *
+ * Modified by David Fries <dfries@mail.win.org> 7/11/99
+ * - Added support for the Timex Datalink Ironman Triathlon
  * 
  * Permission is hereby granted to copy, reproduce, redistribute or otherwise
  * use this software as long as: there is no monetary profit gained
