@@ -10,7 +10,8 @@
 
 #include <stdio.h>
 #include <time.h>
-#include <datalink.h>
+#include <string.h>
+#include "datalink.h"
 
 extern char *tzname[];
 
@@ -21,7 +22,6 @@ int set_time(WatchInfoPtr wi)
 	ListPtr times;
 	ItemPtr tp;
 	int isdst;
-	int err;
 
 	now = time(NULL) + 9;	/* Offset for sending to watch. */
 	now_s = localtime(&now);
@@ -37,6 +37,7 @@ int set_time(WatchInfoPtr wi)
 	tp->data.time.month = now_s->tm_mon + 1;
 	tp->data.time.day = now_s->tm_mday;
 	tp->data.time.year = now_s->tm_year;
+/* TODO: investigate, see change log */
 	tp->data.time.dow = (now_s->tm_wday + 6) % 7;
 	tp->data.time.hour_fmt = 1;
 	tp->data.time.download = 1;
@@ -58,6 +59,7 @@ int set_time(WatchInfoPtr wi)
 	tp->data.time.month = now_s->tm_mon + 1;
 	tp->data.time.day = now_s->tm_mday;
 	tp->data.time.year = now_s->tm_year;
+/* TODO: investigate, see change log */
 	tp->data.time.dow = (now_s->tm_wday + 6) % 7;
 	tp->data.time.hour_fmt = 1;
 	tp->data.time.download = 1;
@@ -69,23 +71,21 @@ int set_time(WatchInfoPtr wi)
 	return (0);
 }
 
-my_error_proc(char *msg)
+int my_error_proc(char *msg)
 {
 	fprintf(stderr, "ERROR: %s\n", msg);
 	exit(-1);
 }
 
-my_warn_proc(char *msg)
+int my_warn_proc(char *msg)
 {
 	fprintf(stderr, "WARNING: %s\n", msg);
 	return (0);
 }
 
-main()
+int main( int argc, char ** argv)
 {
 	WatchInfoPtr wi;
-	int ret;
-	int err;
 
 /*
  Use my error proc to exit on error and my warn proc to ignore warnings
@@ -93,7 +93,33 @@ main()
 	dl_set_error(my_error_proc);
 	dl_set_warn(my_error_proc);
 
-	wi = dl_init_watch(DATALINK_150);
+	if(argc==2)
+	{
+		if(!strcmp("-model70",argv[1])||!strcmp("-70",argv[1]))
+			wi = dl_init_watch(DATALINK_70);
+		else
+		if(!strcmp("-model150",argv[1])||!strcmp("-150",argv[1]))
+			wi = dl_init_watch(DATALINK_150);
+		else
+		if(!strcmp("-model150s",argv[1])||!strcmp("-150s",argv[1]))
+			wi = dl_init_watch(DATALINK_150S);
+		else
+		if(!strcmp("-ironman",argv[1]))
+			wi = dl_init_watch(DATALINK_IRONMAN);
+		else
+		{
+			printf("Usage: %s [ -model70 | -70 | -model70 | "
+				"-150 | -model150 | -model150s | -150s |"
+				" -ironman]\n", argv[0]);
+			printf("The default is -model150 "
+				"is none is specified\n");
+			exit(1);
+		}
+	}
+	else
+	{
+		wi = dl_init_watch(DATALINK_150);
+	}
 /*
  Set the time.
 */
@@ -103,5 +129,5 @@ main()
  Send it to the watch
 */
 	dl_send_data(wi, SVGA_BLINK);
-	exit(0);
+	return 0;
 }

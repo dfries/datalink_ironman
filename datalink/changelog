@@ -1,3 +1,9 @@
+02-4-2001:
+I don't see the problem with the day of week.  I'm reverting back to
+the previous code.  Will have to investigate sometime.  On my watch
+the code is correct as it used to be (and is now again).
+-- David Fries
+
 04-22-2000:
 Fixed a bug with the day of the week that was shifted by one. Please report
 if it broke something.
