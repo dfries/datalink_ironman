@@ -215,7 +215,8 @@ typedef struct watch_info_s
 #define NO_WATCH 0
 #define DATALINK_70 1
 #define DATALINK_150 2
-#define DATALINK_IRONMAN 3
+#define DATALINK_150S 3
+#define DATALINK_IRONMAN 4
 
 #define DEF_LPTRANSINFO 1
 
