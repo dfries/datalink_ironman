@@ -145,7 +145,7 @@ int main(int argc, char **argv)
 
 /* The rest of this needs to be as root, open_vt, will raise privileges */
 
-	if ((oldvt = open_vt()) < 0)
+	if ((oldvt = open_vt()) == -1)
 		exit(-1);
 
 	maxPriority();
