@@ -2,7 +2,33 @@
 #include <gdk--.h>
 #include <gtk/gtk.h>
 #include <gtk--/fileselection.h>
+#include <fstream.h>
 #include <iostream>
+
+#define ExitOnTrue( file, msg ) if(file){ cout << msg ;\
+	cout << __FUNCTION__ << "() " << __FILE__ << ':' << __LINE__ << endl;\
+	exit(1); }
+
+
+struct signalinfo
+{
+	ifstream file;	// file to read from
+	int location;	// where in the file we are, -1 initially
+	short * buffer;	// where to put the temporary information
+	GdkPoint *points;	// the point objects for this signal
+	double vloc;	// how high or low to display the signal
+	double vzoomfact;	// how far to zoom vertically, higher is zoomout
+	Gdk_Color fg;	// the foreground color
+	Gdk_Color bg;	// the background color
+};
+
+const int testsignal = 0;
+const int syncsignal = 1;
+const int numsignals = 2;
+const char* syncfile = "/tmp/sync";
+
+const int DefaultWidth = 400;
+const int DefaultHeight = 400;
 
 class graph_drawing_area : public Gtk_DrawingArea
 {
@@ -16,11 +42,47 @@ public:
 			| GDK_POINTER_MOTION_HINT_MASK);
 		lastx = -1;
 		lasty = -1;
-		//fgcolor.set_rgb( 30000, 0, 10000);
-		fgcolor.set_rgb_p( 0, 0, 1);
 		colormap = colormap.get_system();
-		//fgcolor = colormap.black();
-		colormap.alloc( fgcolor );
+		for( int i = 0; i < numsignals; i++)
+		{
+			signal[i].file.open(syncfile, ios::in);
+			ExitOnTrue( !signal[i].file, "Error opening " 
+				<< syncfile);
+			signal[i].location = -1;
+			signal[i].vloc = 6000;
+			signal[i].vzoomfact = 3;
+			signal[i].bg = colormap.black();
+		}
+		signal[testsignal].fg.set_rgb_p( 0,1,0);
+		colormap.alloc( signal[testsignal].fg);
+		signal[syncsignal].fg.set_rgb_p( 1, 0, 0);
+		colormap.alloc( signal[syncsignal].fg);
+
+		black.set_rgb_p( 0, 0, 0);
+		colormap.alloc( black );
+
+		numpoints = DefaultWidth;
+		points = new GdkPoint[numpoints];
+	}
+
+	~graph_drawing_area()
+	{
+	}
+
+	void setinputfile ( string name, int signalnum )
+	{
+		if( signalnum < 0 || signalnum >= numsignals )
+		{
+			cerr << "Trying to set the file " << name
+				<< " to a nonexisting signal " << signalnum
+				<< endl;
+		}
+
+		signal[signalnum].file.close();
+		signal[signalnum].file.open( name.c_str() );
+		ExitOnTrue( !signal[signalnum].file, "Error opening "
+			<< name );
+		signal[signalnum].location = 0;
 	}
 private:
 
@@ -36,6 +98,7 @@ private:
 		}
 		//gc = get_style()->gtkobj()->white_gc;
 		gc = get_style()->gtkobj()->black_gc;
+		gc.set_foreground( black );
 		pixmap.create(get_window(), width(), height());
 
 		pixmap.draw_rectangle( gc,
@@ -51,6 +114,7 @@ private:
 	{
 		gc = get_style()->gtkobj()->fg_gc
 			[GTK_WIDGET_STATE (GTK_WIDGET(gtkobj()))];
+		gc.set_foreground( black );
 		// Same like above + Gtk_Widget has set_state function but
 		// no get_state function.
 		win.draw_pixmap( gc,
@@ -61,7 +125,7 @@ private:
 		return FALSE;
 	}
 
-	/* Draw a line on the screen */
+	/* Draw the signals on the screen */
 	void draw_brush ( gdouble x, gdouble y)
 	{
 		GdkRectangle update_rect;
@@ -94,13 +158,32 @@ private:
 
 	gint button_press_event_impl (GdkEventButton *event)
 	{
+		int updatesignal = (event->y >= height()/2);
+		if(event->button == 2 && pixmap)
+			draw_graph( updatesignal, -width(), 0);
+		if(event->button == 3 && pixmap)
+			draw_graph( updatesignal, width(), 0);
 		if(event->button == 1 && pixmap)
-			draw_brush(event->x, event->y);
+		{
+			lastx = (int)event->x;
+			lasty = (int)event->y;
+		}
 		return TRUE;
+	}
+
+	gint button_release_event_impl (GdkEventButton *event)
+	{
+		int updatesignal = (event->y >= height()/2);
+		if( event->button == 1 && pixmap)
+		{
+			draw_graph( updatesignal, (int)(event->x - lastx),
+				(int)(event->y - lasty));
+		}
 	}
 
 	gint motion_notify_event_impl (GdkEventMotion *event)
 	{
+		GdkModifierType state;
 		int x, y;
 		GdkModifierType state;
 		if (event->is_hint)
@@ -113,7 +196,8 @@ private:
 		}
 
 		if(state& GDK_BUTTON1_MASK && pixmap )
-			draw_brush(x,y);
+			move_graph( updatesignal, (int)(event->x - lastx),
+				(int)(event->y - lasty));
 		return TRUE;
 	}
 
@@ -125,8 +209,11 @@ private:
 	Gdk_Visual visual;
 	int lastx;
 	int lasty;
-	Gdk_Color fgcolor;
+	Gdk_Color black;
 	Gdk_Colormap colormap;
+	signalinfo signal[numsignals];
+	GdkPoint *points;
+	int numpoints;
 
 };
 
@@ -141,7 +228,7 @@ public:
 		add(&vbox);
 
 		/* Creaet the drawing area */
-		drawing_area.size(400,400);
+		drawing_area.size(DefaultWidth,DefaultHeight);
 		vbox.pack_start(drawing_area, TRUE, TRUE, 0);
 
 		/* Add the hbox to the buttom */
@@ -185,6 +272,7 @@ private:
 	void FSbuttonpressed()
 	{
 		cout << "File Selected " << fs->get_filename() << endl;
+		drawing_area.setinputfile( fs->get_filename(), testsignal);
 		fs->hide();
 	}
 	void showfileselection()
