@@ -23,6 +23,7 @@
 
 #define MODEL_70 0
 #define MODEL_150 1
+#define MODEL_IRONMAN 2
 
 send_data(type, packets, npckts)
 int type;
@@ -60,18 +61,32 @@ int npckts;
 	for (i = 0; i < npckts; i++) {
 
 		for (j = 0; j <= *packets[i]; j += inc) {
+			if( type == MODEL_IRONMAN && j == *packets[i] )
+				break;
+			printf("j is %d, *packets[i] is %d\n", j, *packets[i]);
+			printf("sync\n");
 			vga_waitretrace();
 			byte = packets[i][j];
 			WRITE_BYTE1(1, byte)
+			printf("1-%x;  ", byte);
 
 			if (type == MODEL_70)
 				continue;
 
-			if (j + 1 == packets[i][0])
-				WRITE_BYTE2(0, 0xff)
-			else {
-				byte = packets[i][j + 1];
+			if ( type == MODEL_IRONMAN )
+			{
+				byte = packets[i][j+1];
 				WRITE_BYTE2(1, byte)
+				printf("2-%x;  ", byte);
+			}
+			else
+			{
+				if (j + 1 == packets[i][0])
+					WRITE_BYTE2(0, 0xff)
+				else {
+					byte = packets[i][j + 1];
+					WRITE_BYTE2(1, byte)
+				}
 			}
 
 		}
