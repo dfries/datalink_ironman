@@ -13,7 +13,11 @@ timer = 1, "12:34:11", "test 123", 0, 0
 timer = 2, "00:15", "15 mins.", 1, 0
 timer = 3, "00:30", "30 mins.", 0, 1
 
-#phone = "5093363720 C", "Garren"
+phone = "5093363720 C", "Garren"
+phone = "111111111111", "000000000000000"
+
+# chrono label and number of laps, "8 char label", laps range from 2 to 50
+chron = "Chrono", 8
 
 # hourly chime, button beep
 system = 0, 0
