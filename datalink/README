@@ -77,6 +77,8 @@ protocol was decoded by taking a light sensitive circuit, placing it
 in from of a CRT screen that was flashing data from the Timex software,
 recording it with a sound card, and useing software I wrote to
 turn it back into data.  Then figuring out by hand what it means.
+	When doing any transfers the chronograph and timer is stopped.
+This is just so you know.
 
 David Fries
 dfries@mail.win.org
