@@ -44,6 +44,30 @@ void dumpdata( int buf[], int size )
 		<< setw(6) << (buf[size-1] - buf[size-2-1]) << endl;
 }
 
+const int minpeakvalue = 250;
+// find first peak that is over 250 high, using the diff as the sum of
+// the change from the previous sample of three samples
+// return -1 if the peak was not found
+int findpeak( int buf[], int start, int end )
+{
+	int diff;
+	int i;
+	for( i = start; i < end-3; i++)
+	{
+		diff = buf[i+3]-buf[i];
+		if( diff > minpeakvalue )
+			return i+1;
+	}
+	return -1;
+}
+
+// decode a frame worth of data
+void decodeframe( int buf[], int size )
+{
+	int location = findpeak( buf, 0, 200);
+	cout << "Location found was " << location << endl;
+}
+
 int main( int argc, char ** argv)
 {
 	if( argc < 4 )
@@ -71,7 +95,8 @@ int main( int argc, char ** argv)
 	ExitOnTrue( !infile, "Error reading " << *(argv+1));
 
 	makenice( buf, nice, amount );
-	dumpdata( nice, amount);
+//	dumpdata( nice, amount);
+	decodeframe( nice, amount );
 
 	delete [] buf;
 	infile.close();
