@@ -380,6 +380,7 @@ int type;
 			dl_fill_pack_ascii(&memdata[p], dl_download_data.chron[i].label,
 				dl_download_data.max_chron_str, ' ');
 			p += 8;
+			memdata[p++] = 0x13;
 		}
 
 		for (i = 0; i < dl_download_data.num_phones; i++) {
@@ -394,6 +395,8 @@ int type;
 				exit(-1);
 			}
 			p += labelsize;
+			#warning there should be more rime or reason to this
+			memdata[p++] = 0x10;
 		}
 
 		if (p > maxdatasize )
@@ -431,6 +434,7 @@ int type;
 			printf("i %d, buf[0] 0x%0.2x, size %d, offset %d\n",
 				i, buf[0], size, offset );
 			buf[1] = 0x61;
+			buf[2] = i+1;
 			buf[3] = i;
 			memcpy(&buf[3], &memdata[offset], size);
 			dl_docrc(buf);
