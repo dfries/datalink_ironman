@@ -1,0 +1,115 @@
+#include <datalink.h>
+
+WatchInfoPtr dl_init_watch(int which_watch);
+
+  which_watch is currently only DATALINK_150;
+
+  returns a pointer to a new WatchInfo pointer, NULL on error. If there
+  is an error, dl_error_proc will also be called. dl_error_proc can be
+  set with dl_set_error
+
+ItemPtr dl_new_item(WatchInfoPtr wi, int type);
+
+  wi is the WatchInfoPtr returned by dl_init_watch.
+  type can be one of
+     DL_TIME_TYPE for time packet
+     DL_ALARM_TYPE for alarm packet
+     DL_APP_TYPE for appointment packet
+     DL_PHONE_TYPE for phone packet
+     DL_TODO_TYPE for todo packet
+     DL_ANNIV_TYPE for anniversary packet
+     DL_SYSTEM_TYPE for system packet
+     DL_WRISTAPP_TYPE for wristapp packet
+     DL_MELODY_TYPE for melody packet
+
+  dl_new_item allocate an item structure and initializes it with the item
+  type supplied. 
+
+  returns a pointer to a new item, NULL on error. If there is an error,
+  dl_error_proc will also be called. dl_error_proc can be set with
+  dl_set_error
+
+int dl_init_download(WatchInfoPtr wi, List times, List alarms, 
+                     List apps, List phones, List todos, List annivs,
+                     List system, List wristapp, List melody);
+
+  wi is the WatchInfoPtr returned by dl_init_watch. times is the list
+  of times to download. alarams is the list of alarms to download, apps
+  is the list of appointments to download, phones is the list of phone
+  numbers to download, todos is the list of todo items to download,
+  annivs is the list of anniversaries to download, system is the list of
+  system data to download, wristapp is the list of wristapps to download
+  and melody is the list of melodies to download. Currently, system,
+  wristapp and melody can only be a list of 1 item.
+
+  dl_init_download will check the validity of the data being
+  downloaded to the watch. If everything is ready for the download,
+  dl_init_download will copy all of the data in preparation for a call
+  to dl_send_data.
+
+  If there are any problems with the data, depending on the severity,
+  dl_error_proc or dl_warn_proc will be called and the value of that
+  call will be retuned from dl_init_download.
+
+int dl_send_data(int device);
+
+  device is the type of output device to use in the download to
+  (SVGA_BLINK, SER_BLINK, PACKET_FILE).
+
+  dl_send_data will send the data prepared by dl_init_download using the
+  the selected blink engine. On error dl_error_proc is called and its
+  return value is returned.
+
+int dl_sizeof_item(ItemPtr item);
+
+  item is the item that you want to get a size of. The size is how
+  much of the database space in the watch that will be taken up by the
+  item. For Time, Alarm, System, WristApp, and Melody packets, the size
+  is 0.
+
+int dl_sizeof_list(List list);
+
+  list is a list of item that you want to get a size of. The size is how
+  much of the database space in the watch that will be taken up by the
+  item. For Time, Alarm, System, WristApp, and Melody packets, the size
+  is 0.
+
+int dl_item_ok(WatchInfoPtr wi, ItemPtr item);
+
+  wi is the WatchInfoPtr returned by dl_init_watch. times is the list
+  item is the item returned from dl_new_item that has had the data
+  portion filled by the calling application.
+
+  returns 1 if the item is OK, 0 otherwise.
+
+void dl_free_download()
+
+  free up space allocated for a download by dl_init_download.
+
+WatchInfoPtr dl_read_save(char *file, ListPtr *alarms, ListPtr *apps,
+	ListPtr *phones, ListPtr *todos, ListPtr *annivs, ListPtr *system,
+	ListPtr *wristapp, ListPtr *melody);
+
+  Initialize a watch structure with the contects of file. Return a watch
+  info structure and the lists.
+
+int dl_write_save(char *file, char *wristappfile, char *melodyfile);
+
+  Save the contents of a download to a reloadable file. dl_write_save
+  must be called after dl_init_download. file is the file to write the
+  save to. wristappfile is the file that the selected wristapp can be
+  read from. melodyfile is the file that the selected melody scheme can
+  be read from.
+
+int dl_pack_ascii(char *to, char *from);
+
+  Pack the characters in from into to using the watch character set.
+
+void dl_pack_fill_ascii(char *to, char *from, int size, char fill);
+
+  Pack the characters in from into to using the watch character
+  set. This is packed one character perl byte (unlike dl_pack_ascii).
+
+char dl_pack_char(char c);
+
+  Convert c into the watch characters set.
