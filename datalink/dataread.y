@@ -550,12 +550,13 @@ value		: INTEGER ',' DATE ',' TIME ',' STRING ',' INTEGER
 			;
 
 %%
-dl_error(char *s)
+int dl_error(char *s)
 {
 	char buf[1024];
 
-	sprintf(buf, "%s on line %d.",s,line_num);
+	snprintf(buf, sizeof buf,"%s on line %d.",s,line_num);
 	(*dl_error_proc)(buf);
+	return 0;
 }
 
 extern FILE *dl_in;
