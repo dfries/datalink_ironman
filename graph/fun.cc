@@ -43,6 +43,7 @@ public:
 	~graph_drawing_area();
 	void setinputfile ( string name, int signalnum );
 	void setflipamount( double amount );
+	class graph_window *graph_pointer;
 
 private:
 	/* Create a new backing pixmap of the appropriate size */
@@ -270,6 +271,8 @@ void graph_drawing_area::draw_graph( int updatesignal,
 	signal[updatesignal].file.read( (char *)signal[updatesignal].buffer,
 		width()*sizeof(short));
 	ExitOnTrue(!signal[updatesignal].file, "Error reading file" );
+	graph_pointer->setfileoffset(updatesignal,
+		signal[updatesignal].location);
 
 
 	// only need to update the modified signal
@@ -360,10 +363,18 @@ public:
 		/* Creaet the drawing area */
 		drawing_area.size(DefaultWidth,DefaultHeight);
 		vbox.pack_start(drawing_area, TRUE, TRUE, 0);
+		drawing_area.graph_pointer = this;
 
 		/* Add the hbox to the buttom */
 		vbox.pack_start(hbox, FALSE, FALSE, 0);
 
+		hbox.pack_start( fileoffset[0], FALSE, FALSE, 0);
+		fileoffset[0].show();
+		hbox.pack_start( fileoffset[1], FALSE, FALSE, 0);
+		fileoffset[1].show();
+		setfileoffset(0, 0);
+		setfileoffset(1, 0);
+		
 		/* Add the button */
 		hbox.pack_start( button, FALSE, FALSE, 0);
 		connect_to_method ( button.clicked, this, &quit );
@@ -394,6 +405,17 @@ public:
 		vbox.show();
 		hbox.show();
 
+	}
+
+	void setfileoffset( int signal, int offset)
+	{
+		// set the text for the flip amount
+		char * buff = new char [15];
+		strstream membuff(buff, 15 );
+		membuff << (signal ? "Sync " : "Test ") << offset
+			<< (char)0 << flush;
+		fileoffset[signal].set_text( buff );
+		delete buff;
 	}
 
 private:
@@ -454,6 +476,7 @@ private:
 	Gtk_FileSelection *fs;
 	Gtk_Label changeflipL;
 	Gtk_Entry changeflipE;
+	Gtk_Label fileoffset[numsignals];
 };
 
 int main ( int argc, char ** argv)
