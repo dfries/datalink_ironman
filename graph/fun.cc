@@ -172,8 +172,8 @@ void graph_drawing_area::setinputfile ( string name, int signalnum )
 
 	signal[signalnum].file.close();
 	signal[signalnum].file.open( name.c_str() );
-	ExitOnTrue( !signal[signalnum].file, "Error opening "
-		<< name );
+	ExitOnTrue( !signal[signalnum].file, "Error opening \""
+		<< name << "\" " );
 	signal[signalnum].location = 0;
 }
 
@@ -479,7 +479,7 @@ void graph_window::showfileselection()
 	if(!fs)
 	{
 		fs=new Gtk::FileSelection("File Selection");
-		fs->set_filename("/tmp/data/");
+		fs->set_filename(".");
 		fs->get_ok_button()->clicked.connect(slot(this,
 			&graph_window::FSbuttonpressed));
 		fs->get_cancel_button()->clicked.connect(slot(this,
