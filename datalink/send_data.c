@@ -23,11 +23,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <vga.h>
+#include "datalink.h"
 #include "datalink_macros.h"
-
-#define MODEL_70 0
-#define MODEL_150 1
-#define MODEL_IRONMAN 2
 
 int send_data(int type, unsigned char **packets, int npckts)
 {
@@ -36,7 +33,7 @@ int send_data(int type, unsigned char **packets, int npckts)
 	register unsigned char byte;
 	unsigned char white[80];
 	unsigned char black[80];
-	int inc = (type == MODEL_70) ? 1 : 2;
+	int inc = (type == DATALINK_70) ? 1 : 2;
 
 	for (i = 0; i < 80; i++)
 	{
@@ -64,7 +61,7 @@ int send_data(int type, unsigned char **packets, int npckts)
 		{
 			vga_waitretrace();
 			byte = packets[i][j];
-			WRITE_BYTE1(1, byte) if (type == MODEL_70)
+			WRITE_BYTE1(1, byte) if (type == DATALINK_70)
 				continue;
 
 			if (j + 1 == packets[i][0])

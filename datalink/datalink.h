@@ -260,4 +260,8 @@ int dl_todo_by_label(ItemPtr, ItemPtr);
 int dl_todo_by_prio(ItemPtr, ItemPtr);
 int dl_write_save(char *, char *, char *);
 
+int open_vt();
+void close_vt(int oldvt);
+int send_data(int type, unsigned char **packets, int npckts);
+
 #endif				/* __DATALINK_H__ */

@@ -25,44 +25,48 @@
  *
  */
 
+#include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/fcntl.h>
 #include <signal.h>
 #include <sched.h>
 #include <string.h>
+#include <sys/ioctl.h>
 #include <sys/mman.h>
+#include "datalink.h"
 
-#define MODEL_70 0
-#define MODEL_150 1
-#define MODEL_IRONMAN 2
+static void maxPriority();
 
-void maxPriority(void);
-
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int oldvt;
-	char **data;
+	unsigned char **data;
 	char buf[256];
 	int fd;
 	unsigned char size;
 	int n;
 	int p = 0;
-	int type = MODEL_IRONMAN;
+	int type = DATALINK_IRONMAN;
 
 	while (argc > 1 && *argv[1] == '-')
 	{
 
 		if (strcmp(argv[1], "-ironman") == 0
 		    || strcmp(argv[1], "-modelironman") == 0)
-			type = MODEL_IRONMAN;
+			type = DATALINK_IRONMAN;
 		else
 		    if (strcmp(argv[1], "-150") == 0
 			|| strcmp(argv[1], "-model150") == 0)
-			type = MODEL_150;
+			type = DATALINK_150;
+		else
+		    if (strcmp(argv[1], "-150s") == 0
+			|| strcmp(argv[1], "-model150s") == 0)
+			type = DATALINK_150S;
 		else
 		    if (strcmp(argv[1], "-70") == 0
 			|| strcmp(argv[1], "-model70") == 0)
-			type = MODEL_70;
+			type = DATALINK_70;
 		else
 		{
 			fprintf(stderr, "Unknown option %s.\n", argv[1]);
@@ -82,7 +86,8 @@ main(int argc, char **argv)
 /* Drop down to user privileges to read file. */
 	seteuid(getuid());
 
-	if ((data = (char **) calloc(sizeof(char *), 1024)) == NULL)
+	if ((data = (unsigned char **) calloc(sizeof(unsigned char *),
+		1024)) == NULL)
 	{
 		fprintf(stderr, "Could not allocate data array.\n");
 		exit(-1);
@@ -146,11 +151,11 @@ main(int argc, char **argv)
 	maxPriority();
 	send_data(type, data, p);
 	close_vt(oldvt);
-	exit(0);
+	return 0;
 }
 
 
-void maxPriority(void)
+static void maxPriority()
 {
 	struct sched_param scp;
 
