@@ -100,7 +100,14 @@ void Usage()
 {
 	printf("DataLink Library Karl Hakimian <hakimian@eecs.wsu.edu>\n");
 	printf("\tIronman support added by David Fries <dfries@mail.win.org>\n");
-	printf("Usage: datalink options\n");
+	printf("Usage: datalink [watch type] options\n");
+	printf("watchtype (ironman is default, must be specified before other options)\n");
+	printf("  -model70\t use if you have this watch\n");
+	printf("  -70\t use if you have this watch\n");
+	printf("  -model70\t use if you have this watch\n");
+	printf("  -150\t use if you have this watch\n");
+	printf("  -model150\t use if you have this watch\n");
+	printf("  -ironman\t use if you have this watch\n");
 	printf("options:\n");
 	printf("\tNot all options are available for all watches\n");
 	printf("\tIf you specify any of the send only... options following\n");
@@ -137,29 +144,26 @@ void Usage()
 	printf("  -sort-anniv-by-label\n");
 	printf("  -file\t dump data to DEBUGOUTPUT and do not display\n");
 	printf("  -serial\t send with the serial link\n");
-	printf("  -model70\t use if you have this watch\n");
-	printf("  -70\t use if you have this watch\n");
-	printf("  -model70\t use if you have this watch\n");
-	printf("  -150\t use if you have this watch\n");
-	printf("  -model150\t use if you have this watch\n");
-	printf("  -ironman\t use if you have this watch\n");
 	exit(-1);
 }
 
-#define TIME 0x001
-#define ALARM 0x002
-#define APP 0x004
-#define TODO 0x008
-#define PHONE 0x010
-#define ANNIV 0x020
-#define SYSTEM 0x040
-#define WRISTAPP 0x080
-#define MELODY 0x100
-#define TIMER 0x200
-#define CHRON 0x400
+#define TIME		0x001
+#define ALARM		0x002
+#define APP		0x004
+#define TODO		0x008
+#define PHONE		0x010
+#define ANNIV		0x020
+#define SYSTEM		0x040
+#define WRISTAPP	0x080
+#define MELODY		0x100
+#define TIMER		0x200
+#define CHRON		0x400
 
-#define ALL 0x7FF
-#define DB 0x03C
+/* All would be 0x755 */
+#define ALL70		0x07F
+#define ALL150		0x1FF
+#define ALLIRONMAN	0x653
+#define DB		0x03C
 /*
 #define DEFAULT 0x03F
 */
@@ -185,7 +189,14 @@ char **argv;
 	while (argc > 1 && (*argv[1] == '-' || *argv[1] == '+')) {
 
 		if (strcmp("-all", argv[1]) == 0)
-			flags = ALL;
+		{
+			if( type == DATALINK_70 )
+				flags = ALL70;
+			if( type == DATALINK_150 )
+				flags = ALL150;
+			if( type == DATALINK_IRONMAN )
+				flags = ALLIRONMAN;
+		}
 		else if (strcmp("-db", argv[1]) == 0)
 			flags = DB;
 		else if (strcmp("+db", argv[1]) == 0)
