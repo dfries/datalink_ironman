@@ -27,6 +27,8 @@ extern int line_num;
 #define CHRON 12
 #define NUMLISTS 13
 
+int dl_error(char *s);
+
 static ListPtr *lists = NULL;
 static ItemPtr ip = NULL;
 static char buf[1024];
@@ -548,8 +550,7 @@ value		: INTEGER ',' DATE ',' TIME ',' STRING ',' INTEGER
 			;
 
 %%
-dl_error(s)
-char *s;
+dl_error(char *s)
 {
 	char buf[1024];
 
