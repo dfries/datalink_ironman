@@ -16,23 +16,19 @@
 #include <unistd.h>
 #include <datalink.h>
 
-my_error_proc(msg)
-char *msg;
+my_error_proc(char *msg)
 {
 	fprintf(stderr, "ERROR: %s\n", msg);
 	exit(-1);
 }
 
-my_warn_proc(msg)
-char *msg;
+my_warn_proc(char *msg)
 {
 	fprintf(stderr, "WARNING: %s\n", msg);
 	return (0);
 }
 
-ListPtr set_time(wi, times)
-WatchInfoPtr wi;
-ListPtr times;
+ListPtr set_time(WatchInfoPtr wi, ListPtr times)
 {
 	time_t now;
 	time_t tztime;
@@ -180,9 +176,7 @@ void Usage()
 */
 #define DEFAULT 0
 
-main(argc, argv)
-int argc;
-char **argv;
+main(int argc, char **argv)
 {
 	char *prog = argv[0];
 	WatchInfoPtr wi;

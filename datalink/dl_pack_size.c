@@ -20,8 +20,7 @@
 #include "datalink.h"
 #include "datalink_private.h"
 
-int dl_pack_size(string)
-char *string;
+int dl_pack_size(char *string)
 {
 	int size;
 	int l;

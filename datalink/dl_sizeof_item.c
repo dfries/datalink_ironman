@@ -20,9 +20,7 @@
 #include "datalink.h"
 #include "datalink_private.h"
 
-int dl_sizeof_item(wi, item)
-WatchInfoPtr wi;
-ItemPtr item;
+int dl_sizeof_item(WatchInfoPtr wi, ItemPtr item)
 {
 	int last_warn = 0;
 	int size;

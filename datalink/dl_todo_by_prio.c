@@ -19,9 +19,7 @@
 
 #include "datalink.h"
 
-int dl_todo_by_prio(a, b)
-ItemPtr a;
-ItemPtr b;
+int dl_todo_by_prio(ItemPtr a, ItemPtr b)
 {
 	int r;
 

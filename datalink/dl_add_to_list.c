@@ -19,9 +19,7 @@
 
 #include "datalink.h"
 
-void dl_add_to_list(list, item)
-ListPtr list;
-ItemPtr item;
+void dl_add_to_list(ListPtr list, ItemPtr item)
 {
 
 	if (list->last)

@@ -28,10 +28,7 @@
 #define MODEL_150 1
 #define MODEL_IRONMAN 2
 
-send_data(type, packets, npckts)
-int type;
-unsigned char **packets;
-int npckts;
+send_data(int type, unsigned char **packets, int npckts)
 {
 	int i;
 	register int j;

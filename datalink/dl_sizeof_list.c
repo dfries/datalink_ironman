@@ -20,9 +20,7 @@
 #include "datalink.h"
 #include "datalink_private.h"
 
-int dl_sizeof_list(wi, list)
-WatchInfoPtr wi;
-ListPtr list;
+int dl_sizeof_list(WatchInfoPtr wi, ListPtr list)
 {
 	ItemPtr ip;
 	int size = 0;

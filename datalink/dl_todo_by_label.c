@@ -19,9 +19,7 @@
 
 #include "datalink.h"
 
-int dl_todo_by_label(a, b)
-ItemPtr a;
-ItemPtr b;
+int dl_todo_by_label(ItemPtr a, ItemPtr b)
 {
 	int r;
 

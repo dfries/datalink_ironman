@@ -17,8 +17,7 @@
  *
  */
 
-int dl_pack_char(c)
-char c;
+int dl_pack_char(char c)
 {
 	c = toupper(c);
 

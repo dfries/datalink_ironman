@@ -17,10 +17,7 @@
  *
  */
 
-void dl_pack_phone(to, from, len)
-unsigned char *to;
-unsigned char *from;
-int len;
+void dl_pack_phone(unsigned char *to, unsigned char *from, int len)
 {
 	int i;
 	int l;

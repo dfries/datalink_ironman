@@ -24,9 +24,7 @@
 #include "datalink_private.h"
 
 
-int dl_item_ok(wi, ip)
-WatchInfoPtr wi;
-ItemPtr ip;
+int dl_item_ok(WatchInfoPtr wi, ItemPtr ip)
 {
 	char buf[1024];
 

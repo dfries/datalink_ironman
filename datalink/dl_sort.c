@@ -19,9 +19,7 @@
 
 #include "datalink.h"
 
-int dl_sort(list, cmp_proc)
-ListPtr list;
-int (*cmp_proc) ();
+int dl_sort(ListPtr list, int (*cmp_proc) ())
 {
 	ListPtr nl;
 	ItemPtr ip;

@@ -17,11 +17,8 @@
  *
  */
 
-void dl_fill_pack_ascii(to, from, size, fill)
-unsigned char *to;
-unsigned char *from;
-int size;
-char fill;
+void dl_fill_pack_ascii(unsigned char * to, unsigned char * from, int size,
+	char fill)
 {
 	int c;
 	int l = strlen(from);

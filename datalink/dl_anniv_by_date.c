@@ -19,9 +19,7 @@
 
 #include "datalink.h"
 
-int dl_anniv_by_date(a, b)
-ItemPtr a;
-ItemPtr b;
+int dl_anniv_by_date(ItemPtr a, ItemPtr b)
 {
 	int r;
 

@@ -17,8 +17,7 @@
  *
  */
 
-int dl_pack_digit(c)
-char c;
+int dl_pack_digit(char c)
 {
 	int i;
 

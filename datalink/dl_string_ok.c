@@ -19,9 +19,7 @@
 
 #include "datalink.h"
 
-int dl_string_ok(string, maxl)
-char *string;
-int maxl;
+int dl_string_ok(char *string, int maxl)
 {
 	int i;
 	int l;

@@ -14,8 +14,7 @@
 
 extern char *tzname[];
 
-int set_time(wi)
-WatchInfoPtr wi;
+int set_time(WatchInfoPtr wi)
 {
 	time_t now;
 	struct tm *now_s;
@@ -70,15 +69,13 @@ WatchInfoPtr wi;
 	return (0);
 }
 
-my_error_proc(msg)
-char *msg;
+my_error_proc(char *msg)
 {
 	fprintf(stderr, "ERROR: %s\n", msg);
 	exit(-1);
 }
 
-my_warn_proc(msg)
-char *msg;
+my_warn_proc(char *msg)
 {
 	fprintf(stderr, "WARNING: %s\n", msg);
 	return (0);

@@ -19,9 +19,7 @@
 
 #include "datalink.h"
 
-int dl_app_by_datetime(a, b)
-ItemPtr a;
-ItemPtr b;
+int dl_app_by_datetime(ItemPtr a, ItemPtr b)
 {
 	int r;
 

@@ -24,20 +24,10 @@
 #include "datalink_private.h"
 
 int
-dl_init_download(wi, times, alarms, chron, timers, apps, todos, phones,
-		 annivs, system, wristapp, melody)
-WatchInfoPtr wi;
-ListPtr times;
-ListPtr alarms;
-ListPtr chron;
-ListPtr timers;
-ListPtr system;
-ListPtr apps;
-ListPtr todos;
-ListPtr phones;
-ListPtr annivs;
-ListPtr wristapp;
-ListPtr melody;
+dl_init_download(WatchInfoPtr wi, ListPtr times, ListPtr alarms,
+	ListPtr chron, ListPtr timers, ListPtr apps, ListPtr todos,
+	ListPtr phones, ListPtr annivs, ListPtr system, ListPtr wristapp,
+	ListPtr melody)
 {
 	ItemPtr ip;
 	char buf[1024];

@@ -19,9 +19,7 @@
 
 #include "datalink.h"
 
-int dl_phone_by_label(a, b)
-ItemPtr a;
-ItemPtr b;
+int dl_phone_by_label(ItemPtr a, ItemPtr b)
 {
 	int r;
 

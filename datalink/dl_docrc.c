@@ -23,8 +23,7 @@ static unsigned short int crc16_table[16] = {
 	0xA001, 0x6C00, 0x7800, 0xB401, 0x5000, 0x9C01, 0x8801, 0x4400
 };
 
-unsigned short int dl_docrc(data)
-unsigned char *data;
+unsigned short int dl_docrc(unsigned char *data)
 {
 	int i;
 	unsigned short int t;

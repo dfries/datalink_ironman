@@ -105,8 +105,7 @@ int open_vt()
 	return (vts.v_active);
 }
 
-void close_vt(oldvt)
-int oldvt;
+void close_vt(int oldvt)
 {
 	int fd;
 	struct vt_stat vts;

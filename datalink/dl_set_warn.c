@@ -19,8 +19,7 @@
 
 #include "datalink.h"
 
-void dl_set_warn(func)
-int (*func) ();
+void dl_set_warn(int (*func) ())
 {
 	dl_warn_proc = func;
 }

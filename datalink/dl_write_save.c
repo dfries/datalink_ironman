@@ -22,10 +22,7 @@
 #include "datalink.h"
 #include "datalink_private.h"
 
-int dl_write_save(datafile, wristappfile, melodyfile)
-char *datafile;
-char *wristappfile;
-char *melodyfile;
+int dl_write_save(char *datafile, char *wristappfile, char *melodyfile)
 {
 	FILE *fp;
 	ItemPtr ip;

@@ -29,22 +29,19 @@ int (*dl_warn_proc) (char *);
 
 Download dl_download_data = { 0 };
 
-dl_default_error(msg)
-char *msg;
+dl_default_error(char *msg)
 {
 	fprintf(stderr, "ERROR: %s\n", msg);
 	return (-1);
 }
 
-int dl_default_warn(msg)
-char *msg;
+int dl_default_warn(char *msg)
 {
 	fprintf(stderr, "WARNING: %s\n", msg);
 	return (1);
 }
 
-WatchInfoPtr dl_init_watch(type)
-int type;
+WatchInfoPtr dl_init_watch(int type)
 {
 	WatchInfoPtr result;
 

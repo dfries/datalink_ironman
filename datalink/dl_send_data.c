@@ -69,14 +69,8 @@ static unsigned char end1[] = { 4, 0x21, 0, 0 };
 static unsigned char pre60[] = { 6, 0x23, 2, 0x40, 0, 0 };
 static unsigned char numdatapackets[] = { 5, 0x60, 0, 0, 0 };
 
-_write_data(fd, buf, data, size, pnum, type, wi)
-int fd;
-unsigned char *buf;
-unsigned char *data;
-int size;
-int *pnum;
-int type;
-WatchInfoPtr wi;
+_write_data(int fd, unsigned char *buf, unsigned char *data, int size,
+	int *pnum, int type, WatchInfoPtr wi)
 {
 	int bytes_left;
 
@@ -111,9 +105,7 @@ WatchInfoPtr wi;
 	return (1);
 }
 
-dl_send_data(wi, type)
-WatchInfoPtr wi;
-int type;
+dl_send_data(WatchInfoPtr wi, int type)
 {
 	char fname[1024];
 	unsigned char buf[64];
