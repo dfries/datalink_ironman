@@ -185,6 +185,20 @@ ItemPtr ip;
 		}
 
 		break;
+	case DL_CHRON_TYPE:
+
+		if ( ip->data.chron.chron_laps < 0 )
+		{
+			sprintf(buf, "Negative laps not allowed in chron.");
+			(*dl_warn_proc)(buf);
+		}
+
+		if (!dl_string_ok(ip->data.chron.label, wi->max_chron_str)) {
+			sprintf(buf, "Bad characters in label in chron.");
+			(*dl_warn_proc)(buf);
+		}
+
+		break;
 	case DL_PHONE_TYPE:
 
 		if (!dl_string_ok(ip->data.phone.number, wi->max_phone_str)) {
