@@ -17,6 +17,7 @@
  *
  */
 
+#include <stdlib.h>
 #include "datalink.h"
 
 ItemPtr dl_new_item(WatchInfoPtr wi, int type)

@@ -17,6 +17,8 @@
  *
  */
 
+#include "datalink.h"
+
 int dl_pack_ascii(unsigned char *to, unsigned char *from)
 {
 	int c;

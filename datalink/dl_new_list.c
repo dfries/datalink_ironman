@@ -17,6 +17,7 @@
  *
  */
 
+#include <stdlib.h>
 #include "datalink.h"
 
 ListPtr dl_new_list()
