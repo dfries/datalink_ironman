@@ -21,10 +21,11 @@
 #include "datalink_private.h"
 
 int
-dl_init_download(wi, times, alarms, apps, todos, phones, annivs, system, wristapp, melody)
+dl_init_download(wi, times, alarms, timers, apps, todos, phones, annivs, system, wristapp, melody)
 WatchInfoPtr wi;
 ListPtr times;
 ListPtr alarms;
+ListPtr timers;
 ListPtr system;
 ListPtr apps;
 ListPtr todos;
@@ -48,6 +49,7 @@ ListPtr melody;
 	dl_download_data.anniv_size = 0;
 	dl_download_data.pre_notification_time = wi->pre_notification_time;
 	dl_download_data.max_alarm_str = wi->max_alarm_str;
+	dl_download_data.max_timer_str = wi->max_timer_str;
 	dl_download_data.max_phone_str = wi->max_phone_str;
 
 /* Count and verify items. */
@@ -95,6 +97,30 @@ ListPtr melody;
 		if (i != alarms->count) {
 			last_warn = (*dl_warn_proc)("Alarm count value incorrect.");
 			alarms->count = i;
+		}
+
+	}
+
+	if (timers && timers->download) {
+
+		for (i = 0, ip = timers->first; ip; ip = ip->next, i++) {
+
+			if (!ip->data.timer.timer_num)
+				ip->data.timer.timer_num = i + 1;
+
+			if (!dl_item_ok(wi, ip)) {
+				sprintf(buf, "Bad timer item #%d", i + 1);
+				return((*dl_error_proc)(buf));
+			}
+
+			if (i >= wi->max_timers)
+				return((*dl_error_proc)("Too many timer items."));
+
+		}
+
+		if (i != timers->count) {
+			last_warn = (*dl_warn_proc)("Timer count value incorrect.");
+			timers->count = i;
 		}
 
 	}
@@ -288,6 +314,21 @@ ListPtr melody;
 		for (i = 0, ip = alarms->first; ip; ip = ip->next, i++) {
 			memcpy((char *)&dl_download_data.alarms[i],
 				(char *)&ip->data.alarm, sizeof(Alarm));
+		}
+
+	}
+
+	if (timers && timers->download) {
+
+	   if ((dl_download_data.timers =
+			   (TimerPtr)calloc(timers->count, sizeof(Timer))) == NULL)
+			return((*dl_error_proc)("Can't allocate timer download data."));
+
+		dl_download_data.num_timers = timers->count;
+
+		for (i = 0, ip = timers->first; ip; ip = ip->next, i++) {
+			memcpy((char *)&dl_download_data.timers[i],
+				(char *)&ip->data.timer, sizeof(Timer));
 		}
 
 	}

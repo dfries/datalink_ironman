@@ -72,7 +72,7 @@ ItemPtr ip;
 
 		if (ip->data.alarm.alarm_num < 1 ||
 				ip->data.alarm.alarm_num > wi->max_alarms) {
-			sprintf(buf, "Bad time zone number #%d", ip->data.time.tz_num);
+			sprintf(buf, "Bad alarm number #%d", ip->data.alarm.alarm_num);
 			(*dl_error_proc)(buf);
 			return(0);
 		}
@@ -103,6 +103,58 @@ ItemPtr ip;
 
 		if (!dl_string_ok(ip->data.alarm.label, wi->max_alarm_str)) {
 			sprintf(buf, "Bad string in alarm #%d", ip->data.alarm.alarm_num);
+			(*dl_warn_proc)(buf);
+		}
+
+		break;
+	case DL_TIMER_TYPE:
+
+		if (ip->data.timer.timer_num < 1 ||
+				ip->data.timer.timer_num > wi->max_timers) {
+			sprintf(buf, "Bad timer number #%d", ip->data.timer.timer_num);
+			(*dl_error_proc)(buf);
+			return(0);
+		}
+
+		if (ip->data.timer.hours > 99) {
+			sprintf(buf, "Bad hour in timer #%d", ip->data.timer.timer_num);
+			(*dl_error_proc)(buf);
+			return(0);
+		}
+
+		if (ip->data.timer.minutes > 59) {
+			sprintf(buf, "Bad minute in timer #%d", ip->data.timer.timer_num);
+			(*dl_error_proc)(buf);
+			return(0);
+		}
+
+		if (ip->data.timer.second > 59) {
+			sprintf(buf, "Bad second in timer #%d", ip->data.timer.timer_num);
+			(*dl_error_proc)(buf);
+			return(0);
+		}
+
+		if (ip->data.timer.repeat != 0 && ip->data.timer.repeat != 1 ) {
+			sprintf(buf, "Bad repeat in timer #%d", ip->data.timer.timer_num);
+			(*dl_error_proc)(buf);
+			return(0);
+		}
+
+		if (ip->data.timer.chron != 0 && ip->data.timer.chron != 1 ) {
+			sprintf(buf, "Bad chron in timer #%d", ip->data.timer.timer_num);
+			(*dl_error_proc)(buf);
+			return(0);
+		}
+
+		if (ip->data.timer.chron && ip->data.timer.repeat ) {
+			sprintf(buf, "Can't do repeat and chron at the end of a timer, in timer #%d"
+				, ip->data.timer.timer_num);
+			(*dl_error_proc)(buf);
+			return(0);
+		}
+
+		if (!dl_string_ok(ip->data.timer.label, wi->max_timer_str)) {
+			sprintf(buf, "Bad string in timer #%d", ip->data.timer.timer_num);
 			(*dl_warn_proc)(buf);
 		}
 

@@ -87,6 +87,7 @@ ListPtr times;
 #define SYSTEM 0x040
 #define WRISTAPP 0x080
 #define MELODY 0x100
+#define TIMER 0x200
 
 #define ALL 0x1FF
 #define DB 0x03C
@@ -101,7 +102,7 @@ char **argv;
 {
 	char *prog = argv[0];
 	WatchInfoPtr wi;
-	ListPtr times, alarms, apps, todos, phones, annivs;
+	ListPtr times, alarms, timers, apps, todos, phones, annivs;
 	ListPtr system, wristapp, melody;
 	char datafile[1024];
 	int output = SVGA_BLINK;
@@ -128,6 +129,10 @@ char **argv;
 			flags = ALARM;
 		else if (strcmp("+alarm", argv[1]) == 0)
 			flags |= ALARM;
+		else if (strcmp("-timer", argv[1]) == 0)
+			flags = TIMER;
+		else if (strcmp("+timer", argv[1]) == 0)
+			flags |= TIMER;
 		else if (strcmp("-wristapp", argv[1]) == 0)
 			flags = WRISTAPP;
 		else if (strcmp("+wristapp", argv[1]) == 0)
@@ -198,13 +203,16 @@ char **argv;
 	dl_set_error(my_error_proc);
 	dl_set_warn(my_warn_proc);
 
-	wi = dl_read_save(datafile, type, &times, &alarms, &apps, &todos, &phones,
+	wi = dl_read_save(datafile, type, &times, &alarms, &timers, &apps, &todos, &phones,
 		&annivs, &system, &wristapp, &melody);
 
 /* Mark for download. */
 
 	if ((flags&ALARM) && alarms->count)
 		alarms->download = 1;
+
+	if ((flags&TIMER) && timers->count)
+		timers->download = 1;
 
 	if ((flags&APP) && apps->count) {
 		apps->download = 1;
@@ -256,7 +264,7 @@ char **argv;
 /*
  Send it to the watch
 */
-	dl_init_download(wi, times, alarms, apps, todos, phones, annivs, system,
+	dl_init_download(wi, times, alarms, timers, apps, todos, phones, annivs, system,
 		wristapp, melody);
 	dl_send_data(wi, output);
 	exit(0);

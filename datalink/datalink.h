@@ -46,6 +46,16 @@ typedef struct alarm_s {
 	unsigned char audible;
 } Alarm, *AlarmPtr;
 
+typedef struct timer_s {
+	unsigned char timer_num;
+	unsigned char hours;
+	unsigned char minutes;
+	unsigned char second;
+	unsigned char repeat;
+	unsigned char chron;
+	char *label;
+} Timer, *TimerPtr;
+
 typedef struct system_s {
 	unsigned char chime;
 	unsigned char beep;
@@ -90,6 +100,7 @@ typedef struct item_s {
 	union {
 		Time time;
 		Alarm alarm;
+		Timer timer;
 		System sys;
 		Appointment app;
 		Phone phone;
@@ -114,7 +125,7 @@ typedef struct watch_info_s {
 	int max_alarms;
 	int max_apps;
 	int max_phones;
-	int max_timer;
+	int max_timers;
 	int max_todos;
 	int max_annivs;
 	int max_system;
@@ -125,7 +136,7 @@ typedef struct watch_info_s {
 	int mem_size;		/* Memory used. */
 	int max_str;		/* Max string length for this device. */
 	int max_alarm_str;	/* Max string length for an alarm on this device. */
-	int max_cron_str;	/* Max string length for the cron on this device. */
+	int max_chron_str;	/* Max string length for the cron on this device. */
 	int max_phone_str;	/* Max string length for a phone on this device. */
 	int max_timer_str;	/* Max string length for the timer on this device. */
 	int max_wristapp_len;
@@ -134,6 +145,7 @@ typedef struct watch_info_s {
 	int time_adjust;
 	List times;
 	List alarms;
+	List timers;
 	List system;
 	List apps;
 	List phones;
@@ -160,7 +172,8 @@ typedef struct watch_info_s {
 #define DL_SYSTEM_TYPE		7
 #define DL_WRISTAPP_TYPE	8
 #define DL_MELODY_TYPE		9
-#define DL_MAX_TYPE			9
+#define DL_TIMER_TYPE		10
+#define DL_MAX_TYPE			10
 
 /* Output types */
 #define NO_OUTPUT 0
@@ -189,7 +202,7 @@ int dl_app_by_label(ItemPtr, ItemPtr);
 unsigned short int dl_docrc(unsigned char *);
 void dl_fill_pack_ascii(unsigned char *, unsigned char *, int, char);
 void dl_free_download(void);
-int dl_init_download(WatchInfoPtr, ListPtr, ListPtr, ListPtr,
+int dl_init_download(WatchInfoPtr, ListPtr, ListPtr, ListPtr, ListPtr,
 	ListPtr, ListPtr, ListPtr, ListPtr, ListPtr, ListPtr);
 WatchInfoPtr dl_init_watch(int);
 int dl_item_ok(WatchInfoPtr, ItemPtr);
@@ -202,7 +215,7 @@ void dl_pack_phone(unsigned char *, unsigned char *, int);
 int dl_pack_size(char *);
 int dl_phone_by_label(ItemPtr, ItemPtr);
 WatchInfoPtr dl_read_save(char *, int, ListPtr *, ListPtr *, ListPtr *, ListPtr *,
-	ListPtr *, ListPtr *, ListPtr *, ListPtr *, ListPtr *);
+	ListPtr *, ListPtr *, ListPtr *, ListPtr *, ListPtr *, ListPtr * );
 int dl_send_data(WatchInfoPtr, int);
 void dl_set_error(int (*)());
 void dl_set_warn(int (*)());

@@ -61,7 +61,7 @@ WatchInfoPtr wi;
 	tp->data.time.label = tzname[1 - isdst];
 	dl_add_to_list(times, tp);
 
-	dl_init_download(wi, times, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+	dl_init_download(wi, times, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 	return(0);
 }
 

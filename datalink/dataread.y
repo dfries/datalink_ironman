@@ -18,12 +18,14 @@ extern int line_num;
 #define TIMEZONE 8
 #define DATA 9
 #define INTVAL 10
-#define NUMLISTS 9
+#define NUMLISTS 12
+#define TIMER 11
 
 static ListPtr *lists = NULL;
 static ItemPtr ip = NULL;
 static char buf[1024];
 static int hour, minute, second, month, day, year;
+static int repeat, chron;
 static int prio, audible, chime, beep, pos;
 static int val, tfmt, dfmt;
 static char msg[64];
@@ -115,6 +117,39 @@ item		: NAME '=' value '\n'
 		strncpy(ip->data.alarm.label, msg, l);
 		ip->data.alarm.label[l] = '\0';
 		dl_add_to_list(lists[ALARM], ip);
+		break;
+
+	case TIMER:
+		if (strcmp($1, "timer")) {
+			sprintf(buf, "Bad entry, %s = timer.", $1);
+			dl_error(buf);
+			return(-1);
+		}
+
+		if (!(ip = dl_new_item(wi, DL_TIMER_TYPE))) {
+			dl_error("Could not allocate timer item.");
+			return(-1);
+		}
+
+		ip->data.timer.timer_num = pos;
+		ip->data.timer.hours = hour;
+		ip->data.timer.minutes = minute;
+		ip->data.timer.second = second;
+		ip->data.timer.repeat = repeat;
+		ip->data.timer.chron = chron;
+		l = strlen(msg);
+
+		if (l > wi->max_timer_str)
+			l = wi->max_timer_str;
+
+		if ((ip->data.timer.label = (char *)malloc(l + 1)) == NULL) {
+			dl_error("Could not allocate timer label.");
+			return(-1);
+		}
+
+		strncpy(ip->data.timer.label, msg, l);
+		ip->data.timer.label[l] = '\0';
+		dl_add_to_list(lists[TIMER], ip);
 		break;
 	case APP:
 
@@ -400,6 +435,17 @@ value		: INTEGER ',' DATE ',' TIME ',' STRING ',' INTEGER
 				audible = $9;
 				$$ = ALARM;
 			}
+			
+			| INTEGER ',' TIME ',' STRING ',' INTEGER ',' INTEGER
+			/* Timer */
+			{
+				pos = $1;
+				sscanf($3, "%d:%d:%d", &hour, &minute, &second);
+				strcpy(msg, $5);
+				repeat = $7;
+				chron = $9;
+				$$ = TIMER;
+			}
 
 			| DATE ',' TIME ',' STRING
 			/* Appointment */
@@ -472,12 +518,13 @@ char *s;
 extern FILE *dl_in;
 
 WatchInfoPtr
-dl_read_save(datafile, type, times, alarms, apps, todos, phones, annivs,
+dl_read_save(datafile, type, times, alarms, timers, apps, todos, phones, annivs,
 	system, wristapp, melody)
 char *datafile;
 int type;
 ListPtr *times;
 ListPtr *alarms;
+ListPtr *timers;
 ListPtr *apps;
 ListPtr *todos;
 ListPtr *phones;
@@ -510,6 +557,7 @@ ListPtr *melody;
 		return(NULL);
 
 	*alarms = lists[ALARM];
+	*timers = lists[TIMER];
 	*apps = lists[APP];
 	*phones = lists[PHONE];
 	*todos = lists[TODO];

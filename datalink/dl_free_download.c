@@ -31,6 +31,9 @@ dl_free_download()
 	if (dl_download_data.alarms)
 		free(dl_download_data.alarms);
 
+	if (dl_download_data.timers)
+		free(dl_download_data.timers);
+
 	if (dl_download_data.apps)
 		free(dl_download_data.apps);
 

@@ -25,6 +25,8 @@ typedef struct download_s {
 	TimePtr times;
 	int num_alarms;
 	AlarmPtr alarms;
+	int num_timers;
+	TimerPtr timers;
 	int memory;
 	int num_apps;
 	int app_size;
@@ -35,6 +37,7 @@ typedef struct download_s {
 	ToDoPtr todos;
 	int max_alarm_str;
 	int max_phone_str;
+	int max_timer_str;
 	int num_phones;
 	int phone_size;
 	PhonePtr phones;
