@@ -1,0 +1,83 @@
+This is the README file for the datalink library.
+
+This is the datalink library for Linux.  It uses the SVGAlib to send data
+to the Timex DataLink watches.  You will need SVGAlib installed and the
+development headers and libraries for SVGAlib to compile against.
+
+The original author is Karl R. Hakimian <hakimian@eecs.wsu.edu>, I have
+extended the program to work with the Timex DataLink Ironman Triathlon
+watch.  I do not have the ability to test the original model 70 or model 150
+watches and I have only tested the SVGA output program.  The original
+watches and serblink (serial blink) program may have been broken with
+my code changes, I have no way to test them.
+
+Compiling:
+Just type `make` on the command line.
+	$ make
+
+Installing:
+Type `make install` on the command line.
+	% make install
+The default locations of the installed programs are:
+
+/usr/local/lib/libdatalink.so.1
+/usr/local/lib/libdatalink.a
+/usr/local/include/datalink.h
+/usr/local/bin/svgablink
+/usr/local/bin/serblink
+/usr/local/bin/setwatch
+
+Please note that the svgablink must be installed setuid root to use
+the SVGAlib and change to graphics mode.  If you install as root
+the default is to install setuid root.  If you are concerned about
+security I suggest you have it setuid root and executable by
+the group and not executable by the world.  Include only those
+in the group who has a reason to run the program and you trust.
+I do not know how much the original author has put into making
+it secure, I know I haven't done anything along those lines.
+If you have patches to fix any problems please email me (David).
+
+Running:
+The short version:
+	Copy datafile from the source directory, make any changes.
+Hit mode on your watch until you get to the "COMM READY V4.0" screen.
+Run setwatch with the following arguements `setwatch -all datafile`.
+If you have the model 70 or model 150 you have to add the option
+-model150 or -150, or -model70 or -70 to the setwatch program.
+The long version:
+	Make a directory called .datalink in your home directory,
+copy the datalink file from the source directory to that directory,
+follow above directions adding any of the options to send specific
+data to the watch.  Find all bugs, fix all bugs, send all patches
+to me (David).
+
+Suggestions:
+	I have found my 15" monitor seems to send the data without
+any problems, but my 19" monitor tends to corrupt some of the phone
+data.  All of the packets have crc data in them, but the watch does not
+indicate the data is bad, so check to make sure everything was transfered
+correctly.  I may need to add code to adjust the spacing of the lines
+on the monitor, I'm not sure what the problem is here.
+	Running anything in the background can cause the program to not
+function correctly.  SVGAlib appears to be polling the video card to
+determine when the verticle sync occurs and if it misses it because
+something else is running the watch may not get the data correctly.
+I don't know how much of a problem this is, I just noticed it on
+development of my additions.
+	Improvements, suggestions, patches, comments e-mail me.  I am
+also interested in how many people find this useful, please e-mail
+if you just plan to use it, I would like to hear from you.
+	If you work for Timex or have any influence, I would like
+some documentation on these watches.  I have none.  I am aware
+there is a software development kit that Timex put out, but I am
+also told it contains only information on how to use their equivalent
+of the datalink library.  I do not need this.  I need documentation
+of the protocol and watch capabilities, that is what I need.  The
+protocol was decoded by taking a light sensitive circuit, placing it
+in from of a CRT screen that was flashing data from the Timex software,
+recording it with a sound card, and useing software I wrote to
+turn it back into data.  Then figuring out by hand what it means.
+
+David Fries
+dfries@mail.win.org
+August 25, 1999
