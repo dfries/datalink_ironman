@@ -1,11 +1,56 @@
 visible improvements:
-Add support for Datalink 150S watches (from Frank Denis)
-It will now only search in the users path for serblink and svgablink
-not any hard-coded paths.
+- Add support for Datalink 150S watches (from Frank Denis)
+- It will now only search in the users path for serblink and svgablink
+	not any hard-coded paths.
+- settime is now installed by default and will accept a command line for
+	the different types of watches
+- svgablink no longer hangs on exit
+
+
+02-08-2001 console change
+	looking at the console change code and the kernel call that is
+	responsible for that ioctl VT_ACTIVATE drivers/char/vt.c 771
+		arg--;
+		-> vc_allocate(arg);
+			assumption is that is already there
+			(X was running right?)
+		-> set_console(arg);
+			want_console=arg;
+			tasklet_struct.func = console_softint
+			tasklet_schedule(&console_tasklet);
+			-> hide_cursor(fg_console);
+			-> change_console(want_console);
+				-> kill_proc (probably)
+				or -> complete_change_console
+	VT_WAITACTIVE -> vt_waitactive(arg-1)
+	VT_DISALLOCATE -> vc_disallocate(arg-1)
+		sw->con_deinit
+
+	XF86 Ver 4.0 code (lnx_init.c)
+	ioctl( (newtty fd), VT_GETSTATE, &vts)
+		activeVT= vts.v_active
+	//detach from controlling tty
+		i=open("/dev/tty", O_RDWR))
+			ioctl(i, TIOCNOTTY,0);
+			close(i);
+	get console( ioctl(newfd, VT_ACTIVATE, vtno)
+	.*VT_WAITACTIVE
+	/* set user controlled enter/exit console handlers */
+	VT_GETMODE,
+	VT_SETMODE
+	KDSETMODE
+	/* in xf86CloseConsole() */
+	KDSETMODE // text mode
+	VT_SETMODE // default vt handling
+	ioctl(newfd, VT_ACTIVATE, activeVT)
+	close(newfd)
+	
+	*** revision 1.6 of vt.c contains the code to change back to auto
+	mode to fix this problem.
+
 
 02-04-2001 
 	hang at svgablink.c:150 trying to do a close_vt(oldvt); call
-
 
 02-04-2001 patching process from Frank Denis
 	used `indent -bls -bli0 -bl -v -kr -i8 *.c *.h` to help format code
