@@ -15,6 +15,7 @@ timer = 3, "00:30", "30 mins.", 0, 1
 
 phone = "111111111111", "000000000000000"
 phone = "9119119111 W", "call me"
+phone = "5093363720 C", "Garren"
 
 # chrono label and number of laps, "8 char label", laps range from 2 to 50
 # default entry
