@@ -54,7 +54,7 @@ libdatalink.a: $(OBJ)
 
 libdatalink.so.1: $(OBJ)
 	rm -f $@
-	$(CC) -shared -o $@ $(OBJ)
+	$(CC) -shared -o $@ $(OBJ) $(CFLAGS)
 	$(RANLIB) $@
 
 dl_read_save.c: dataread.y
@@ -80,10 +80,10 @@ svgablink: $(SVGAOBJ)
 	$(CC) $(CFLAGS) -o $@ $(SVGAOBJ) -lvga
 
 settime.o: settime.c
-	$(CC) -I. -c settime.c 
+	$(CC) $(CFLAGS) -I. -c settime.c 
 
 setwatch.o: setwatch.c
-	$(CC) -I. -c setwatch.c 
+	$(CC) $(CFLAGS) -I. -c setwatch.c 
 
 settime: settime.o libdatalink.a
 	$(CC) $(CFLAGS) -o $@ settime.o -L. -ldatalink
