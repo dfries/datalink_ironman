@@ -60,6 +60,7 @@ signalinfo::~signalinfo()
 
 void signalinfo::Init(const char *filename, int width)
 {
+	cout << "Opening file " << filename << endl;
 	file.open(filename, ios::in);
 	ExitOnTrue( !file, "Error opening " << filename);
 	Resize(width);
@@ -552,7 +553,12 @@ void graph_window::setfileoffset( int signal, int offset)
 
 int main ( int argc, char ** argv)
 {
-	if( argc > 2 )
+	if(argc==2)
+	{
+		filename[0] = *(argv+1);
+		filename[1] = filename[0];
+	}
+	else if( argc > 2 )
 	{
 		filename[0] = *(argv+1);
 		filename[1] = *(argv+2);
