@@ -26,6 +26,18 @@
  * See http://csgrad.cs.vt.edu/~tjohnson/ for more info.
  */
 
+/* This section by David Fries <david@fries.net>
+ * Using a photo cell hooked up directly to the microphone input of a
+ * computer it is easy to catch the output waveform of either the CRT
+ * blinking or the LED serial port blinking.
+ *
+ * The sample rate of one CRT capture was 44100 stereo (it's an old capture,
+ * I've since found that the system does better with 48000 recordings).
+ * A complete retrace took 1477.5 stereo samples / 2 = 738.75 mono samples.
+ * 738.75/44100=.016751 seconds per retrace
+ * 44100/738.75=59.695 frames per second, which is as expected.
+ */
+
 #include <unistd.h>
 #include <stdio.h>
 #include <fcntl.h>
@@ -78,17 +90,32 @@ void sendbyte(int fil, unsigned char dat)
 static void __pause(int fil, int count)
 {
 	char buff[8192];
-	int i, c;
-
-	c = 0;
-	for (i = 0; i < (count * LEN); i++)
-		buff[c++] = 0x0;
-	write(fil, buff, c);
+	int i, sent;
+	memset(buff, ZERO[1], sizeof(buff));
+	for(i=0; i<count*LEN; i+=sent)
+	{
+		sent=count*LEN-i;
+		if(sent>sizeof(buff))
+			sent=sizeof(buff);
+		write(fil, buff, sent);
+	}
 }
 
 #undef ZERO
 #undef ONE
 #undef LEN
+
+void Usage(const char *prog)
+{
+	fprintf(stderr,
+		"%s [-d device] [-f file]\n"
+		"Transmitt a file to a Timex Datalink watch useing an LED on a serial\n"
+		"port.  Timex does not support this product, DO NOT ask them questions about\n"
+		"it.  See http://csgrad.cs.vt.edu/~tjohnson/ for more info.\n"
+		"Version $Id$\n",
+		prog);
+	exit(0);
+}
 
 int main(int argc, char **argv)
 {
@@ -112,14 +139,7 @@ int main(int argc, char **argv)
 		{
 		case 'h':
 		case '?':
-			fprintf(stderr,
-				"%s [-d device] [-f file]\n"
-				"Transmitt a file to a Timex Datalink watch useing an LED on a serial\n"
-				"port.  Timex does not support this product, DO NOT ask them questions about\n"
-				"it.  See http://csgrad.cs.vt.edu/~tjohnson/ for more info.\n"
-				"Version $Id$\n",
-				argv[0]);
-			exit(0);
+			Usage(argv[0]);
 			break;
 		case 'd':
 			strcpy(device, optarg);
@@ -134,13 +154,7 @@ int main(int argc, char **argv)
 		strcpy(fil, argv[1]);
 	else
 	{
-		fprintf(stderr,
-			"%s file\nTransmitt a file to a Timex Datalink watch useing an LED on a serial\n"
-			"port.  Timex does not support this product, DO NOT ask them questions about\n"
-			"it.  See http://csgrad.cs.vt.edu/~tjohnson/ for more info.\n"
-			"Version $Id$\n",
-			argv[0]);
-		exit(0);
+		Usage(argv[0]);
 	}
 #endif
 
@@ -150,7 +164,7 @@ int main(int argc, char **argv)
 		perror("open datafile failed:");
 		exit(1);
 	}
-	len = read(data, buff, 4096);
+	len = read(data, buff, sizeof(buff));
 	close(data);
 	printf("data length:%d\n", len);
 
