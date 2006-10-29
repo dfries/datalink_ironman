@@ -23,6 +23,7 @@ class signalinfo
 {
 public:
 	signalinfo();
+	~signalinfo();
 	// initialize with the specific file and width
 	void Init(const char *filename, int width);
 	// resize the data structures to handle a different width
@@ -48,6 +49,13 @@ signalinfo::signalinfo()
 	points = NULL;
 	vloc = 165;
 	vzoomfact = 36;
+}
+
+signalinfo::~signalinfo()
+{
+	file.close();
+	delete [] buffer;
+	delete [] points;
 }
 
 void signalinfo::Init(const char *filename, int width)
@@ -172,12 +180,6 @@ graph_drawing_area::graph_drawing_area() : pixmap(0)
 
 graph_drawing_area::~graph_drawing_area()
 {
-	for(int i = 0; i < numsignals; i++)
-	{
-		signal[i].file.close();
-		delete [] signal[i].buffer;
-		delete [] signal[i].points;
-	}
 }
 
 void graph_drawing_area::setflipamount( double amount )
