@@ -2,12 +2,14 @@
 #include <gdk--.h>
 #include <gtk/gtk.h>
 #include <gtk--/fileselection.h>
-#include <fstream.h>
+#include <fstream>
 #include <iostream>
-#include <strstream.h>
+#include <sstream>
 #include <stdlib.h>
 #include <string.h>
 #include <sigc++/slot.h>
+
+using namespace std;
 
 #define ExitOnTrue( file, msg ) if(file){ cout << msg ;\
 	cout << __FUNCTION__ << "() " << __FILE__ << ':' << __LINE__ << endl;\
@@ -448,13 +450,12 @@ graph_window::graph_window() : Gtk::Window(GTK_WINDOW_TOPLEVEL),
 	changeflipE.activate.connect(slot(this,&graph_window::changeflip));
 
 	// set the text for the flip amount
-	char * buff = new char [40];
-	strstream membuff(buff, 40 );
+	stringstream membuff;
 	// stress that a floating point value is acceptable
 	membuff << DefaultWidth << ".0" << (char)0 << flush;
 	int zero = 0;
-	changeflipE.insert_text( buff, strlen(buff), &zero );
-	delete buff;
+	string buffer=membuff.str();
+	changeflipE.insert_text(buffer.c_str(), buffer.size(), &zero);
 
 	destroy.connect(slot(this, &graph_window::quit));
 
@@ -516,12 +517,11 @@ void graph_window::quit()
 void graph_window::setfileoffset( int signal, int offset)
 {
 	// set the text for the flip amount
-	char * buff = new char [15];
-	strstream membuff(buff, 15 );
+	stringstream membuff;
 	membuff << (signal ? "Sync " : "Test ") << offset
 		<< (char)0 << flush;
-	fileoffset[signal].set_text( buff );
-	delete buff;
+	string buffer=membuff.str();
+	fileoffset[signal].set_text(buffer.c_str());
 }
 
 int main ( int argc, char ** argv)
