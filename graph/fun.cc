@@ -19,8 +19,14 @@ using namespace std;
 using SigC::slot;
 using SigC::bind;
 
-struct signalinfo
+class signalinfo
 {
+public:
+	signalinfo();
+	// initialize with the specific file and width
+	void Init(const char *filename, int width);
+	// resize the data structures to handle a different width
+	void Resize(int width);
 	ifstream file;	// file to read from
 	int location;	// where in the file we are, -1 initially
 	double fraction; // the fractional part of the location
@@ -33,6 +39,36 @@ struct signalinfo
 	Gdk_Color bg;	// the background color
 };
 
+signalinfo::signalinfo()
+{
+	location = 0;
+	fraction = 0;
+	buffer = NULL;
+	buffersize = 0;
+	points = NULL;
+	vloc = 165;
+	vzoomfact = 36;
+}
+
+void signalinfo::Init(const char *filename, int width)
+{
+	file.open(filename, ios::in);
+	ExitOnTrue( !file, "Error opening " << filename);
+	Resize(width);
+	// read the file
+	file.read( (char*)buffer, width*sizeof(short));
+	ExitOnTrue(!file, "Error reading file" );
+}
+
+void signalinfo::Resize(int width)
+{
+	delete [] buffer;
+	buffer = new short[width];
+	buffersize = width;
+	delete [] points;
+	points = new GdkPoint[width];
+}
+
 const int testsignal = 0;
 const int syncsignal = 1;
 const int numsignals = 2;
@@ -41,7 +77,7 @@ const int numsignals = 2;
 const char* syncfile = "sync";
 char * filename[2] = {"sync", "sync"};
 
-const int DefaultWidth = 737;
+const int DefaultWidth = 550;
 const int DefaultHeight = 550;
 
 const int DefaultMinMotion = 5;
@@ -122,24 +158,8 @@ graph_drawing_area::graph_drawing_area() : pixmap(0)
 	colormap = colormap.get_system();
 	for( int i = 0; i < numsignals; i++)
 	{
-		signal[i].file.open(filename[i], ios::in);
-		ExitOnTrue( !signal[i].file, "Error opening " 
-			<< syncfile);
-		signal[i].location = 0;
-		signal[i].fraction = 0;
-		signal[i].buffer = new short[DefaultWidth];
-		signal[i].buffersize = DefaultWidth;
-		signal[i].points = new GdkPoint[DefaultWidth];
-		signal[i].vloc = 165;
-		signal[i].vzoomfact = 36;
-		signal[i].bg = colormap.black();
-
-		// read the file
-		signal[i].file.read( (char*)signal[i].buffer,
-			DefaultWidth*sizeof(short));
-		ExitOnTrue(!signal[i].file,
-			"Error reading file" );
-
+		signal[i].Init(filename[i], DefaultWidth);
+		signal[i].bg=colormap.black();
 	}
 	signal[testsignal].fg.set_rgb_p( 0, 1, 0);
 	colormap.alloc( signal[testsignal].fg);
@@ -289,8 +309,12 @@ void graph_drawing_area::draw_graph( int updatesignal,
 	int sig;
 	int i;
 
+	/*
 	ExitOnTrue(signal[updatesignal].buffersize!=width(),
 		"resizing not implimented yet");
+	*/
+	if(signal[updatesignal].buffersize!=width())
+		signal[updatesignal].Resize(width());
 
 	// the x offset is the number of pixels to move it
 	// there are two bytes per short and one short per pixel
