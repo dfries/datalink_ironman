@@ -26,7 +26,7 @@
  * See http://csgrad.cs.vt.edu/~tjohnson/ for more info.
  */
 
-/* This section by David Fries <david@fries.net>
+/* This section by David Fries <david@fries.net>, using the Ironman datalink
  * Using a photo cell hooked up directly to the microphone input of a
  * computer it is easy to catch the output waveform of either the CRT
  * blinking or the LED serial port blinking.
@@ -36,6 +36,25 @@
  * A complete retrace took 1477.5 stereo samples / 2 = 738.75 mono samples.
  * 738.75/44100=.016751 seconds per retrace
  * 44100/738.75=59.695 frames per second, which is as expected.
+ *
+ * For the LED output the capture was at 48000 mono.
+ * A complete waveform (what would be a CRT refresh), 815.35
+ * 815.35/48000=.016986 seconds per retrace
+ * 48000/815.35=58.870 frames per second.  Should be close enough.
+ *
+ * observations from the CRT output,
+ * sync1 many frames
+ * 101010101  101010101 = 0x55 0x55
+ * 14 blank frames
+ * sync2 50 framse
+ * 110101010  000000000 = 0xAA 0
+ * 14 blank frames
+ * 100011111  111111011 = 0x1F 0xFB
+ * etc
+ *
+ * From looking at the datalink_macros.h svgablink code it lists
+ * END_PACKET of 12 blank frames,
+ *
  */
 
 #include <unistd.h>
@@ -56,16 +75,27 @@
 #define PORT "/dev/ttyd1"
 #endif
 
-void sendbyte(int fil, unsigned char dat)
+// 14 frames
+static int END_PACKET = 14;
+
+/* Send one watch byte's worth of data out the serial port.
+ * fil, serial port file descriptor
+ * start_bit, 1 to send start bit, 0 to not send it (blanking periods mostly)
+ * dat, the byte of data to send.
+ */
+void sendbyte(int fil, int start_bit, unsigned char dat)
+/* original, zero is one 0xff, everything else is zero */
 #define ZERO "\0xff\0\0\0\0\0"
 #define ONE "\0\0\0\0\0\0"
+#define OFF_BYTE 0xff
 #define LEN 6
 {
 	static int frame = 0;
 	char buff[1024];
 	int c = 0;
 	int i;
-	memcpy(&buff[c], ZERO, LEN);
+	// Start bit
+	memcpy(&buff[c], start_bit?ZERO:ONE, LEN);
 	c += LEN;
 	for (i = 0; i < 8; i++)
 	{
@@ -86,24 +116,19 @@ void sendbyte(int fil, unsigned char dat)
 	write(fil, buff, c);
 }
 
-/* For pauses between packets: */
-static void __pause(int fil, int count)
+/* For pauses between packets:
+ * fil, serial port file descriptor
+ * count, how many frames (two bytes per frame) to pause
+ */
+static void pause(int fil, int count)
 {
-	char buff[8192];
-	int i, sent;
-	memset(buff, ZERO[1], sizeof(buff));
-	for(i=0; i<count*LEN; i+=sent)
+	int i;
+	for(i=0; i<count; ++i)
 	{
-		sent=count*LEN-i;
-		if(sent>sizeof(buff))
-			sent=sizeof(buff);
-		write(fil, buff, sent);
+		sendbyte(fil, 0, OFF_BYTE);
+		sendbyte(fil, 0, OFF_BYTE);
 	}
 }
-
-#undef ZERO
-#undef ONE
-#undef LEN
 
 void Usage(const char *prog)
 {
@@ -189,34 +214,44 @@ int main(int argc, char **argv)
 	}
 #if 0
 	while (1)
-		__pause(port, 20);	/* used for hardware debugging */
+		pause(port, 20);	/* used for hardware debugging */
 #endif
 	printf("sync1\n");
-	for (i = 0; i < 500; i++)
+	for (i = 0; i < 500+250; i++)
 	{
-		sendbyte(port, 0x55);
+		sendbyte(port, 1, 0x55);
 		if (!(i % 100))
 			printf("%d\n", 5 - (i / 100));
 	}
-	for (i = 0; i < 50; i++)
-		sendbyte(port, 0xAA);
+	pause(port, END_PACKET);
 	printf("sync2\n");
+	for (i = 0; i < 50; i++)
+	{
+		/* Fill the 1st byte, leave the 2nd empty. */
+		sendbyte(port, 1, 0xAA);
+		sendbyte(port, 0, OFF_BYTE);
+	}
+	pause(port, END_PACKET);
 	i = 0;
 	do
 	{
 		plen = buff[i];
 		printf("%d\n", plen);
 		for (j = 0; j < plen; j++)
-			sendbyte(port, buff[i++]);
+			sendbyte(port, 1, buff[i++]);
 		if (plen & 1)
-			sendbyte(port, 0);
-		__pause(port, 240);
+			sendbyte(port, 0, OFF_BYTE);
+		pause(port, END_PACKET);
 	}
 	while (i < len);
 
-	__pause(port, 240);
+	pause(port, END_PACKET);
 	tcsetattr(port, TCSADRAIN, &new);
 	sleep(1);
 	close(port);
 	return 0;
 }
+
+#undef ZERO
+#undef ONE
+#undef LEN
