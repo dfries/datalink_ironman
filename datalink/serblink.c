@@ -111,7 +111,7 @@ void sendbyte(int fil, int start_bit, unsigned char dat)
 		c += LEN;
 	}
 	frame = !frame;		/* a frame is 2 words, which would have been on */
-	/* a single CRT frame (different inter-word pause) */
+	/* a single CRT frame (different inter-word blank_frame) */
 
 	write(fil, buff, c);
 }
@@ -120,7 +120,7 @@ void sendbyte(int fil, int start_bit, unsigned char dat)
  * fil, serial port file descriptor
  * count, how many frames (two bytes per frame) to pause
  */
-static void pause(int fil, int count)
+static void blank_frame(int fil, int count)
 {
 	int i;
 	for(i=0; i<count; ++i)
@@ -214,16 +214,16 @@ int main(int argc, char **argv)
 	}
 #if 0
 	while (1)
-		pause(port, 20);	/* used for hardware debugging */
+		blank_frame(port, 20);	/* used for hardware debugging */
 #endif
 	printf("sync1\n");
-	for (i = 0; i < 500+250; i++)
+	for (i = 0; i < 500; i++)
 	{
 		sendbyte(port, 1, 0x55);
 		if (!(i % 100))
 			printf("%d\n", 5 - (i / 100));
 	}
-	pause(port, END_PACKET);
+	blank_frame(port, END_PACKET);
 	printf("sync2\n");
 	for (i = 0; i < 50; i++)
 	{
@@ -231,7 +231,7 @@ int main(int argc, char **argv)
 		sendbyte(port, 1, 0xAA);
 		sendbyte(port, 0, OFF_BYTE);
 	}
-	pause(port, END_PACKET);
+	blank_frame(port, END_PACKET);
 	i = 0;
 	do
 	{
@@ -241,11 +241,11 @@ int main(int argc, char **argv)
 			sendbyte(port, 1, buff[i++]);
 		if (plen & 1)
 			sendbyte(port, 0, OFF_BYTE);
-		pause(port, END_PACKET);
+		blank_frame(port, END_PACKET);
 	}
 	while (i < len);
 
-	pause(port, END_PACKET);
+	blank_frame(port, END_PACKET);
 	tcsetattr(port, TCSADRAIN, &new);
 	sleep(1);
 	close(port);
