@@ -15,7 +15,7 @@ CC = gcc
 #CFLAGS = -Wall -g -DBINDIR=\"$(BINDIR)\"
 CFLAGS = -O2 -DBINDIR=\"$(BINDIR)\"
 
-PORT = /dev/ttyS0
+PORT = /dev/ttyS1
 
 ENGINES = svgablink serblink
 
@@ -87,7 +87,7 @@ serblink: $(SEROBJ)
 
 svgablink: $(SVGAOBJ)
 	rm -f $@
-	$(CC) $(CFLAGS) -o $@ $(SVGAOBJ) -lvga
+	$(CC) $(CFLAGS) -o $@ $(SVGAOBJ) -lvga -lm
 
 settime.o: settime.c
 	$(CC) $(CFLAGS) -I. -c settime.c 
