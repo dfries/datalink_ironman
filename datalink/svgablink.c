@@ -33,6 +33,7 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <errno.h>
 #include "datalink.h"
 
 static void maxPriority();
@@ -98,8 +99,8 @@ int main(int argc, char **argv)
 /* Open data file */
 	if ((fd = open(argv[1], O_RDONLY)) < 0)
 	{
-		fprintf(stderr, "Could not open %s for reading.\n",
-			argv[1]);
+		fprintf(stderr, "open datafile %s failed: %s\n", argv[1],
+			strerror(errno));
 		exit(-1);
 	}
 
