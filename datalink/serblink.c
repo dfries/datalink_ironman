@@ -63,6 +63,7 @@
 #include <stdlib.h>
 #include <termios.h>
 #include <string.h>
+#include <errno.h>
 
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -184,9 +185,10 @@ int main(int argc, char **argv)
 #endif
 
 	data = open(fil, O_RDONLY);
-	if (!data)
+	if (data==-1)
 	{
-		perror("open datafile failed:");
+		fprintf(stderr, "open datafile %s failed: %s\n", fil,
+			strerror(errno));
 		exit(1);
 	}
 	len = read(data, buff, sizeof(buff));
@@ -194,9 +196,10 @@ int main(int argc, char **argv)
 	printf("data length:%d\n", len);
 
 	port = open(device, O_RDWR);
-	if (port < 0)
+	if(port==-1)
 	{
-		perror("open of device failed:");
+		fprintf(stderr, "open of device %s failed: %s\n", device,
+			strerror(errno));
 		exit(1);
 	}
 
