@@ -83,8 +83,8 @@ const int syncsignal = 1;
 const int numsignals = 2;
 //const char* syncfile = "/tmp/sync";
 //const char* syncfile = "/tmp/data/121blank";
-const char* syncfile = "sync";
-char * filename[2] = {"sync", "sync"};
+const char * syncfile = "sync";
+const char * filename[2] = {"sync", "sync"};
 
 const int DefaultWidth = 550;
 const int DefaultHeight = 550;
