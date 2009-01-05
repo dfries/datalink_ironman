@@ -152,6 +152,7 @@ int main(int argc, char **argv)
 	unsigned char buff[4096];
 	char fil[1024];
 	char device[1024];
+	const int sync_bytes = 500;
 
 	setpriority(PRIO_PROCESS, 0, -20);	/* pauses will screwup the timing */
 
@@ -220,11 +221,11 @@ int main(int argc, char **argv)
 		blank_frame(port, 20);	/* used for hardware debugging */
 #endif
 	printf("sync1\n");
-	for (i = 0; i < 500; i++)
+	for (i = 0; i < sync_bytes; i++)
 	{
 		sendbyte(port, 1, 0x55);
 		if (!(i % 100))
-			printf("%d\n", 5 - (i / 100));
+			printf("%3d\n", (sync_bytes-i)/100);
 	}
 	blank_frame(port, END_PACKET);
 	printf("sync2\n");
