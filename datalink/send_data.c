@@ -22,6 +22,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <vga.h>
+#include <string.h>
+#include <time.h>
 #include "datalink.h"
 #include "datalink_macros.h"
 
@@ -30,15 +32,12 @@ int send_data(int type, unsigned char **packets, int npckts)
 	int i;
 	register int j;
 	register unsigned char byte;
-	unsigned char white[80];
-	unsigned char black[80];
+	unsigned char white[640];
+	unsigned char black[640];
 	int inc = (type == DATALINK_70) ? 1 : 2;
 
-	for (i = 0; i < 80; i++)
-	{
-		white[i] = 0xff;
-		black[i] = 0x00;
-	}
+	memset(white, vga_white(), sizeof(white));
+	memset(black, 0, sizeof(black));
 
 /* Become root to set vga mode. */
 	seteuid(0);
@@ -53,12 +52,39 @@ int send_data(int type, unsigned char **packets, int npckts)
    next call even though vga_init gave up root privileges. */
 	seteuid(0);
 #endif
-	vga_setmode(G640x480x2);
+	if(!vga_hasmode(G640x480x16))
+	{
+		fprintf(stderr, "G640x480x2 graphics mode isn't supported, "
+			"please report it\n");
+		return 1;
+	}
+	if(vga_setmode(G640x480x16))
+	{
+		fprintf(stderr, "Couldn't set G640x480x2 even though it "
+			"claimed to support it\n");
+		return 2;
+	}
 #ifdef MACH64_HACK
 	seteuid(getuid());
 #endif
 
-	SYNC DATASTART for (i = 0; i < npckts; i++)
+	#if 1
+	/* write out the sync bytes */
+	WRITE_BYTE1(1, 0x55);
+	WRITE_BYTE2(1, 0x55);
+	//sync(); // try to sync the disks now so they aren't active later
+	{
+		/* Sleep for 200 frames worth of output. */
+		int syncframes=200;
+		struct timespec tv={ syncframes/60,
+			(syncframes%60)*1000000/60};
+		nanosleep( &tv, 0);
+	}
+	#else
+	/* Or just write and busywait 200 frames */
+	SYNC
+	#endif
+	DATASTART for (i = 0; i < npckts; i++)
 	{
 
 		for (j = 0; j <= *packets[i]; j += inc)
