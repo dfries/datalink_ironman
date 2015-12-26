@@ -13,7 +13,7 @@ INCDIR=$(PREFIX)/include
 
 CC = gcc
 #CFLAGS = -Wall -g -DBINDIR=\"$(BINDIR)\"
-CFLAGS = -O2 -DBINDIR=\"$(BINDIR)\"
+CFLAGS = -Wall -O2 -DBINDIR=\"$(BINDIR)\"
 
 PORT = /dev/ttyS1
 
