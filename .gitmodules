@@ -1,0 +1,6 @@
+[submodule "cores"]
+	path = uc_blink/cores
+	url = SpacedOut.fries.net:/home/david/git_root/programming/cc/iButton/teensy/cores.git
+[submodule "teensy_helper"]
+	path = uc_blink/teensy_helper
+	url = SpacedOut.fries.net:/home/david/git_root/programming/cc/iButton/teensy/teensy_helper.git
