@@ -1,0 +1,16 @@
+# MCU name, you MUST set this to match the board you are using
+# type "make clean" after changing this, so all files will be rebuilt
+#
+# Teensy 3.0
+MCU = MK20DX128
+# Teensy 3.1
+#MCU = MK20DX256
+# Teensy-LC
+#MCU = MKL26Z64
+
+# Processor frequency.
+#   Normally the first thing your program should do is set the clock prescaler,
+#   so your program will run at the correct speed.  You should also set this
+#   variable to same clock speed.  The _delay_ms() macro uses this, and many
+#   examples use this variable to calculate timings.  Do not add a "UL" here.
+F_CPU = 48000000
