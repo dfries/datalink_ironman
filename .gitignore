@@ -1,0 +1,11 @@
+*.o
+*.a
+*.so.1
+datalink/y.tab.h
+datalink/depend
+datalink/parse.c
+datalink/serblink
+datalink/settime
+datalink/setwatch
+datalink/svgablink
+graph/fun
