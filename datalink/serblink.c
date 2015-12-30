@@ -137,8 +137,7 @@ void Usage(const char *prog)
 		"%s [-d device] [-f file]\n"
 		"Transmitt a file to a Timex Datalink watch useing an LED on a serial\n"
 		"port.  Timex does not support this product, DO NOT ask them questions about\n"
-		"it.  See http://csgrad.cs.vt.edu/~tjohnson/ for more info.\n"
-		"Version $Id$\n",
+		"it.  See http://csgrad.cs.vt.edu/~tjohnson/ for more info.\n",
 		prog);
 	exit(0);
 }

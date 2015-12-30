@@ -172,7 +172,6 @@ void Usage()
 	    ("datafile: If not specified ~/.datalink/datafile is used\n");
 	printf
 	    ("  If any option is after the datafile, it will be ignored\n");
-	printf("Version $Id$\n");
 }
 
 // ability to set the time
