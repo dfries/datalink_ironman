@@ -12,8 +12,8 @@ MANDIR=$(PREFIX)/man
 INCDIR=$(PREFIX)/include
 
 CC = gcc
-#CFLAGS = -Wall -g -DBINDIR=\"$(BINDIR)\"
-CFLAGS = -Wall -O2 -DBINDIR=\"$(BINDIR)\"
+#CFLAGS = -Wall -fPIC -g -DBINDIR=\"$(BINDIR)\"
+CFLAGS = -Wall -fPIC -g -O2 -DBINDIR=\"$(BINDIR)\"
 
 PORT = /dev/ttyS1
 
@@ -74,7 +74,7 @@ parse.c: dataread.l dl_read_save.c y.tab.h
 	mv lex.yy.c $@
 
 depend: Makefile
-	makedepend -f- -o.o $(CFLAGS) $(SRC) $(SVGASRC) $(SERSRC) > depend
+	makedepend -f- -o.o $(SRC) $(SVGASRC) $(SERSRC) > depend
 	@echo "Dependencies have been made, re-run make to build"
 	@false
 
