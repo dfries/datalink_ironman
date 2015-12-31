@@ -139,9 +139,11 @@ void Usage(const char *prog)
 {
 	fprintf(stderr,
 		"%s [-d device] [-f file]\n"
+		"The device can also be passed by the environment variable PORT\n"
+		"export PORT=/dev/ttyXXXX\n"
 		"Transmitt a file to a Timex Datalink watch useing an LED on a serial\n"
 		"port.  Timex does not support this product, DO NOT ask them questions about\n"
-		"it.  See http://csgrad.cs.vt.edu/~tjohnson/ for more info.\n",
+		"it.\n",
 		prog);
 	exit(0);
 }
@@ -156,11 +158,15 @@ int main(int argc, char **argv)
 	char fil[1024];
 	char device[1024];
 	const int sync_bytes = 500;
+	const char *env_port = getenv("PORT");
 
 	setpriority(PRIO_PROCESS, 0, -20);	/* pauses will screwup the timing */
 
 	strcpy(fil, "DEBUGOUTPUT");
 	strcpy(device, PORT);	/* defaults */
+
+	if(env_port)
+		strcpy(device, env_port);
 
 #ifdef OTHERCMDLINE
 	while ((c = getopt(argc, argv, "h?d:f:")) != -1)
@@ -183,9 +189,7 @@ int main(int argc, char **argv)
 	if (argc == 2)
 		strcpy(fil, argv[1]);
 	else
-	{
 		Usage(argv[0]);
-	}
 #endif
 
 	data = open(fil, O_RDONLY);
