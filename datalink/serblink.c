@@ -114,7 +114,11 @@ void sendbyte(int fil, int start_bit, unsigned char dat)
 	frame = !frame;		/* a frame is 2 words, which would have been on */
 	/* a single CRT frame (different inter-word blank_frame) */
 
-	write(fil, buff, c);
+	if(write(fil, buff, c) == -1)
+	{
+		perror("Error writing to serial port");
+		exit(1);
+	}
 }
 
 /* For pauses between packets:
