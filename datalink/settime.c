@@ -150,6 +150,6 @@ int main( int argc, char ** argv)
 /*
  Send it to the watch
 */
-	dl_send_data(wi, SVGA_BLINK);
+	dl_send_data(wi, SVGA_BLINK, argv[0]);
 	return 0;
 }

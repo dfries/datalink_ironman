@@ -111,8 +111,9 @@ int _write_data(int fd, unsigned char *buf, unsigned char *data, int size,
 
 /* TODO: If there is any errors we currently leak a file descriptor,
  * it might be nice to close the file first.
+ * prog: calling program name
  */
-int dl_send_data(WatchInfoPtr wi, int type)
+int dl_send_data(WatchInfoPtr wi, int type, const char *prog)
 {
 	char fname[PATH_MAX];
 	char * tmpdir;
@@ -135,6 +136,16 @@ int dl_send_data(WatchInfoPtr wi, int type)
 	int status;
 	int ret=0;
 	int p;
+	int try_local = 0;
+
+	/* Look for a relative path for settime and setwatch, if it matches
+	 * try to run the update program in the current working directory,
+	 * useful for debugging.
+	 */
+	if(strncmp("./set", prog, 5))
+	{
+		try_local = 1;
+	}
 
 	if (type == BLINK_FILE)
 	{
@@ -153,7 +164,7 @@ int dl_send_data(WatchInfoPtr wi, int type)
 		 * Try P_tmpdir if that fails
 		 * Fallback to /tmp if need be
 		 */
-		if(tmpdir=getenv("TMPDIR"))
+		if((tmpdir=getenv("TMPDIR")))
 			if(strlen(tmpdir)+strlen(template)+1 >= PATH_MAX)
 				tmpdir=0; // invalid path, string too long
 		if(!tmpdir)
@@ -835,6 +846,11 @@ int dl_send_data(WatchInfoPtr wi, int type)
 				    ("Don't know what watch for svgablink.");
 				exit(-1);
 			}
+			if(try_local)
+			{
+				execlp("./svgablink", "svgablink",
+					protocol, fname, NULL);
+			}
 			execlp("svgablink", "svgablink", protocol, fname, NULL);
 
 			(*dl_error_proc)
@@ -869,6 +885,8 @@ int dl_send_data(WatchInfoPtr wi, int type)
 			 * exec that will search the users active path,
 			 * if it isn't there (we can't run it).
 			 */
+			if(try_local)
+				execlp("./serblink", "serblink", fname, NULL);
 			execlp("serblink", "serblink", fname, NULL);
 
 

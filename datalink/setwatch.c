@@ -438,6 +438,6 @@ int main(int argc, char **argv)
 */
 	dl_init_download(wi, times, alarms, chron, timers, apps, todos,
 			 phones, annivs, system, wristapp, melody);
-	dl_send_data(wi, output);
+	dl_send_data(wi, output, argv[0]);
 	return 0;
 }

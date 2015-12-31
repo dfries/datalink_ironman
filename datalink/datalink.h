@@ -248,7 +248,7 @@ int dl_phone_by_label(ItemPtr, ItemPtr);
 WatchInfoPtr dl_read_save(char *, int, ListPtr *, ListPtr *, ListPtr *,
 			  ListPtr *, ListPtr *, ListPtr *, ListPtr *,
 			  ListPtr *, ListPtr *, ListPtr *, ListPtr *);
-int dl_send_data(WatchInfoPtr, int);
+int dl_send_data(WatchInfoPtr, int, const char *prog);
 void dl_set_error(int (*)());
 void dl_set_warn(int (*)());
 int dl_sizeof_item(WatchInfoPtr, ItemPtr);
