@@ -88,7 +88,7 @@ static int END_PACKET = 14;
  */
 void sendbyte(int fil, int start_bit, unsigned char dat)
 /* original, zero is one 0xff, everything else is zero */
-#define ZERO "\0xff\0\0\0\0\0"
+#define ZERO "\xff\0\0\0\0\0"
 #define ONE "\0\0\0\0\0\0"
 #define OFF_BYTE 0xff
 #define LEN 6
