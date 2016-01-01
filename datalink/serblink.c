@@ -76,6 +76,8 @@
 #define PORT "/dev/ttyd1"
 #endif
 
+#define OTHERCMDLINE
+
 // 14 frames
 static int END_PACKET = 14;
 
@@ -138,12 +140,14 @@ static void blank_frame(int fil, int count)
 void Usage(const char *prog)
 {
 	fprintf(stderr,
-		"%s [-d device] [-f file]\n"
-		"The device can also be passed by the environment variable PORT\n"
-		"export PORT=/dev/ttyXXXX\n"
+		"%s [-d device] [-f file] [-s sync_frames]\n"
 		"Transmitt a file to a Timex Datalink watch useing an LED on a serial\n"
 		"port.  Timex does not support this product, DO NOT ask them questions about\n"
-		"it.\n",
+		"it.\n"
+		"The device can also be passed by the environment variable PORT\n"
+		"export PORT=/dev/ttyXXXX\n"
+		"sync_frames default is 500, "
+		"increase for a longer sync time.\n",
 		prog);
 	exit(0);
 }
@@ -157,8 +161,11 @@ int main(int argc, char **argv)
 	unsigned char buff[4096];
 	char fil[1024];
 	char device[1024];
-	const int sync_bytes = 500;
+	int sync_bytes = 500;
 	const char *env_port = getenv("PORT");
+#ifdef OTHERCMDLINE
+	char c;
+#endif
 
 	setpriority(PRIO_PROCESS, 0, -20);	/* pauses will screwup the timing */
 
@@ -168,8 +175,11 @@ int main(int argc, char **argv)
 	if(env_port)
 		strcpy(device, env_port);
 
+	// If there are two arguments it's the data file
+	if (argc == 2)
+		strcpy(fil, argv[1]);
 #ifdef OTHERCMDLINE
-	while ((c = getopt(argc, argv, "h?d:f:")) != -1)
+	while ((c = getopt(argc, argv, "h?d:f:s:")) != -1)
 	{
 		switch (c)
 		{
@@ -183,12 +193,13 @@ int main(int argc, char **argv)
 		case 'f':
 			strcpy(fil, optarg);
 			break;
+		case 's':
+			sync_bytes = atoi(optarg);
+			break;
 		}
 	}
 #else
-	if (argc == 2)
-		strcpy(fil, argv[1]);
-	else
+	if (argc != 2)
 		Usage(argv[0]);
 #endif
 
