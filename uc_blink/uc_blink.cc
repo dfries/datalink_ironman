@@ -84,7 +84,8 @@ static uint8_t g_color;
 /* If accepted upstream this is an extern "C" call in usb_dev.h which is
  * called each time a non-zero data packet is received.
  */
-void usb_rx_cb(void)
+//void usb_rx_cb(void)
+void rx_poll(void)
 {
 	//LED_GREEN1_ON;
 	// run until full or no more data
@@ -190,7 +191,7 @@ void ftm0_isr()
 
 		if(serial_get == serial_put)
 		{
-		//	NVIC_DISABLE_IRQ(IRQ_FTM0);
+			NVIC_DISABLE_IRQ(IRQ_FTM0);
 			// if the buffer filled up there could be data buffered
 			// and no interrupts move it to the local buffer
 			usb_rx_cb();
@@ -419,6 +420,7 @@ int main(void)
 		LED_ON;
 #else
 #warning sleep disabled
+		rx_poll();
 #endif
 	}
 }
