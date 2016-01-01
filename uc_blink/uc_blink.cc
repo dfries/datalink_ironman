@@ -88,6 +88,11 @@ void usb_rx_cb(void)
 		if(!r)
 			break;
 
+		if(serial_data[serial_put] == 'm')
+			usb_serial_printf("FTM0_MOD %d\n", FTM0_MOD);
+		if(serial_data[serial_put] == 's')
+			usb_serial_printf("FTM0_SC 0x%x\n", FTM0_SC);
+
 		//LED_TOGGLE;
 		serial_put = (serial_put + r) % sizeof(serial_data);
 	}
@@ -99,12 +104,20 @@ void ftm0_isr()
 {
 	if(FTM0_SC & FTM_SC_TOF)
 	{
-		// clear interrupt flag (write 0) Do you need to?
-		//FTM0_SC &= ~FTM_SC_TOF;
+	/*
+	static uint16_t rate;
+	if(++rate == 5)
+	{
+		LED_TOGGLE;
+		rate = 0;
+	}
+	*/
+		// clear interrupt flag, it will keep triggering until you do
+		FTM0_SC &= ~FTM_SC_TOF;
 
 		if(serial_get == serial_put)
 		{
-			NVIC_DISABLE_IRQ(IRQ_FTM0);
+		//	NVIC_DISABLE_IRQ(IRQ_FTM0);
 			// if the buffer filled up there could be data buffered
 			// and no interrupts move it to the local buffer
 			usb_rx_cb();
@@ -114,17 +127,33 @@ void ftm0_isr()
 				return;
 			}
 		}
+		/*
+		usb_serial_printf("%u %u %c\n", serial_put, serial_get,
+			serial_data[serial_get] & 1 ? '*' : '-');
+		*/
 		char b = serial_data[serial_get];
 		serial_get = (serial_get + 1) % sizeof(serial_data);
 		if(b & 1)
 		{
 			LED_ON;
-			usb_serial_write("*", 1);
+			//LED_ON;
+			//usb_serial_write("*", 1);
+			//LED_OFF;
 		}
 		else
 		{
 			LED_OFF;
+			/*
+			usb_serial_printf("\n %u\n", !usb_serial_write_buffer_free());
 			usb_serial_write("-", 1);
+			if(!usb_serial_write_buffer_free() < 2)
+			{
+				//LED_ON;
+				//LED_OFF;
+				//LED_ON;
+				//LED_OFF;
+			}
+			*/
 		}
 	}
 }
@@ -176,7 +205,7 @@ int main(void)
 	//NVIC_ENABLE_IRQ(IRQ_FTM0);
 
 	// slower initially for debugging
-	FTM0_SC |= FTM_SC_PS(FTM::prescale_128);
+	//FTM0_SC |= FTM_SC_PS(FTM::prescale_128);
 
 	// PORT_PCR_DSE enable high drive strength, data sheet gives values
 	// PORT_PCR_SRE enable slow slew rate ?  slower, no
