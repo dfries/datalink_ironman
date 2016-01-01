@@ -30,6 +30,31 @@ extern "C" void yield() {}
 #define LED_OFF    GPIOC_PCOR = _BV(5)
 #define LED_TOGGLE GPIOC_PTOR = _BV(5)
 
+// LEDs are common anode and inverted, switch set/clear
+#define LED_RED0_ON		GPIOC_PCOR = _BV(4)
+#define LED_RED0_OFF		GPIOC_PSOR = _BV(4)
+#define LED_RED0_TOGGLE		GPIOC_PTOR = _BV(4)
+
+#define LED_GREEN0_ON		GPIOD_PCOR = _BV(4)
+#define LED_GREEN0_OFF		GPIOD_PSOR = _BV(4)
+#define LED_GREEN0_TOGGLE	GPIOD_PTOR = _BV(4)
+
+#define LED_BLUE0_ON		GPIOD_PCOR = _BV(7)
+#define LED_BLUE0_OFF		GPIOD_PSOR = _BV(7)
+#define LED_BLUE0_TOGGLE	GPIOD_PTOR = _BV(7)
+
+#define LED_RED1_ON		GPIOD_PCOR = _BV(5)
+#define LED_RED1_OFF		GPIOD_PSOR = _BV(5)
+#define LED_RED1_TOGGLE		GPIOD_PTOR = _BV(5)
+
+#define LED_GREEN1_ON		GPIOD_PCOR = _BV(6)
+#define LED_GREEN1_OFF		GPIOD_PSOR = _BV(6)
+#define LED_GREEN1_TOGGLE	GPIOD_PTOR = _BV(6)
+
+#define LED_BLUE1_ON		GPIOC_PCOR = _BV(1)
+#define LED_BLUE1_OFF		GPIOC_PSOR = _BV(1)
+#define LED_BLUE1_TOGGLE	GPIOC_PTOR = _BV(1)
+
 void usb_serial_printf(const char *__restrict format, ...)
 	__attribute__ ((__format__ (__printf__, 1, 2)));
 
@@ -50,6 +75,8 @@ static char serial_data[129];
 // indices into serial_data, next index to put (from USB) or get data, equal is
 // empty
 static uint8_t serial_get, serial_put;
+
+static uint8_t g_color;
 
 #ifndef USB_RX_CB_AVAILABLE
 #error usb_rx_cb not available, this program will not function
@@ -88,10 +115,46 @@ void usb_rx_cb(void)
 		if(!r)
 			break;
 
+		// for interactive use, only looks at the first character
 		if(serial_data[serial_put] == 'm')
-			usb_serial_printf("FTM0_MOD %d\n", FTM0_MOD);
+			usb_serial_printf("FTM0_MOD %ld\n", FTM0_MOD);
 		if(serial_data[serial_put] == 's')
-			usb_serial_printf("FTM0_SC 0x%x\n", FTM0_SC);
+			usb_serial_printf("FTM0_SC 0x%lx\n", FTM0_SC);
+		uint8_t old = g_color;
+		if(serial_data[serial_put] == 'a')
+			g_color = 0;
+		if(serial_data[serial_put] == 'r')
+			g_color = 1;
+		if(serial_data[serial_put] == 'g')
+			g_color = 2;
+		if(serial_data[serial_put] == 'b')
+			g_color = 3;
+		if(serial_data[serial_put] == 'R')
+			g_color = 4;
+		if(serial_data[serial_put] == 'G')
+			g_color = 5;
+		if(serial_data[serial_put] == 'B')
+			g_color = 6;
+		if(serial_data[serial_put] == 'i' && r == 1)
+		{
+			LED_ON;
+			--r;
+		}
+		if(serial_data[serial_put] == 'o' && r == 1)
+		{
+			LED_OFF;
+			--r;
+		}
+		if(g_color != old)
+		{
+			LED_OFF;
+			LED_RED0_OFF;
+			LED_GREEN0_OFF;
+			LED_BLUE0_OFF;
+			LED_RED1_OFF;
+			LED_GREEN1_OFF;
+			LED_BLUE1_OFF;
+		}
 
 		//LED_TOGGLE;
 		serial_put = (serial_put + r) % sizeof(serial_data);
@@ -123,7 +186,30 @@ void ftm0_isr()
 			usb_rx_cb();
 			if(serial_get == serial_put)
 			{
-				LED_OFF;
+				switch(g_color)
+				{
+				case 0:
+					LED_OFF;
+					break;
+				case 1:
+					LED_RED0_OFF;
+					break;
+				case 2:
+					LED_GREEN0_OFF;
+					break;
+				case 3:
+					LED_BLUE0_OFF;
+					break;
+				case 4:
+					LED_RED1_OFF;
+					break;
+				case 5:
+					LED_GREEN1_OFF;
+					break;
+				case 6:
+					LED_BLUE1_OFF;
+					break;
+				}
 				return;
 			}
 		}
@@ -135,14 +221,62 @@ void ftm0_isr()
 		serial_get = (serial_get + 1) % sizeof(serial_data);
 		if(b & 1)
 		{
-			LED_ON;
+			switch(g_color)
+			{
+			case 0:
+				LED_ON;
+				break;
+			case 1:
+				LED_RED0_ON;
+				break;
+			case 2:
+				LED_GREEN0_ON;
+				break;
+			case 3:
+				LED_BLUE0_ON;
+				break;
+			case 4:
+				LED_RED1_ON;
+				break;
+			case 5:
+				LED_GREEN1_ON;
+				break;
+			case 6:
+				LED_BLUE1_ON;
+				break;
+			}
+			//LED_ON;
 			//LED_ON;
 			//usb_serial_write("*", 1);
 			//LED_OFF;
 		}
 		else
 		{
-			LED_OFF;
+			switch(g_color)
+			{
+			case 0:
+				LED_OFF;
+				break;
+			case 1:
+				LED_RED0_OFF;
+				break;
+			case 2:
+				LED_GREEN0_OFF;
+				break;
+			case 3:
+				LED_BLUE0_OFF;
+				break;
+			case 4:
+				LED_RED1_OFF;
+				break;
+			case 5:
+				LED_GREEN1_OFF;
+				break;
+			case 6:
+				LED_BLUE1_OFF;
+				break;
+			}
+			//LED_OFF;
 			/*
 			usb_serial_printf("\n %u\n", !usb_serial_write_buffer_free());
 			usb_serial_write("-", 1);
@@ -183,6 +317,59 @@ int main(void)
 	Disable_Analog();
 	Disable_Serial();
 	Disable_SysTick();
+
+	const uint32_t gpio_value = PORT_PCR_MUX(PORT::MUX_ALT_GPIO) |
+		PORT_PCR_DSE | PORT_PCR_SRE;
+	// RGB set 0
+	PORTC_PCR4 = gpio_value;
+	PORTD_PCR4 = gpio_value;
+	PORTD_PCR7 = gpio_value;
+	// RGB set 1
+	PORTD_PCR5 = gpio_value;
+	PORTD_PCR6 = gpio_value;
+	PORTC_PCR1 = gpio_value;
+
+	// common anode, they start on, so turn them off
+	LED_RED0_OFF;
+	LED_GREEN0_OFF;
+	LED_BLUE0_OFF;
+	LED_RED1_OFF;
+	LED_GREEN1_OFF;
+	LED_BLUE1_OFF;
+
+	// output for all
+	GPIOC_PDDR |= _BV(4) | _BV(1);
+	GPIOD_PDDR |= _BV(4) | _BV(7) | _BV(5) | _BV(6);
+
+	LED_RED0_ON;
+	for(int i = 0; i<F_CPU / 66; ++i)
+		LED_OFF;
+	LED_RED0_OFF;
+
+	LED_GREEN0_ON;
+	for(int i = 0; i<F_CPU / 66; ++i)
+		LED_OFF;
+	LED_GREEN0_OFF;
+
+	LED_BLUE0_ON;
+	for(int i = 0; i<F_CPU / 66; ++i)
+		LED_OFF;
+	LED_BLUE0_OFF;
+
+	LED_RED1_ON;
+	for(int i = 0; i<F_CPU / 66; ++i)
+		LED_OFF;
+	LED_RED1_OFF;
+
+	LED_GREEN1_ON;
+	for(int i = 0; i<F_CPU / 66; ++i)
+		LED_OFF;
+	LED_GREEN1_OFF;
+
+	LED_BLUE1_ON;
+	for(int i = 0; i<F_CPU / 66; ++i)
+		LED_OFF;
+	LED_BLUE1_OFF;
 
 	// enable the FTM specific registers, which is the second set,
 	// except I'm not figuring out where the first set ends and
