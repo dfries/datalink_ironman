@@ -86,6 +86,7 @@ static uint8_t g_color;
  */
 void usb_rx_cb(void)
 {
+	//LED_GREEN1_ON;
 	// run until full or no more data
 	while(usb_serial_available())
 	{
@@ -109,11 +110,18 @@ void usb_rx_cb(void)
 			size);
 			*/
 		if(!size)
+		{
+			//LED_RED1_ON;
 			break;
+		}
 
 		int r = usb_serial_read(serial_data + serial_put, size);
 		if(!r)
+		{
+			//LED_RED1_ON;
 			break;
+		}
+		//LED_RED1_OFF;
 
 		// for interactive use, only looks at the first character
 		if(serial_data[serial_put] == 'm')
@@ -161,12 +169,14 @@ void usb_rx_cb(void)
 	}
 	if(serial_get != serial_put)
 		NVIC_ENABLE_IRQ(IRQ_FTM0);
+	//LED_GREEN1_OFF;
 }
 
 void ftm0_isr()
 {
 	if(FTM0_SC & FTM_SC_TOF)
 	{
+		//LED_BLUE1_ON;
 	/*
 	static uint16_t rate;
 	if(++rate == 5)
@@ -210,6 +220,7 @@ void ftm0_isr()
 					LED_BLUE1_OFF;
 					break;
 				}
+		//LED_BLUE1_OFF;
 				return;
 			}
 		}
@@ -289,6 +300,7 @@ void ftm0_isr()
 			}
 			*/
 		}
+		//LED_BLUE1_OFF;
 	}
 }
 
