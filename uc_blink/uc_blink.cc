@@ -396,7 +396,9 @@ int main(void)
 	// than FTM0_MOD but more than 32768 gives fully on when it should
 	// be almost off (using PWM_Clear mode)
 	FTM0_SC &= ~FTM_SC_CLKS_MASK; // disable clock to update FTM0_MOD
-	FTM0_MOD = F_CPU * 2 / (115200 / 9);
+	// emulate a 115200 baud serial port, only update the LED on/off
+	// every byte + start bit
+	FTM0_MOD = F_CPU / (115200 / 9);
 	// CPWMS center aligned (count up/down)
 	// use FTM::prescale_1 which is also 0
 	// TOIE Timer Overflow Interrupt Enable
