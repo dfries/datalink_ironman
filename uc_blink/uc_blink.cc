@@ -84,8 +84,12 @@ static uint8_t g_color;
 /* If accepted upstream this is an extern "C" call in usb_dev.h which is
  * called each time a non-zero data packet is received.
  */
-//void usb_rx_cb(void)
+#define IRQ_CB
+#ifdef IRQ_CB
+void usb_rx_cb(void)
+#else
 void rx_poll(void)
+#endif
 {
 	//LED_GREEN1_ON;
 	// run until full or no more data
@@ -422,7 +426,9 @@ int main(void)
 		LED_ON;
 #else
 #warning sleep disabled
+		#ifndef IRQ_CB
 		rx_poll();
+		#endif
 #endif
 	}
 }
