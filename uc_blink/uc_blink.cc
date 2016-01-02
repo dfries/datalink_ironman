@@ -91,6 +91,9 @@ void usb_rx_cb(void)
 void rx_poll(void)
 #endif
 {
+	int irq_disabled;
+	__irq_status(irq_disabled);
+	__disable_irq();
 	//LED_GREEN1_ON;
 	// run until full or no more data
 	while(usb_serial_available())
@@ -175,10 +178,19 @@ void rx_poll(void)
 	if(serial_get != serial_put)
 		NVIC_ENABLE_IRQ(IRQ_FTM0);
 	//LED_GREEN1_OFF;
+	// must restore because it's called from ftm0_isr
+	if(!irq_disabled)
+	{
+		__enable_irq();
+	}
 }
 
 void ftm0_isr()
 {
+	int irq_disabled;
+	__irq_status(irq_disabled);
+	__disable_irq();
+	do {
 	if(FTM0_SC & FTM_SC_TOF)
 	{
 		//LED_BLUE1_ON;
@@ -226,7 +238,7 @@ void ftm0_isr()
 					break;
 				}
 		//LED_BLUE1_OFF;
-				return;
+				break;
 			}
 		}
 		/*
@@ -306,6 +318,11 @@ void ftm0_isr()
 			*/
 		}
 		//LED_BLUE1_OFF;
+	}
+	} while(0);
+	if(!irq_disabled)
+	{
+		__enable_irq();
 	}
 }
 
