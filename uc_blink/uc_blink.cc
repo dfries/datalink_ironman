@@ -193,7 +193,6 @@ void ftm0_isr()
 	do {
 	if(FTM0_SC & FTM_SC_TOF)
 	{
-		//LED_BLUE1_ON;
 	/*
 	static uint16_t rate;
 	if(++rate == 5)
@@ -208,36 +207,36 @@ void ftm0_isr()
 		if(serial_get == serial_put)
 		{
 			NVIC_DISABLE_IRQ(IRQ_FTM0);
+			switch(g_color)
+			{
+			case 0:
+				LED_OFF;
+				break;
+			case 1:
+				LED_RED0_OFF;
+				break;
+			case 2:
+				LED_GREEN0_OFF;
+				break;
+			case 3:
+				LED_BLUE0_OFF;
+				break;
+			case 4:
+				LED_RED1_OFF;
+				break;
+			case 5:
+				LED_GREEN1_OFF;
+				break;
+			case 6:
+				LED_BLUE1_OFF;
+				break;
+			}
+
 			// if the buffer filled up there could be data buffered
 			// and no interrupts move it to the local buffer
 			usb_rx_cb();
 			if(serial_get == serial_put)
 			{
-				switch(g_color)
-				{
-				case 0:
-					LED_OFF;
-					break;
-				case 1:
-					LED_RED0_OFF;
-					break;
-				case 2:
-					LED_GREEN0_OFF;
-					break;
-				case 3:
-					LED_BLUE0_OFF;
-					break;
-				case 4:
-					LED_RED1_OFF;
-					break;
-				case 5:
-					LED_GREEN1_OFF;
-					break;
-				case 6:
-					LED_BLUE1_OFF;
-					break;
-				}
-		//LED_BLUE1_OFF;
 				break;
 			}
 		}
