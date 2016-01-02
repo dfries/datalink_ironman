@@ -84,16 +84,18 @@ static uint8_t g_color;
 /* If accepted upstream this is an extern "C" call in usb_dev.h which is
  * called each time a non-zero data packet is received.
  */
-#define IRQ_CB
+//#define IRQ_CB
 #ifdef IRQ_CB
 void usb_rx_cb(void)
 #else
 void rx_poll(void)
 #endif
 {
+	#ifdef RX_IRQ_DISABLE
 	int irq_disabled;
 	__irq_status(irq_disabled);
 	__disable_irq();
+	#endif
 	//LED_GREEN1_ON;
 	// run until full or no more data
 	while(usb_serial_available())
@@ -179,10 +181,12 @@ void rx_poll(void)
 		NVIC_ENABLE_IRQ(IRQ_FTM0);
 	//LED_GREEN1_OFF;
 	// must restore because it's called from ftm0_isr
+	#ifdef RX_IRQ_DISABLE
 	if(!irq_disabled)
 	{
 		__enable_irq();
 	}
+	#endif
 }
 
 void ftm0_isr()
@@ -234,7 +238,10 @@ void ftm0_isr()
 
 			// if the buffer filled up there could be data buffered
 			// and no interrupts move it to the local buffer
+			#ifdef IRQ_CB
+			// only check when not polling
 			usb_rx_cb();
+			#endif
 			if(serial_get == serial_put)
 			{
 				break;
