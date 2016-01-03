@@ -22,6 +22,14 @@
 // TODO remove extras
 extern "C" void yield() {}
 
+#define IRQ_CB
+//#define EXTERNAL_LED
+
+#ifndef USB_RX_CB_AVAILABLE
+#warning usb_rx_cb not available, will poll USB
+#undef IRQ_CB
+#endif
+
 // built in LED PTC5
 #define LED_CONFIG {PORTC_PCR5 = PORT_PCR_MUX(PORT::MUX_ALT_GPIO) | \
 	PORT_PCR_DSE | PORT_PCR_SRE; \
@@ -30,6 +38,7 @@ extern "C" void yield() {}
 #define LED_OFF    GPIOC_PCOR = _BV(5)
 #define LED_TOGGLE GPIOC_PTOR = _BV(5)
 
+#ifdef EXTERNAL_LED
 // LEDs are common anode and inverted, switch set/clear
 #define LED_RED0_ON		GPIOC_PCOR = _BV(4)
 #define LED_RED0_OFF		GPIOC_PSOR = _BV(4)
@@ -55,6 +64,9 @@ extern "C" void yield() {}
 #define LED_BLUE1_OFF		GPIOC_PSOR = _BV(1)
 #define LED_BLUE1_TOGGLE	GPIOC_PTOR = _BV(1)
 
+static uint8_t g_color;
+#endif
+
 void usb_serial_printf(const char *__restrict format, ...)
 	__attribute__ ((__format__ (__printf__, 1, 2)));
 
@@ -76,15 +88,9 @@ static char serial_data[129];
 // empty
 static uint8_t serial_get, serial_put;
 
-static uint8_t g_color;
-
-#ifndef USB_RX_CB_AVAILABLE
-#error usb_rx_cb not available, this program will not function
-#endif
 /* If accepted upstream this is an extern "C" call in usb_dev.h which is
  * called each time a non-zero data packet is received.
  */
-//#define IRQ_CB
 #ifdef IRQ_CB
 void usb_rx_cb(void)
 #else
@@ -96,7 +102,6 @@ void rx_poll(void)
 	__irq_status(irq_disabled);
 	__disable_irq();
 	#endif
-	//LED_GREEN1_ON;
 	// run until full or no more data
 	while(usb_serial_available())
 	{
@@ -114,30 +119,28 @@ void rx_poll(void)
 		}
 
 		/*
-		while(!usb_serial_write_buffer_free())
-			;
 		usb_serial_printf("p %u g %u size %u\n", serial_put, serial_get,
 			size);
 			*/
 		if(!size)
 		{
-			//LED_RED1_ON;
 			break;
 		}
 
 		int r = usb_serial_read(serial_data + serial_put, size);
 		if(!r)
 		{
-			//LED_RED1_ON;
 			break;
 		}
-		//LED_RED1_OFF;
 
 		// for interactive use, only looks at the first character
+		// The datalink rs-232 protocol only sends 0xff and 0x00
+		// bytes, having a few debug characters doesn't interfere
 		if(serial_data[serial_put] == 'm')
 			usb_serial_printf("FTM0_MOD %ld\n", FTM0_MOD);
 		if(serial_data[serial_put] == 's')
 			usb_serial_printf("FTM0_SC 0x%lx\n", FTM0_SC);
+#ifdef EXTERNAL_LED
 		uint8_t old = g_color;
 		if(serial_data[serial_put] == 'a')
 			g_color = 0;
@@ -153,16 +156,6 @@ void rx_poll(void)
 			g_color = 5;
 		if(serial_data[serial_put] == 'B')
 			g_color = 6;
-		if(serial_data[serial_put] == 'i' && r == 1)
-		{
-			LED_ON;
-			--r;
-		}
-		if(serial_data[serial_put] == 'o' && r == 1)
-		{
-			LED_OFF;
-			--r;
-		}
 		if(g_color != old)
 		{
 			LED_OFF;
@@ -173,13 +166,23 @@ void rx_poll(void)
 			LED_GREEN1_OFF;
 			LED_BLUE1_OFF;
 		}
+#endif
+		if(serial_data[serial_put] == 'i' && r == 1)
+		{
+			LED_ON;
+			--r;
+		}
+		if(serial_data[serial_put] == 'o' && r == 1)
+		{
+			LED_OFF;
+			--r;
+		}
 
-		//LED_TOGGLE;
 		serial_put = (serial_put + r) % sizeof(serial_data);
 	}
 	if(serial_get != serial_put)
 		NVIC_ENABLE_IRQ(IRQ_FTM0);
-	//LED_GREEN1_OFF;
+
 	// must restore because it's called from ftm0_isr
 	#ifdef RX_IRQ_DISABLE
 	if(!irq_disabled)
@@ -197,20 +200,13 @@ void ftm0_isr()
 	do {
 	if(FTM0_SC & FTM_SC_TOF)
 	{
-	/*
-	static uint16_t rate;
-	if(++rate == 5)
-	{
-		LED_TOGGLE;
-		rate = 0;
-	}
-	*/
 		// clear interrupt flag, it will keep triggering until you do
 		FTM0_SC &= ~FTM_SC_TOF;
 
 		if(serial_get == serial_put)
 		{
 			NVIC_DISABLE_IRQ(IRQ_FTM0);
+#ifdef EXTERNAL_LED
 			switch(g_color)
 			{
 			case 0:
@@ -235,6 +231,9 @@ void ftm0_isr()
 				LED_BLUE1_OFF;
 				break;
 			}
+#else
+			LED_OFF;
+#endif
 
 			// if the buffer filled up there could be data buffered
 			// and no interrupts move it to the local buffer
@@ -255,6 +254,7 @@ void ftm0_isr()
 		serial_get = (serial_get + 1) % sizeof(serial_data);
 		if(b & 1)
 		{
+#ifdef EXTERNAL_LED
 			switch(g_color)
 			{
 			case 0:
@@ -279,13 +279,13 @@ void ftm0_isr()
 				LED_BLUE1_ON;
 				break;
 			}
-			//LED_ON;
-			//LED_ON;
-			//usb_serial_write("*", 1);
-			//LED_OFF;
+#else
+			LED_ON;
+#endif
 		}
 		else
 		{
+#ifdef EXTERNAL_LED
 			switch(g_color)
 			{
 			case 0:
@@ -310,20 +310,10 @@ void ftm0_isr()
 				LED_BLUE1_OFF;
 				break;
 			}
-			//LED_OFF;
-			/*
-			usb_serial_printf("\n %u\n", !usb_serial_write_buffer_free());
-			usb_serial_write("-", 1);
-			if(!usb_serial_write_buffer_free() < 2)
-			{
-				//LED_ON;
-				//LED_OFF;
-				//LED_ON;
-				//LED_OFF;
-			}
-			*/
+#else
+			LED_OFF;
+#endif
 		}
-		//LED_BLUE1_OFF;
 	}
 	} while(0);
 	if(!irq_disabled)
@@ -358,6 +348,7 @@ int main(void)
 	Disable_Serial();
 	Disable_SysTick();
 
+#ifdef EXTERNAL_LED
 	const uint32_t gpio_value = PORT_PCR_MUX(PORT::MUX_ALT_GPIO) |
 		PORT_PCR_DSE | PORT_PCR_SRE;
 	// RGB set 0
@@ -410,6 +401,7 @@ int main(void)
 	for(int i = 0; i<F_CPU / 66; ++i)
 		LED_OFF;
 	LED_BLUE1_OFF;
+#endif
 
 	// enable the FTM specific registers, which is the second set,
 	// except I'm not figuring out where the first set ends and
@@ -467,15 +459,13 @@ int main(void)
 	for(;;)
 	{
 #if 0
-		LED_OFF;
 		// Wait for Interrupt, sleep mode
 		__WFI();
-		LED_ON;
 #else
 #warning sleep disabled
+#endif
 		#ifndef IRQ_CB
 		rx_poll();
 		#endif
-#endif
 	}
 }
