@@ -423,9 +423,33 @@ int main(void)
 	// than FTM0_MOD but more than 32768 gives fully on when it should
 	// be almost off (using PWM_Clear mode)
 	FTM0_SC &= ~FTM_SC_CLKS_MASK; // disable clock to update FTM0_MOD
-	// emulate a 115200 baud serial port, only update the LED on/off
-	// every byte + start bit
-	FTM0_MOD = F_CPU / (115200 / 9);
+	// emulate the timing of a 115200 baud serial port,
+	// (only set to turn the LED on/off once per sent byte)
+
+	/* Timing, serblink sets the serial port for
+	 * 115200 1 start bit 8 data bits 1 stop bit
+	 * one frame is (data sent not serial bits)
+	 *
+	 * start bit, 6 bytes
+	 * 8x data bits, 8*6 - 4 = 44, (alternate 6 and 5 bytes for timing)
+	 * 4*6 = 24 (blank between the two lines)
+	 * start bit, 6 bytes
+	 * 8x data bits, 8*6 - 4 = 44, (alternate 6 and 5 bytes for timing)
+	 * 12*6 = 72 (blank between frames)
+	 * = 196
+	 * (115200 / 9) / 196 = 65 Hz watch ignores
+	 * (115200 / 10) / 196 = 58.78 Hz watch works
+	 * 48000000 / (115200 / 10) = 4166
+	 * 48000000 / (4166 * 196) = 58.78
+	 * 48000000 / (M * 196) = 60
+	 * 48000000 / (60 * 196) = 4081.63
+	 * 48000000 / (4081 * 196) = 60.0093
+	 * 4081 is closer to 60 Hz, but going with F_CPU / (115200 / 10)
+	 * because it is less of a mystery as to where the numbers come
+	 * from and if the CPU speed changes it should still work.
+	 */
+
+	FTM0_MOD = F_CPU / (115200 / 10);
 	// CPWMS center aligned (count up/down)
 	// use FTM::prescale_1 which is also 0
 	// TOIE Timer Overflow Interrupt Enable
