@@ -181,7 +181,9 @@ void rx_poll(void)
 		serial_put = (serial_put + r) % sizeof(serial_data);
 	}
 	if(serial_get != serial_put)
+	{
 		NVIC_ENABLE_IRQ(IRQ_FTM0);
+	}
 
 	// must restore because it's called from ftm0_isr
 	#ifdef RX_IRQ_DISABLE
@@ -456,14 +458,15 @@ int main(void)
 	// PORT_PCR_SRE enable slow slew rate ?  slower, no
 	// PORT_PCR_ODE Open Drain Enabled
 
+	#ifdef IRQ_CB
+	// if it isn't polling, the main loop is empty, so go back to sleep
+	SCB_SCR |= SCB_SCR_SLEEPONEXIT;
+	#endif
 	for(;;)
 	{
-#if 0
 		// Wait for Interrupt, sleep mode
 		__WFI();
-#else
-#warning sleep disabled
-#endif
+
 		#ifndef IRQ_CB
 		rx_poll();
 		#endif
