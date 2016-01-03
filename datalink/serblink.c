@@ -137,6 +137,7 @@ static void blank_frame(int fil, int count)
 	}
 }
 
+#define DEFAULT_SYNC_FRAMES 1000
 void Usage(const char *prog)
 {
 	fprintf(stderr,
@@ -146,9 +147,9 @@ void Usage(const char *prog)
 		"it.\n"
 		"The device can also be passed by the environment variable PORT\n"
 		"export PORT=/dev/ttyXXXX\n"
-		"sync_frames default is 500, "
+		"sync_frames default is %u, "
 		"increase for a longer sync time.\n",
-		prog);
+		prog, DEFAULT_SYNC_FRAMES);
 	exit(0);
 }
 
@@ -161,7 +162,7 @@ int main(int argc, char **argv)
 	unsigned char buff[4096];
 	char fil[1024];
 	char device[1024];
-	int sync_bytes = 500;
+	int sync_frames = DEFAULT_SYNC_FRAMES;
 	const char *env_port = getenv("PORT");
 #ifdef OTHERCMDLINE
 	char c;
@@ -194,7 +195,7 @@ int main(int argc, char **argv)
 			strcpy(fil, optarg);
 			break;
 		case 's':
-			sync_bytes = atoi(optarg);
+			sync_frames = atoi(optarg);
 			break;
 		}
 	}
@@ -239,11 +240,11 @@ int main(int argc, char **argv)
 		blank_frame(port, 20);	/* used for hardware debugging */
 #endif
 	printf("sync1\n");
-	for (i = 0; i < sync_bytes; i++)
+	for (i = 0; i < sync_frames; i++)
 	{
 		sendbyte(port, 1, 0x55);
 		if (!(i % 100))
-			printf("%3d\n", (sync_bytes-i)/100);
+			printf("%3d\n", (sync_frames-i)/100);
 	}
 	blank_frame(port, END_PACKET);
 	printf("sync2\n");
