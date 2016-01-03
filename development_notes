@@ -95,4 +95,64 @@ diff --exclude=CVS -u --recursive --new-file ./TODO /home/david/programming/cc/X
 has +       (void) wi;
 why?  so it is used?
 
+------------------------------------------------------------
+2015-12-31 Teensy 3 blinker notes
 
+Unlike the AVR Timer/Counters, the FlexTimer overflow interrupt flag
+must be manually cleared or the interrupt will fire again.
+
+CRT monitor, resolution 1024x768 could easily sync 3 feet away,
+if the lines were 145 wide in the center it still had no problem
+picking up the signal, it was having problems with a width of about
+half of that.
+
+It is hanging at times writing the data out.  It seems to be a problem
+on transmitting data to the computer.
+LED_ON write() LED_OFF,
+socat listen first, then serblink, hangs with the LED off,
+
+most of usb_dev.c will unconditionally disable then enable interrupts,
+but it should only enable them if they were disabled.
+
+restoring irq status in usb_desc.c code size cost 8 bytes
+I see 2 instructions (get primask and conditional), I don't see where
+the other two bytes went.
+For the entire USB system, code size increase 56 bytes
+Still was seeing corruption and hanging.
+Disabled interrupts in my code and no problems so far.
+my routine calls usb_serial_write which calls usb_tx_packet_count
+which was unconditionally enabling interrupts
+usb_serial_available doesn't call any routines enabling interrupts
+my routine calls usb_serial_read which calls usb_rx which enables
+interrupts
+Verified that without the cores/teensy3/usb_* fix even disabling
+interrupts on my side my program will hang and fail, so the fix must
+be in both places.
+
+power draw,
+toggling a green LED each time through the main loop sees a constant
+amount of wakeups when on USB, none when not on USB
+not on USB, power draw measured using 110 Ohm resistance
+not using __WFI()
+green LED off, 2.37 / 110 = 21.5 mA
+using __WFI(), wait for interrupt sleep mode
+green LED on, 1.862 V / 110 = 16.9 mA
+green LED off, 1.353 / 110 = 12.3 mA
+using sleepdeep (stop) and __WFI()
+.36V / 110 = 3.27 mA, but while it appears to receive data, the LED
+doesn't blink and it doesn't work
+starting without USB connected just on power, something's left running,
+2.00 / 110 = 18 mA
+enable SCB_SCR_SLEEPONEXIT
+1.34 / 110 = 12.18 mA no measurable difference with or without
+very low power run and return to normal run on interrupt
+1.34 / 110 = 12.18 mA
+very low power run, don't enable return to normal on interrupt
+1.34 / 110 = 12.18 mA
+set very low power run before each __WFI() return to normal on
+interrupt
+1.34 / 110 = 12.18 mA
+system clock divider of 16 so 3 MHz operation
+1.34 / 110 = 12.18 mA
+also clock divider for 2 & 4 of 16
+1.34 / 110 = 12.18 mA
