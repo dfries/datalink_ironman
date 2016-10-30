@@ -15,9 +15,9 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "teensy_helper/kinetis_extra.h"
-#include "teensy_helper/bit_extra.h"
-#include "teensy_helper/kinetis_power.h"
+#include "kinetis_helper/kinetis_extra.h"
+#include "kinetis_helper/bit_extra.h"
+#include "kinetis_helper/kinetis_power.h"
 
 // TODO remove extras
 extern "C" void yield() {}
