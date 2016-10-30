@@ -1,6 +1,6 @@
 [submodule "cores"]
 	path = uc_blink/cores
-	url = SpacedOut.fries.net:/home/david/git_root/programming/cc/iButton/teensy/cores.git
+	url = git@github.com:dfries/cores.git
 [submodule "uc_blink/kinetis_helper"]
 	path = uc_blink/kinetis_helper
-	url = SpacedOut.fries.net:/home/david/git_root/programming/cc/iButton/teensy/kinetis_helper.git
+	url = git@github.com:dfries/kinetis_helper.git
