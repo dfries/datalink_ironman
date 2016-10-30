@@ -1,3 +1,14 @@
+	:
+	-serblink.c 
+	along with another wiring diagram, the serlbink program
+TODO: What all has chnaged?
+	 
+	modified as well as another wiring diagram.
+	-Timer seconds is now initalized to zero for each timer
+	 instead of being set to the last value given.  Other
+	 variables are linewise initalized to zero.
+	-Dependences are remade if the make file is newer than the
+	 depend file.
 07-21-2002:
 	-Fixed the setwatch options of -app and +app to say appointments
 	 instead of wristapp.
