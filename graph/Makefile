@@ -3,10 +3,6 @@ LDFLAGS =
 GTKFLAGS = `gtkmm-config --cflags`
 GTKLDFLAGS = `gtkmm-config --libs`
 
-# Not yet updated to 2.4
-#GTKFLAGS = `pkg-config --cflags gtkmm-2.4`
-#GTKLDFLAGS = `pkg-config --libs gtkmm-2.4`
-
 ifdef efence
 LDFLAGS += -lstdc++-2-libc6.1-1-2.9.0 -lefence
 endif
