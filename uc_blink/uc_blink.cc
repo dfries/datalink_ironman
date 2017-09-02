@@ -140,6 +140,10 @@ void rx_poll(void)
 			usb_serial_printf("FTM0_MOD %ld\n", FTM0_MOD);
 		if(serial_data[serial_put] == 's')
 			usb_serial_printf("FTM0_SC 0x%lx\n", FTM0_SC);
+		if(serial_data[serial_put] == '?')
+			usb_serial_printf("Datalink Ironman serial emulation\n"
+			"PORT=/dev/ttyACM1 "
+			"./setwatch -ironman -serial +time\n");
 #ifdef EXTERNAL_LED
 		uint8_t old = g_color;
 		if(serial_data[serial_put] == 'a')
