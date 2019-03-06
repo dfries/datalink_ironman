@@ -68,6 +68,7 @@ OBJDIR = .
 # List C++ source files here. (C dependencies are automatically generated.)
 CXXSRC = $(TARGET).cc
 CPPSRC = \
+cores/teensy3/EventResponder.cpp \
 cores/teensy3/DMAChannel.cpp
 
 SRC += cores/teensy3/pins_teensy.c \
