@@ -6,6 +6,9 @@
  * built in LED at the correct rate for the datalink serial protocol
  */
 
+// for millis() if cores isn't fixed
+#include "cores/teensy3/core_pins.h"
+
 // arm_math.h sets macros and includes core_cmInstr.h
 #include "cores/teensy3/arm_math.h"
 
@@ -200,9 +203,11 @@ void rx_poll(void)
 
 void ftm0_isr()
 {
+	#ifdef RX_IRQ_DISABLE
 	int irq_disabled;
 	__irq_status(irq_disabled);
 	__disable_irq();
+	#endif
 	do {
 	if(FTM0_SC & FTM_SC_TOF)
 	{
@@ -322,10 +327,12 @@ void ftm0_isr()
 		}
 	}
 	} while(0);
+	#ifdef RX_IRQ_DISABLE
 	if(!irq_disabled)
 	{
 		__enable_irq();
 	}
+	#endif
 }
 
 int main(void)
