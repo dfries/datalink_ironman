@@ -142,6 +142,8 @@ clean:
 	rm -f settime setwatch cvt $(ENGINES)
 	rm -f depend
 
-# The next line was used for makedepend
+# Trigger makedepend but only if clean isn't a 
+ifeq (,$(findstring clean,$(MAKECMDGOALS)))
 include depend
+endif
 # DO NOT DELETE
