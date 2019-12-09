@@ -153,8 +153,9 @@ int dl_send_data(WatchInfoPtr wi, int type, const char *prog)
 		if ((ofd = open(fname,
 			O_WRONLY | O_CREAT | O_TRUNC, 0644)) == -1)
 		{
-			sprintf(buf, "Can't open %s for writing.", fname);
-			return ((*dl_error_proc) (buf));
+			char msg[64];
+			sprintf(msg, "Can't open %s for writing.", fname);
+			return ((*dl_error_proc) (msg));
 		}
 	}
 	else
@@ -179,8 +180,9 @@ int dl_send_data(WatchInfoPtr wi, int type, const char *prog)
 		strcat(fname, template);
 		if ((ofd = mkstemp(fname)) == -1)
 		{
-			sprintf(buf, "Can't open %s for writing.", fname);
-			return ((*dl_error_proc) (buf));
+			char msg[64];
+			sprintf(msg, "Can't open %s for writing.", fname);
+			return ((*dl_error_proc) (msg));
 		}
 	}
 
