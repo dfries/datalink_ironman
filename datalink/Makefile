@@ -17,8 +17,6 @@ CFLAGS = -Wall -fPIC -g -O2 -DBINDIR=\"$(BINDIR)\"
 
 PORT = /dev/ttyS1
 
-ENGINES = svgablink serblink
-
 RANLIB = echo
 #RANLIB = ranlib
 
@@ -54,7 +52,7 @@ LEX = flex -Pdl_ -olex.yy.c
 
 .PHONY: all clean
 
-all: depend libdatalink.so.1 settime setwatch $(ENGINES)
+all: depend libdatalink.so.1 settime setwatch serblink svgablink_reminder
 
 libdatalink.a: $(OBJ)
 	rm -f $@
@@ -74,7 +72,8 @@ parse.c: dataread.l dl_read_save.c y.tab.h
 	mv lex.yy.c $@
 
 depend: Makefile
-	makedepend -f- -o.o $(SRC) $(SVGASRC) $(SERSRC) > depend
+	makedepend -f- -o.o $(SRC) $(SERSRC) > depend
+	makedepend -f- -o.o $(SVGASRC) >> depend
 	@echo "Dependencies have been made, re-run make to build"
 	@false
 
@@ -84,6 +83,11 @@ serblink.o: $(SERSRC)
 serblink: $(SEROBJ)
 	rm -f $@
 	$(CC) $(CFLAGS) -o $@ $(SEROBJ)
+
+svgablink_reminder:
+	@echo No longer building svgablink by default, build separately with
+	@echo the following if vga.h is available.
+	@echo make svgablink
 
 svgablink: $(SVGAOBJ)
 	rm -f $@
@@ -139,7 +143,7 @@ clean:
 	rm -f $(SVGAOBJ) $(SEROBJ)
 	rm -f parse.c dl_read_save.c y.tab.h
 	rm -f settime.o setwatch.o cvt.o
-	rm -f settime setwatch cvt $(ENGINES)
+	rm -f settime setwatch cvt svgablink serblink
 	rm -f depend
 
 # Trigger makedepend but only if clean isn't a 
