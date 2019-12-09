@@ -34,7 +34,6 @@ dl_init_download(WatchInfoPtr wi, ListPtr times, ListPtr alarms,
 	ItemPtr ip;
 	char buf[1024];
 	int i;
-	int last_warn = 0;
 
 /* Free up old download structure if it exists. */
 	dl_free_download();
@@ -74,9 +73,7 @@ dl_init_download(WatchInfoPtr wi, ListPtr times, ListPtr alarms,
 
 		if (i != times->count)
 		{
-			last_warn =
-			    (*dl_warn_proc)
-			    ("Time count value incorrect.");
+			(*dl_warn_proc)("Time count value incorrect.");
 			times->count = i;
 		}
 
@@ -102,9 +99,7 @@ dl_init_download(WatchInfoPtr wi, ListPtr times, ListPtr alarms,
 
 		if (i != chron->count)
 		{
-			last_warn =
-			    (*dl_warn_proc)
-			    ("Chron count value incorrect.");
+			(*dl_warn_proc)("Chron count value incorrect.");
 			chron->count = i;
 		}
 
@@ -133,9 +128,7 @@ dl_init_download(WatchInfoPtr wi, ListPtr times, ListPtr alarms,
 
 		if (i != alarms->count)
 		{
-			last_warn =
-			    (*dl_warn_proc)
-			    ("Alarm count value incorrect.");
+			(*dl_warn_proc)("Alarm count value incorrect.");
 			alarms->count = i;
 		}
 
@@ -164,9 +157,7 @@ dl_init_download(WatchInfoPtr wi, ListPtr times, ListPtr alarms,
 
 		if (i != timers->count)
 		{
-			last_warn =
-			    (*dl_warn_proc)
-			    ("Timer count value incorrect.");
+			(*dl_warn_proc) ("Timer count value incorrect.");
 			timers->count = i;
 		}
 
@@ -196,9 +187,7 @@ dl_init_download(WatchInfoPtr wi, ListPtr times, ListPtr alarms,
 
 		if (i != apps->count)
 		{
-			last_warn =
-			    (*dl_warn_proc)
-			    ("Appointment count value incorrect.");
+			(*dl_warn_proc) ("Appointment count value incorrect.");
 			apps->count = i;
 		}
 
@@ -227,9 +216,7 @@ dl_init_download(WatchInfoPtr wi, ListPtr times, ListPtr alarms,
 
 		if (i != todos->count)
 		{
-			last_warn =
-			    (*dl_warn_proc)
-			    ("To Do count value incorrect.");
+			(*dl_warn_proc) ("To Do count value incorrect.");
 			todos->count = i;
 		}
 
@@ -258,9 +245,7 @@ dl_init_download(WatchInfoPtr wi, ListPtr times, ListPtr alarms,
 
 		if (i != phones->count)
 		{
-			last_warn =
-			    (*dl_warn_proc)
-			    ("Phone count value incorrect.");
+			(*dl_warn_proc)("Phone count value incorrect.");
 			phones->count = i;
 		}
 
@@ -290,9 +275,7 @@ dl_init_download(WatchInfoPtr wi, ListPtr times, ListPtr alarms,
 
 		if (i != annivs->count)
 		{
-			last_warn =
-			    (*dl_warn_proc)
-			    ("Anniversary count value incorrect.");
+			(*dl_warn_proc)("Anniversary count value incorrect.");
 			annivs->count = i;
 		}
 
@@ -318,9 +301,7 @@ dl_init_download(WatchInfoPtr wi, ListPtr times, ListPtr alarms,
 
 		if (i != system->count)
 		{
-			last_warn =
-			    (*dl_warn_proc)
-			    ("System count value incorrect.");
+			(*dl_warn_proc)("System count value incorrect.");
 			system->count = i;
 		}
 
@@ -347,9 +328,7 @@ dl_init_download(WatchInfoPtr wi, ListPtr times, ListPtr alarms,
 
 		if (i != wristapp->count)
 		{
-			last_warn =
-			    (*dl_warn_proc)
-			    ("WristApp count value incorrect.");
+			(*dl_warn_proc)("WristApp count value incorrect.");
 			wristapp->count = i;
 		}
 
@@ -375,9 +354,7 @@ dl_init_download(WatchInfoPtr wi, ListPtr times, ListPtr alarms,
 
 		if (i != melody->count)
 		{
-			last_warn =
-			    (*dl_warn_proc)
-			    ("Melody count value incorrect.");
+			(*dl_warn_proc)("Melody count value incorrect.");
 			melody->count = i;
 		}
 
