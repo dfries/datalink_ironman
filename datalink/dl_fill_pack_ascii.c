@@ -22,7 +22,7 @@
 #include <string.h>
 #include "datalink.h"
 
-void dl_fill_pack_ascii(unsigned char * to, unsigned char * from, int size,
+void dl_fill_pack_ascii(unsigned char * to, const char * from, int size,
 	char fill)
 {
 	int l = strlen(from);

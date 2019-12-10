@@ -388,7 +388,7 @@ item		: NAME '=' value '\n'
 
 		ip->data.wristapp.len = sbuf.st_size;
 
-		if ((ip->data.wristapp.data = (char *)malloc(sbuf.st_size)) == NULL) {
+		if ((ip->data.wristapp.data = (unsigned char *)malloc(sbuf.st_size)) == NULL) {
 			sprintf(buf, "Could not allocate data for %s.", $1);
 			dl_error(buf);
 			return(-1);

@@ -230,7 +230,7 @@ int dl_anniv_by_label(ItemPtr, ItemPtr);
 int dl_app_by_datetime(ItemPtr, ItemPtr);
 int dl_app_by_label(ItemPtr, ItemPtr);
 unsigned short int dl_docrc(unsigned char *);
-void dl_fill_pack_ascii(unsigned char *, unsigned char *, int, char);
+void dl_fill_pack_ascii(unsigned char *, const char *, int, char);
 void dl_free_download(void);
 int dl_init_download(WatchInfoPtr, ListPtr, ListPtr, ListPtr, ListPtr,
 		     ListPtr, ListPtr, ListPtr, ListPtr, ListPtr, ListPtr,
@@ -239,10 +239,10 @@ WatchInfoPtr dl_init_watch(int);
 int dl_item_ok(WatchInfoPtr, ItemPtr);
 ItemPtr dl_new_item(WatchInfoPtr, int);
 ListPtr dl_new_list(void);
-int dl_pack_ascii(unsigned char *, unsigned char *);
+int dl_pack_ascii(unsigned char *, const char *);
 int dl_pack_char(char);
 int dl_pack_digit(char);
-void dl_pack_phone(unsigned char *, unsigned char *, int);
+void dl_pack_phone(unsigned char *, const char *, int);
 int dl_pack_size(char *);
 int dl_phone_by_label(ItemPtr, ItemPtr);
 WatchInfoPtr dl_read_save(char *, int, ListPtr *, ListPtr *, ListPtr *,

@@ -453,7 +453,7 @@ int dl_send_data(WatchInfoPtr wi, int type, const char *prog)
 		 */
 		/* should be overkill, don't know the right value */
 #define maxdatasize 4096
-		char memdata[maxdatasize] = { 0 };
+		unsigned char memdata[maxdatasize] = { 0 };
 		int p = 0;
 		int labelsize;
 		int packets;
@@ -613,8 +613,7 @@ int dl_send_data(WatchInfoPtr wi, int type, const char *prog)
 		{
 			buf[7] = dl_download_data.alarms[i].audible;
 			dl_fill_pack_ascii(&buf[8],
-					   dl_download_data.
-					   alarms[i].label,
+					   dl_download_data.alarms[i].label,
 					   dl_download_data.max_alarm_str,
 					   ' ');
 			buf[0] = 0x1a;
@@ -622,8 +621,7 @@ int dl_send_data(WatchInfoPtr wi, int type, const char *prog)
 		} else
 		{
 			dl_fill_pack_ascii(&buf[7],
-					   dl_download_data.
-					   alarms[i].label,
+					   dl_download_data.alarms[i].label,
 					   dl_download_data.max_alarm_str,
 					   ' ');
 			buf[15] = dl_download_data.alarms[i].audible;
